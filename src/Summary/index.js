@@ -14,12 +14,9 @@ const Summary = (props) => {
             let width = window.innerWidth,
                 height = window.innerHeight; 
             let scene, camera, renderer;
-            let cube = null,
-                plane = null;
-            let cubes = [],
+            const cubes = [],
                 cubesGroup = [];
             const numOfBoxes = 10;
-            // const boxOffset = .0; //.4
             const boxThickness = .5;
             const boxWidth = 3;
             const boxHeight = 2;
@@ -28,6 +25,8 @@ const Summary = (props) => {
             const colors = [0x50feff, 0x41fe93, 0xb1fe39, 0xfef74a, 0xfe4ea5];
             const allMesh = new THREE.Group();
             let canStart = false;
+            const waveWidth = 3;
+            let waveScale = 0;
             const options = {
                 boxOffset: 0
             }
@@ -56,10 +55,6 @@ const Summary = (props) => {
                 initGUI();
                 initLights();
                 initGeometry();
-                scene.add(allMesh);
-
-                allMesh.rotation.x = 90 * Math.PI/180;
-
                 initAnimation();
             }
 
@@ -102,27 +97,26 @@ const Summary = (props) => {
                 }
 
                 addGround();
+
+                scene.add(allMesh);
+                allMesh.rotation.x = 90 * Math.PI/180;
             }
 
             const createTexture = (i,t,w) => {
                 const text = ['Blue','GreenBlue','Green','Yellow','Red'];
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
+                const fontsize = ctx.canvas.height*.7;
                 ctx.canvas.width = 341.333 * w; //1024
                 ctx.canvas.height = ctx.canvas.width * (t/w); //170
-
-                // if(i ===0){
-                //     ctx.fillStyle = 'red';
-                //     ctx .fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
-                // }
-
-                ctx.font = 'bold '+ctx.canvas.height +"px Arial";
+                ctx.font = 'bold '+ fontsize +"px Arial";
                 ctx.textAlign = "right"; 
+                ctx.textBaseline = "middle";
                 ctx.fillStyle = 'white';
-                ctx.fillText(text[i%5], ctx.canvas.width-ctx.canvas.height*.2, ctx.canvas.height-ctx.canvas.height*.15);
+                ctx.fillText(text[i%5], ctx.canvas.width-ctx.canvas.height*.2, ctx.canvas.height/2);
 
+                // document.body.appendChild(ctx.canvas);
 
-                document.body.appendChild(ctx.canvas);
                 return canvas;
             }
 
@@ -131,7 +125,7 @@ const Summary = (props) => {
                 const geometry = new THREE.BoxGeometry( boxThickness, boxHeight, boxWidth );
                 geometry.translate(0, boxHeight/2, 0);
                 const material = new THREE.MeshPhongMaterial({ color: colors[i%5] });
-                cube = new THREE.Mesh( geometry, material );
+                const cube = new THREE.Mesh( geometry, material );
                 cube.castShadow = true;
                 cube.scale.set(1, 0.001, 0.0001);
 
@@ -140,7 +134,6 @@ const Summary = (props) => {
                 const textMaterial = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(createTexture(i,boxThickness,boxWidth)),wireframe:false, transparent: true });
                 textMaterial.map.rotation = 90 * Math.PI/180;
                 textMaterial.map.center.set(.5,.5);
-                console.log(textMaterial.map);
                 const text = new THREE.Mesh( textGeometry, textMaterial );
                 text.rotation.x = -90 * Math.PI/180;
                 text.position.y = 0.001;
@@ -160,15 +153,13 @@ const Summary = (props) => {
             const addGround = () => {
                 const geometry = new THREE.PlaneGeometry(50, 50, 1);
                 const material = new THREE.MeshPhongMaterial({ color: bgColor });
-                plane = new THREE.Mesh( geometry, material );
+                const plane = new THREE.Mesh( geometry, material );
                 plane.rotation.x = -90 * (Math.PI/180);
                 plane.castShadow = true;
                 plane.receiveShadow = true;
                 allMesh.add(plane);
             }
 
-            let waveWidth = 3;
-            let waveScale = 0;
             const update = () => {
                 if(canStart){
                     const timer = (new Date() - startTime) * .002;
@@ -190,7 +181,6 @@ const Summary = (props) => {
 
             const render = () => {
                 update();
-                
                 renderer.render( scene, camera );
             }
 

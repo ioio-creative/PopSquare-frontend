@@ -37,7 +37,6 @@ const Summary = (props) => {
                 camera.position.x = 0;
                 camera.position.y = 0;
                 camera.position.z = 20;
-                
 
                 scene = new THREE.Scene();
     
@@ -107,7 +106,7 @@ const Summary = (props) => {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 const fontsize = ctx.canvas.height*.7;
-                ctx.canvas.width = 341.333 * w; //1024
+                ctx.canvas.width = Math.round(341.333 * w); //1024
                 ctx.canvas.height = ctx.canvas.width * (t/w); //170
                 ctx.font = 'bold '+ fontsize +"px Arial";
                 ctx.textAlign = "right"; 
@@ -143,7 +142,7 @@ const Summary = (props) => {
                 independentGroup.add(cube);
                 independentGroup.add(text);
 
-                allMesh.add( independentGroup );
+                allMesh.add(independentGroup);
                 
                 // cubes array
                 cubesGroup.push(independentGroup);

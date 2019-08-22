@@ -79,6 +79,9 @@ const Scene = (props) => {
                 domBody.style.position = 'fixed';
                 domBody.style.transform = `translate3d(${mainBody.position.x-width/2}px,${mainBody.position.y-height/2}px,0) rotate(${mainBody.angle*(180/Math.PI)}deg)`;
 
+                const eyesGroup = document.createElement('div');
+                eyesGroup.className = 'eyesGroup';
+
                 const leftEye = document.createElement('div');
                 leftEye.className = 'eye';
                 leftEye.style.width = eyeRadius+'px';
@@ -97,8 +100,18 @@ const Scene = (props) => {
                 rightEye.style.left = width/2-(-offsetX)+width*.2-eyeRadius/2+'px';
                 rightEye.style.top = height/2-offsetY-height*.2+eyeRadius/2+'px';
 
-                domBody.appendChild(leftEye);
-                domBody.appendChild(rightEye);
+                const product = 'product: 1';
+                const category = 'category: 1';
+                const information = 'information: 1';
+
+                const content = document.createElement('div');
+                content.className = 'content';
+                content.innerHTML = `${product}<br/>${category}<br/>${information}`;
+
+                eyesGroup.appendChild(leftEye);
+                eyesGroup.appendChild(rightEye);
+                domBody.appendChild(eyesGroup);
+                domBody.appendChild(content);
                 bodiesWrap.appendChild(domBody);
 
                 domBodies.push(domBody);
@@ -141,7 +154,7 @@ const Scene = (props) => {
 
             World.add(engine.world, [wallLeft, wallRight, ground]);
 
-            console.log(group,ground);
+            // console.log(group,ground);
             
 
             // add mouse control
@@ -174,6 +187,14 @@ const Scene = (props) => {
                     }
                 }
             };
+
+            const showContent = () => {
+                const tl = new TimelineMax();
+                tl.to(engine.timing, 1.6, {timeScale: .05, ease: 'Expo.easeOut'},'s');
+                tl.to('#bodiesWrap .content', .6, {autoAlpha: 1, ease:'Power2.easeInOut'},'s');
+                tl.to('#bodiesWrap .content', 1, {autoAlpha: 0, ease:'Power4.easeInOut'},3);
+                tl.to(engine.timing, 1, {timeScale: 1, ease: 'Expo.easeInOut'},3);
+            }
 
             // Matter.Events.on(mouseConstraint, "mousedown", function(event) {
             //     explosion();
@@ -248,10 +269,11 @@ const Scene = (props) => {
                 mouseConstraint.collisionFilter.mask = group;
                 World.add(engine.world, mouseConstraint);
 
-                setTimeout(()=>{
-                    removeAllBody();
-                    explosion();
-                },5000);
+                // setTimeout(()=>{
+                //     removeAllBody();
+                //     explosion();
+                    // showContent();
+                // },5000);
             }
 
             // handle key down
@@ -260,6 +282,9 @@ const Scene = (props) => {
                     if(e.keyCode === 8){
                         removeAllBody();
                         explosion();
+                    }
+                    else if(e.keyCode === 13){
+                        showContent();
                     }
                     else{
                         createBody();

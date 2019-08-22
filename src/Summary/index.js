@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import * as THREE from 'three';
 import Orbitcontrols from 'three-orbitcontrols';
 import { TimelineMax } from 'gsap';
+import * as dat from 'dat.gui';
 
 const Summary = (props) => {
     const [sceneElem, setSceneElem] = useState(null);
@@ -15,14 +16,21 @@ const Summary = (props) => {
             let scene, camera, renderer;
             let cube = null,
                 plane = null;
-            let cubes = [];
+            let cubes = [],
+                cubesGroup = [];
             const numOfBoxes = 10;
-            const offset = .0; //.4
+            // const boxOffset = .0; //.4
+            const boxThickness = .5;
+            const boxWidth = 3;
+            const boxHeight = 2;
             const startTime = new Date();
             const bgColor = 0x0547bd;
             const colors = [0x50feff, 0x41fe93, 0xb1fe39, 0xfef74a, 0xfe4ea5];
             const allMesh = new THREE.Group();
             let canStart = false;
+            const options = {
+                boxOffset: 0
+            }
 
             const initScene = () => {
                 // camera = new THREE.PerspectiveCamera( 75, width / height, 0.1, 1000 );
@@ -45,6 +53,7 @@ const Summary = (props) => {
 
                 new Orbitcontrols( camera, renderer.domElement );
 
+                initGUI();
                 initLights();
                 initGeometry();
                 scene.add(allMesh);
@@ -52,6 +61,11 @@ const Summary = (props) => {
                 allMesh.rotation.x = 90 * Math.PI/180;
 
                 initAnimation();
+            }
+
+            const initGUI = () => {
+                const gui = new dat.GUI();
+                gui.add(options, 'boxOffset',0, 1).name('Boxes offset');
             }
 
             const initAnimation = () => {
@@ -114,9 +128,6 @@ const Summary = (props) => {
 
             const addBox = (i) => {
                 const independentGroup = new THREE.Group();
-                const boxThickness = .5;
-                const boxWidth = 3;
-                const boxHeight = 2;
                 const geometry = new THREE.BoxGeometry( boxThickness, boxHeight, boxWidth );
                 geometry.translate(0, boxHeight/2, 0);
                 const material = new THREE.MeshPhongMaterial({ color: colors[i%5] });
@@ -135,13 +146,14 @@ const Summary = (props) => {
                 text.position.y = 0.001;
                 text.position.z = boxWidth;
 
-                independentGroup.position.x = ((i*boxThickness) + (i*offset)) - (boxThickness*numOfBoxes/2 + ((numOfBoxes-1)*offset/2) - boxThickness/2 );
+                // independentGroup.position.x = ((i*boxThickness) + (i*boxOffset)) - (boxThickness*numOfBoxes/2 + ((numOfBoxes-1)*boxOffset/2) - boxThickness/2 );
                 independentGroup.add(cube);
                 independentGroup.add(text);
 
                 allMesh.add( independentGroup );
                 
                 // cubes array
+                cubesGroup.push(independentGroup);
                 cubes.push(cube);
             }
 
@@ -161,12 +173,18 @@ const Summary = (props) => {
                 if(canStart){
                     const timer = (new Date() - startTime) * .002;
                     for(let i=0; i<numOfBoxes; i++){
-                        cubes[i].scale.y += (Math.max(0.001, ((Math.sin(timer-i / waveWidth) + 1)) * .5 * waveScale) - cubes[i].scale.y) * .1;
+                        cubes[i].scale.y += (Math.max(0.001, ((Math.sin(timer-i / waveWidth) + 1)) * .5 * waveScale) - cubes[i].scale.y) * .1;                                            
                     }
 
                     if(waveScale < .5)
                         waveScale += 0.01;
                 }
+
+                // gui
+                for(let i=0; i<numOfBoxes; i++){
+                    cubesGroup[i].position.x = ((i*boxThickness) + (i*options.boxOffset)) - (boxThickness*numOfBoxes/2 + ((numOfBoxes-1)*options.boxOffset/2) - boxThickness/2 );
+                }
+
                 camera.lookAt(0,0,0);
             }
 

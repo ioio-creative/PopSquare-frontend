@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Matter from 'matter-js';
 import { TimelineMax, Power4 } from 'gsap';
+import webSocket from 'socket.io-client';
 
 const Scene = (props) => {
     const [sceneElem, setSceneElem] = useState(null);
@@ -8,6 +9,20 @@ const Scene = (props) => {
     let keyDown = null;
     let animId;
     let group = 0;
+    let createBody = null;
+
+    const [socket,setSocket] = useState(null);
+    useEffect(()=>{
+        if(socket){
+            socket.emit('getMessage', 'to server');
+            socket.on('getMessage', message => {
+                console.log(message);
+                createBody();
+            });
+        }else{
+            setSocket(webSocket('http://localhost:3333'));
+        }
+    },[socket])
 
     useEffect(()=>{
         if(sceneElem){
@@ -171,7 +186,7 @@ const Scene = (props) => {
             Render.run(render);
 
             // create body
-            const createBody = () => {
+            createBody = () => {
                 const x = Math.max(w*.3, Math.min(w*.7, Math.random() * w));
                 const y = -100;
                 const radius = Math.round(Math.random() * (w*.1) + 30);
@@ -258,7 +273,7 @@ const Scene = (props) => {
             document.addEventListener("touchstart", keyDown);
 
 
-
+            // update collision filter first
             removeAllBody();
 
 

@@ -11,6 +11,7 @@ const Scene = (props) => {
 
     useEffect(()=>{
         if(sceneElem){
+            const colors = [0x50feff, 0x41fe93, 0xb1fe39, 0xfef74a, 0xfe4ea5];
             // module aliases
             const Engine = Matter.Engine,
                 Render = Matter.Render,
@@ -36,6 +37,7 @@ const Scene = (props) => {
                     width: w,
                     height: h,
                     wireframes: false,
+                    background: '#0547bd'
                 }
             });
 
@@ -102,19 +104,19 @@ const Scene = (props) => {
 
 
 
-            const wallLeft = Bodies.rectangle(-10, h/2, 60, h, { isStatic: true,
+            const wallLeft = Bodies.rectangle(-30, h/2, 60, h, { isStatic: true,
                 collisionFilter: {
                     group: group,
                     mask: group
                 }
             });
-            const wallRight = Bodies.rectangle(w+10, h/2, 60, h, { isStatic: true,
+            const wallRight = Bodies.rectangle(w+30, h/2, 60, h, { isStatic: true,
                 collisionFilter: {
                     group: group,
                     mask: group
                 }
             });
-            const ground = Bodies.rectangle(w/2, h+10, w, 60, { isStatic: true,
+            const ground = Bodies.rectangle(w/2, h+30, w, 60, { isStatic: true,
                 collisionFilter: {
                     group: group,
                     mask: group
@@ -172,24 +174,38 @@ const Scene = (props) => {
             const createBody = () => {
                 const x = Math.max(w*.3, Math.min(w*.7, Math.random() * w));
                 const y = -100;
-                const radius = Math.round(Math.random() * 50 + 30);
+                const radius = Math.round(Math.random() * (w*.1) + 30);
                 let newobj = null;
+                const num = Math.round(Math.random() * 3-1);
+                const color = colors[Math.round(Math.random()*5)];
 
-                if(Math.round(Math.random() * 2-1) === 0){
+                if(num === 0){
                     const circle = Bodies.circle(x, y, radius, { restitution: 0.5,
                         collisionFilter: {
                             group: group,
                             mask: group
-                        } 
+                        },
+                        fillStyle: color
                     });
                     newobj = createDomFrom(circle, -radius*.1, -radius*.1);
+                }
+                else if(num === 1){
+                    const box = Bodies.rectangle(x, y, radius, radius, { restitution: 0.5,
+                        collisionFilter: {
+                            group: group,
+                            mask: group
+                        },
+                        fillStyle: color
+                    });
+                    newobj = createDomFrom(box, -radius*.1, -radius*.1);
                 }
                 else{
                     const triangle = Bodies.polygon(x, y, 3, radius,{
                         collisionFilter: {
                             group: group,
                             mask: group
-                        }
+                        },
+                        fillStyle: color
                     });
                     // rotate triangle to right angle
                     Body.rotate(triangle, -Math.PI/6);
@@ -216,6 +232,11 @@ const Scene = (props) => {
                 mouseConstraint.collisionFilter.group = group;
                 mouseConstraint.collisionFilter.mask = group;
                 World.add(engine.world, mouseConstraint);
+
+                setTimeout(()=>{
+                    removeAllBody();
+                    explosion();
+                },5000);
             }
 
             // handle key down
@@ -234,10 +255,12 @@ const Scene = (props) => {
                 }
             }
             document.addEventListener("keydown", keyDown);
+            document.addEventListener("touchstart", keyDown);
 
-            
+
+
             removeAllBody();
-            // keyDown();
+
 
             const loop = ()=>{
                 animId = requestAnimationFrame(loop);
@@ -268,6 +291,7 @@ const Scene = (props) => {
             if(sceneElem){
                 cancelAnimationFrame(animId);
                 document.removeEventListener("keydown", keyDown);
+                document.removeEventListener("touchstart", keyDown);
             }
         }
     },[sceneElem])

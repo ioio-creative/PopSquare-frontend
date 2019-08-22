@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import * as THREE from 'three';
 import Orbitcontrols from 'three-orbitcontrols';
-import { TweenMax, TimelineMax} from 'gsap';
+import { TimelineMax } from 'gsap';
 
 const Summary = (props) => {
     const [sceneElem, setSceneElem] = useState(null);
@@ -16,7 +16,7 @@ const Summary = (props) => {
             let cube = null,
                 plane = null;
             let cubes = [];
-            const numOfBoxes = 20;
+            const numOfBoxes = 10;
             const offset = .0; //.4
             const startTime = new Date();
             const bgColor = 0x0547bd;
@@ -39,7 +39,7 @@ const Summary = (props) => {
                 renderer.setPixelRatio( window.devicePixelRatio );
                 renderer.setSize( width, height );
                 renderer.shadowMap.enabled = true;
-                renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+                renderer.shadowMap.type = THREE.PCFSoftShadowMap;
                 renderer.setAnimationLoop(render);
                 sceneElem.appendChild( renderer.domElement );
 
@@ -51,6 +51,10 @@ const Summary = (props) => {
 
                 allMesh.rotation.x = 90 * Math.PI/180;
 
+                initAnimation();
+            }
+
+            const initAnimation = () => {
                 const tl = new TimelineMax();
                 for(let i=0; i<numOfBoxes; i++){
                     tl.to(cubes[i].scale, 1.6, {z: 1, ease: 'Power4.easeOut'},i*.08);
@@ -86,18 +90,58 @@ const Summary = (props) => {
                 addGround();
             }
 
+            const createTexture = (i,t,w) => {
+                const text = ['Blue','GreenBlue','Green','Yellow','Red'];
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.canvas.width = 341.333 * w; //1024
+                ctx.canvas.height = ctx.canvas.width * (t/w); //170
+
+                // if(i ===0){
+                //     ctx.fillStyle = 'red';
+                //     ctx .fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
+                // }
+
+                ctx.font = 'bold '+ctx.canvas.height +"px Arial";
+                ctx.textAlign = "right"; 
+                ctx.fillStyle = 'white';
+                ctx.fillText(text[i%5], ctx.canvas.width-ctx.canvas.height*.2, ctx.canvas.height-ctx.canvas.height*.15);
+
+
+                document.body.appendChild(ctx.canvas);
+                return canvas;
+            }
+
             const addBox = (i) => {
-                const boxWidth = .5;
+                const independentGroup = new THREE.Group();
+                const boxThickness = .5;
+                const boxWidth = 3;
                 const boxHeight = 2;
-                const geometry = new THREE.BoxGeometry( boxWidth, boxHeight, 3 );
+                const geometry = new THREE.BoxGeometry( boxThickness, boxHeight, boxWidth );
                 geometry.translate(0, boxHeight/2, 0);
-                const material = new THREE.MeshPhongMaterial({ color: colors[i%5]  });
+                const material = new THREE.MeshPhongMaterial({ color: colors[i%5] });
                 cube = new THREE.Mesh( geometry, material );
                 cube.castShadow = true;
-                cube.position.x = ((i*boxWidth) + (i*offset)) - (boxWidth*numOfBoxes/2 + ((numOfBoxes-1)*offset/2) - boxWidth/2 );
                 cube.scale.set(1, 0.001, 0.0001);
-                allMesh.add( cube );
 
+                // add text
+                const textGeometry = new THREE.PlaneGeometry(boxThickness, boxWidth, 1);
+                const textMaterial = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(createTexture(i,boxThickness,boxWidth)),wireframe:false, transparent: true });
+                textMaterial.map.rotation = 90 * Math.PI/180;
+                textMaterial.map.center.set(.5,.5);
+                console.log(textMaterial.map);
+                const text = new THREE.Mesh( textGeometry, textMaterial );
+                text.rotation.x = -90 * Math.PI/180;
+                text.position.y = 0.001;
+                text.position.z = boxWidth;
+
+                independentGroup.position.x = ((i*boxThickness) + (i*offset)) - (boxThickness*numOfBoxes/2 + ((numOfBoxes-1)*offset/2) - boxThickness/2 );
+                independentGroup.add(cube);
+                independentGroup.add(text);
+
+                allMesh.add( independentGroup );
+                
+                // cubes array
                 cubes.push(cube);
             }
 
@@ -135,7 +179,6 @@ const Summary = (props) => {
             initScene();
 
             onWindowResize = () => {
-                // camera.aspect = window.innerWidth / window.innerHeight;
                 camera.left = -window.innerWidth / 100;
                 camera.right = window.innerWidth / 100;
                 camera.top = window.innerHeight / 100;

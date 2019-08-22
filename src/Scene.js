@@ -196,10 +196,6 @@ const Scene = (props) => {
                 tl.to(engine.timing, 1, {timeScale: 1, ease: 'Expo.easeInOut'},3);
             }
 
-            // Matter.Events.on(mouseConstraint, "mousedown", function(event) {
-            //     explosion();
-            // });
-
             // run the engine
             Engine.run(engine);
 

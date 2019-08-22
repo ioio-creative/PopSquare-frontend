@@ -17,9 +17,11 @@ code {
   pointer-events: none;
   transform-origin: center center;
 }
+
 #bodiesWrap .eye{
   border-radius: 50%;
 }
+
 #bodiesWrap .content{
   position: absolute;
   top:50%;
@@ -27,6 +29,7 @@ code {
   transform: translate3d(10%,-50%,0);
   opacity: 0;
   visibility: hidden;
+  white-space: nowrap;
 }
 
 #scene3d{

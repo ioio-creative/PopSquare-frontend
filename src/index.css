@@ -25,11 +25,12 @@ code {
 #bodiesWrap .content{
   position: absolute;
   top:50%;
-  left:100%;
-  transform: translate3d(10%,-50%,0);
+  left:50%;
+  transform: translate3d(-50%,-50%,0);
   opacity: 0;
   visibility: hidden;
   white-space: nowrap;
+  font-size:12px;
 }
 
 #scene3d{

@@ -5,27 +5,38 @@ import webSocket from 'socket.io-client';
 
 const Scene = (props) => {
     const [sceneElem, setSceneElem] = useState(null);
-    let bodiesWrap = null;
-    let keyDown = null;
-    let animId;
-    let group = 0;
+    const [bodiesWrap, setBodiesWrap] = useState(null);
+    const [socket,setSocket] = useState(null);
     let createBody = null;
 
-    const [socket,setSocket] = useState(null);
     useEffect(()=>{
+        const getMessage = (message) => {
+            console.log(message);
+            createBody();
+        }
+
         if(socket){
             socket.emit('getMessage', 'to server');
-            socket.on('getMessage', message => {
-                console.log(message);
-                createBody();
-            });
+            socket.on('getMessage', getMessage);
         }else{
             setSocket(webSocket('http://localhost:3333'));
         }
-    },[socket])
+
+        return ()=>{
+            if(socket){
+                socket.off('getMessage', getMessage);
+                console.log(1);
+            }
+        }
+    },[socket,createBody])
+
 
     useEffect(()=>{
+        let keyDown = null;
+        let animId;
         if(sceneElem){
+            let group = 0;
+            //
             const colors = [0x50feff, 0x41fe93, 0xb1fe39, 0xfef74a, 0xfe4ea5];
             // module aliases
             const Engine = Matter.Engine,
@@ -190,8 +201,10 @@ const Scene = (props) => {
 
             const showContent = () => {
                 const tl = new TimelineMax();
-                tl.to(engine.timing, 1.6, {timeScale: .05, ease: 'Expo.easeOut'},'s');
+                tl.to(engine.timing, 2, {timeScale: .03, ease: 'Expo.easeOut'},'s');
+                tl.to('#bodiesWrap .eyesGroup', .6, {autoAlpha: 0, ease:'Power2.easeInOut'},'s');
                 tl.to('#bodiesWrap .content', .6, {autoAlpha: 1, ease:'Power2.easeInOut'},'s');
+                tl.to('#bodiesWrap .eyesGroup', .6, {autoAlpha: 1, ease:'Power2.easeInOut'},3);
                 tl.to('#bodiesWrap .content', 1, {autoAlpha: 0, ease:'Power4.easeInOut'},3);
                 tl.to(engine.timing, 1, {timeScale: 1, ease: 'Expo.easeInOut'},3);
             }
@@ -244,7 +257,8 @@ const Scene = (props) => {
                     newobj = createDomFrom(triangle, -radius*.1, -radius*.1);
                 }
                 World.add(engine.world, newobj);
-            }
+            };
+
             
             // remove body
             const removeAllBody = () => {
@@ -333,7 +347,7 @@ const Scene = (props) => {
     },[sceneElem])
 
     return <>
-        <div ref={(elem)=>bodiesWrap=elem} id="bodiesWrap"></div>
+        <div ref={(elem)=>{setBodiesWrap(elem)}} id="bodiesWrap"></div>
         <div ref={(elem)=>{setSceneElem(elem)}} id="scene"></div>
     </>
 }

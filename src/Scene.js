@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Matter from 'matter-js';
-import { TimelineMax, Power4 } from 'gsap';
+import { TimelineMax, Power4, TweenMax } from 'gsap';
 import webSocket from 'socket.io-client';
 
 const Scene = (props) => {
@@ -10,21 +10,21 @@ const Scene = (props) => {
     let createBody = null;
 
     useEffect(()=>{
-        const getMessage = (message) => {
+        const addObject = (message) => {
             console.log(message);
             createBody();
         }
 
         if(socket){
             socket.emit('getMessage', 'to server');
-            socket.on('getMessage', getMessage);
+            socket.on('addObject', addObject);
         }else{
             setSocket(webSocket('http://localhost:3333'));
         }
 
         return ()=>{
             if(socket){
-                socket.off('getMessage', getMessage);
+                socket.off('addObject', addObject);
             }
         }
     },[socket,createBody])
@@ -37,7 +37,7 @@ const Scene = (props) => {
             let group = 0;
             let objects = [];
             let domBodies = [];
-            const colors = [0x50feff, 0x41fe93, 0xb1fe39, 0xfef74a, 0xfe4ea5];
+            const colors = ['#8f2d56', '#0496ff', '#006ba6', '#d81159', '#ffbc42'];
             // module aliases
             const Engine = Matter.Engine,
                 Render = Matter.Render,
@@ -210,45 +210,54 @@ const Scene = (props) => {
             createBody = () => {
                 const x = Math.max(w*.2, Math.min(w*.8, Math.random() * w));
                 const y = 100;
-                const radius = Math.round(Math.random() * (w*.01) + 10);
+                const radius = 1;//Math.round(Math.random() * (w*.03) + 10);
                 let newobj = null;
                 const num = Math.round(Math.random() * 3-1);
-                const color = colors[Math.round(Math.random()*5)];
-                const parms = {
+                const color = colors[Math.round(Math.random()*4)];
+                const params = {
+                    isStatic: true,
+                    restitution: 0.6,
                     collisionFilter: {
                         group: group,
                         mask: group
                     },
-                    fillStyle: color
+                    render:{
+                        fillStyle: color
+                    }
                 }
 
                 if(num === 0){
-                    const circle = Bodies.circle(x, y, radius, { restitution: 0.5, ...parms });
+                    const circle = Bodies.circle(x, y, radius, {...params });
                     newobj = circle;
                 }
                 else if(num === 1){
-                    const box = Bodies.rectangle(x, y, radius, radius, { restitution: 0.5, ...parms });
+                    const box = Bodies.rectangle(x, y, radius, radius, { ...params });
                     newobj = box;
                 }
                 else{
-                    const triangle = Bodies.polygon(x, y, 3, radius,{ ...parms, label:'triangle' });
+                    const triangle = Bodies.polygon(x, y, 3, radius,{ ...params, label:'triangle' });
                     // rotate triangle to right angle
                     Body.rotate(triangle, -Math.PI/6);
                     newobj = triangle;
                 }
                 objects.push(newobj);
 
-                newobj.scale = 1;
-                newobj.noGravity = true;
                 World.add(engine.world, newobj);
 
-                setTimeout(()=>{
-                    newobj.noGravity = false;
-                    if(newobj.label === 'triangle')
-                        createDomFrom(newobj, -radius*.5, -radius*.5);
-                    else
-                        createDomFrom(newobj, -radius*.1, -radius*.1);
-                },3000);
+                TweenMax.to(newobj, 1, {scale:2, ease:'Linear.easeNone', 
+                    onUpdate:()=>{
+                        Body.scale(newobj, 1.07,1.07);
+                    },
+                    onComplete:()=>{
+                        Body.setStatic(newobj, false);
+                        Body.scale(newobj, 1, 1);
+                        
+                        if(newobj.label === 'triangle')
+                            createDomFrom(newobj, -radius*.5, -radius*.5);
+                        else
+                            createDomFrom(newobj, -radius*.1, -radius*.1);
+                    }
+                });
             };
 
             // Events.on(engine, 'beforeUpdate', function() {
@@ -317,7 +326,7 @@ const Scene = (props) => {
             removeAllBody();
 
 
-                    const gravity = engine.world.gravity;
+            // const gravity = engine.world.gravity;
             const loop = ()=>{
                 animId = requestAnimationFrame(loop);
                 
@@ -327,22 +336,13 @@ const Scene = (props) => {
                     const { width, height } = getWidthHeight(body);
                     let additionalRotation = 0;
 
-                    if(body.label === 'triangle'){
+                    if(body.label === 'triangle')
                         additionalRotation = (Math.PI/6)*(180/Math.PI);
-                    }
+                    
 
                     if(domBody)
                         domBody.style.transform = `translate3d(${body.position.x-width/2}px,${body.position.y-height/2}px,0) rotate(${body.angle*(180/Math.PI)+additionalRotation}deg)`;
 
-            
-                    if(body.noGravity){
-                        Body.applyForce(body, body.position, {
-                            x: -gravity.x * gravity.scale * body.mass,
-                            y: -gravity.y * gravity.scale * body.mass
-                        });
-                        const scale = body.scale+0.01;
-                        Body.scale(body, scale, scale);
-                    }
 
                     if(body.position.y > h+height){
                         objects.splice(i,1);

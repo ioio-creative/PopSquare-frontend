@@ -25,7 +25,6 @@ const Scene = (props) => {
         return ()=>{
             if(socket){
                 socket.off('getMessage', getMessage);
-                console.log(1);
             }
         }
     },[socket,createBody])
@@ -36,7 +35,8 @@ const Scene = (props) => {
         let animId;
         if(sceneElem){
             let group = 0;
-            //
+            let objects = [];
+            let domBodies = [];
             const colors = [0x50feff, 0x41fe93, 0xb1fe39, 0xfef74a, 0xfe4ea5];
             // module aliases
             const Engine = Matter.Engine,
@@ -74,10 +74,78 @@ const Scene = (props) => {
                     height: max.y - min.y
                 }
             }
-            
-            let objects = [];
-            let domBodies = [];
 
+            const wallLeft = Bodies.rectangle(-30, h/2, 60, h, { isStatic: true,
+                collisionFilter: {
+                    group: group,
+                    mask: group
+                }
+            });
+            const wallRight = Bodies.rectangle(w+30, h/2, 60, h, { isStatic: true,
+                collisionFilter: {
+                    group: group,
+                    mask: group
+                }
+            });
+            const ground = Bodies.rectangle(w/2, h+30, w, 60, { isStatic: true,
+                collisionFilter: {
+                    group: group,
+                    mask: group
+                }
+            });
+            ground.label = 'ground';
+
+            World.add(engine.world, [wallLeft, wallRight, ground]);
+            
+
+            // add mouse control
+            const mouse = Mouse.create(render.canvas),
+            mouseConstraint = MouseConstraint.create(engine, {
+                mouse: mouse,
+                constraint: {
+                    stiffness: 0.2,
+                    render: {
+                        visible: false
+                    }
+                }
+            });
+            World.add(engine.world, mouseConstraint);
+
+
+            var explosion = function() {
+                var bodies = Composite.allBodies(engine.world);
+        
+                for (var i = 0; i < bodies.length; i++) {
+                    var body = bodies[i];
+        
+                    if (!body.isStatic) {
+                        var forceMagnitude = .02 * body.mass;
+        
+                        Body.applyForce(body, body.position, {
+                            x: (forceMagnitude + Common.random() * forceMagnitude) * Common.choose([1, -1]), 
+                            y: -forceMagnitude + Common.random() * -forceMagnitude
+                        });
+                    }
+                }
+            };
+
+            const showContent = () => {
+                const tl = new TimelineMax();
+                tl.to(engine.timing, 2, {timeScale: .03, ease: 'Expo.easeOut'},'s');
+                tl.to('#bodiesWrap .eyesGroup', .6, {autoAlpha: 0, ease:'Power2.easeInOut'},'s');
+                tl.to('#bodiesWrap .content', .6, {autoAlpha: 1, ease:'Power2.easeInOut'},'s');
+                tl.to('#bodiesWrap .eyesGroup', 1, {autoAlpha: 1, ease:'Power2.easeInOut'},3);
+                tl.to('#bodiesWrap .content', 1, {autoAlpha: 0, ease:'Power4.easeInOut'},3);
+                tl.to(engine.timing, 1, {timeScale: 1, ease: 'Expo.easeInOut'},3);
+            }
+
+            // run the engine
+            Engine.run(engine);
+
+            // run the renderer
+            Render.run(render);
+
+            
             // add Dom bodies
             const createDomFrom = (mainBody, offsetX=0, offsetY=0) => {
                 const { width, height } = getWidthHeight(mainBody);
@@ -126,9 +194,8 @@ const Scene = (props) => {
                 bodiesWrap.appendChild(domBody);
 
                 domBodies.push(domBody);
-                objects.push(mainBody);
-                
-                
+            
+                // animate eyes
                 const a = Math.random() * 5;
                 const b = Math.random() * 5;
                 const c = Math.random() * 10;
@@ -137,128 +204,66 @@ const Scene = (props) => {
                 tl.to([leftEye, rightEye],.1,{scaleY:1, ease:Power4.easeOut});
                 tl.to([leftEye, rightEye],.1,{scaleY:.1},a+b);
                 tl.to([leftEye, rightEye],.1,{scaleY:1});
-
-                return mainBody;
             }
-
-
-
-            const wallLeft = Bodies.rectangle(-30, h/2, 60, h, { isStatic: true,
-                collisionFilter: {
-                    group: group,
-                    mask: group
-                }
-            });
-            const wallRight = Bodies.rectangle(w+30, h/2, 60, h, { isStatic: true,
-                collisionFilter: {
-                    group: group,
-                    mask: group
-                }
-            });
-            const ground = Bodies.rectangle(w/2, h+30, w, 60, { isStatic: true,
-                collisionFilter: {
-                    group: group,
-                    mask: group
-                }
-            });
-            ground.label = 'ground';
-
-            World.add(engine.world, [wallLeft, wallRight, ground]);
-
-            // console.log(group,ground);
-            
-
-            // add mouse control
-            const mouse = Mouse.create(render.canvas),
-            mouseConstraint = MouseConstraint.create(engine, {
-                mouse: mouse,
-                constraint: {
-                    stiffness: 0.2,
-                    render: {
-                        visible: false
-                    }
-                }
-            });
-            World.add(engine.world, mouseConstraint);
-
-
-            var explosion = function() {
-                var bodies = Composite.allBodies(engine.world);
-        
-                for (var i = 0; i < bodies.length; i++) {
-                    var body = bodies[i];
-        
-                    if (!body.isStatic) {
-                        var forceMagnitude = .02 * body.mass;
-        
-                        Body.applyForce(body, body.position, {
-                            x: (forceMagnitude + Common.random() * forceMagnitude) * Common.choose([1, -1]), 
-                            y: -forceMagnitude + Common.random() * -forceMagnitude
-                        });
-                    }
-                }
-            };
-
-            const showContent = () => {
-                const tl = new TimelineMax();
-                tl.to(engine.timing, 2, {timeScale: .03, ease: 'Expo.easeOut'},'s');
-                tl.to('#bodiesWrap .eyesGroup', .6, {autoAlpha: 0, ease:'Power2.easeInOut'},'s');
-                tl.to('#bodiesWrap .content', .6, {autoAlpha: 1, ease:'Power2.easeInOut'},'s');
-                tl.to('#bodiesWrap .eyesGroup', .6, {autoAlpha: 1, ease:'Power2.easeInOut'},3);
-                tl.to('#bodiesWrap .content', 1, {autoAlpha: 0, ease:'Power4.easeInOut'},3);
-                tl.to(engine.timing, 1, {timeScale: 1, ease: 'Expo.easeInOut'},3);
-            }
-
-            // run the engine
-            Engine.run(engine);
-
-            // run the renderer
-            Render.run(render);
 
             // create body
             createBody = () => {
-                const x = Math.max(w*.3, Math.min(w*.7, Math.random() * w));
-                const y = -100;
-                const radius = Math.round(Math.random() * (w*.1) + 30);
+                const x = Math.max(w*.2, Math.min(w*.8, Math.random() * w));
+                const y = 100;
+                const radius = Math.round(Math.random() * (w*.01) + 10);
                 let newobj = null;
                 const num = Math.round(Math.random() * 3-1);
                 const color = colors[Math.round(Math.random()*5)];
+                const parms = {
+                    collisionFilter: {
+                        group: group,
+                        mask: group
+                    },
+                    fillStyle: color
+                }
 
                 if(num === 0){
-                    const circle = Bodies.circle(x, y, radius, { restitution: 0.5,
-                        collisionFilter: {
-                            group: group,
-                            mask: group
-                        },
-                        fillStyle: color
-                    });
-                    newobj = createDomFrom(circle, -radius*.1, -radius*.1);
+                    const circle = Bodies.circle(x, y, radius, { restitution: 0.5, ...parms });
+                    newobj = circle;
                 }
                 else if(num === 1){
-                    const box = Bodies.rectangle(x, y, radius, radius, { restitution: 0.5,
-                        collisionFilter: {
-                            group: group,
-                            mask: group
-                        },
-                        fillStyle: color
-                    });
-                    newobj = createDomFrom(box, -radius*.1, -radius*.1);
+                    const box = Bodies.rectangle(x, y, radius, radius, { restitution: 0.5, ...parms });
+                    newobj = box;
                 }
                 else{
-                    const triangle = Bodies.polygon(x, y, 3, radius,{
-                        collisionFilter: {
-                            group: group,
-                            mask: group
-                        },
-                        fillStyle: color
-                    });
+                    const triangle = Bodies.polygon(x, y, 3, radius,{ ...parms, label:'triangle' });
                     // rotate triangle to right angle
                     Body.rotate(triangle, -Math.PI/6);
-                    newobj = createDomFrom(triangle, -radius*.1, -radius*.1);
+                    newobj = triangle;
                 }
+                objects.push(newobj);
+
+                newobj.scale = 1;
+                newobj.noGravity = true;
                 World.add(engine.world, newobj);
+
+                setTimeout(()=>{
+                    newobj.noGravity = false;
+                    if(newobj.label === 'triangle')
+                        createDomFrom(newobj, -radius*.5, -radius*.5);
+                    else
+                        createDomFrom(newobj, -radius*.1, -radius*.1);
+                },3000);
             };
 
+            // Events.on(engine, 'beforeUpdate', function() {
+            //     var gravity = engine.world.gravity;
+            
+            //     if (noGravity) {
+            //         Body.applyForce(body, {
+            //             x: 0,
+            //             y: 0
+            //         }, {
+            //             x: -gravity.x * gravity.scale * body.mass,
+            //             y: -gravity.y * gravity.scale * body.mass
+            //         });
+            //     }
+            // });
             
             // remove body
             const removeAllBody = () => {
@@ -312,20 +317,32 @@ const Scene = (props) => {
             removeAllBody();
 
 
+                    const gravity = engine.world.gravity;
             const loop = ()=>{
                 animId = requestAnimationFrame(loop);
                 
-                for(let i=0; i<domBodies.length; i++){
+                for(let i=0; i<objects.length; i++){
                     const body = objects[i];
                     const domBody = domBodies[i];
                     const { width, height } = getWidthHeight(body);
                     let additionalRotation = 0;
 
-                    if(body.label === 'Polygon Body'){
+                    if(body.label === 'triangle'){
                         additionalRotation = (Math.PI/6)*(180/Math.PI);
                     }
 
-                    domBody.style.transform = `translate3d(${body.position.x-width/2}px,${body.position.y-height/2}px,0) rotate(${body.angle*(180/Math.PI)+additionalRotation}deg)`;
+                    if(domBody)
+                        domBody.style.transform = `translate3d(${body.position.x-width/2}px,${body.position.y-height/2}px,0) rotate(${body.angle*(180/Math.PI)+additionalRotation}deg)`;
+
+            
+                    if(body.noGravity){
+                        Body.applyForce(body, body.position, {
+                            x: -gravity.x * gravity.scale * body.mass,
+                            y: -gravity.y * gravity.scale * body.mass
+                        });
+                        const scale = body.scale+0.01;
+                        Body.scale(body, scale, scale);
+                    }
 
                     if(body.position.y > h+height){
                         objects.splice(i,1);

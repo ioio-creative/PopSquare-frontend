@@ -251,11 +251,12 @@ const Scene = (props) => {
                     onComplete:()=>{
                         Body.setStatic(newobj, false);
                         Body.scale(newobj, 1, 1);
+                        const { width, height } = getWidthHeight(newobj);
                         
                         if(newobj.label === 'triangle')
-                            createDomFrom(newobj, -radius*.5, -radius*.5);
+                            createDomFrom(newobj, -width/2*.2, -height/2*.1);
                         else
-                            createDomFrom(newobj, -radius*.1, -radius*.1);
+                            createDomFrom(newobj, -width/2*.1, -height/2*.1);
                     }
                 });
             };

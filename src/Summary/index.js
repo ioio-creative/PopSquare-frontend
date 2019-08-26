@@ -62,8 +62,8 @@ const Summary = (props) => {
             const initGUI = () => {
                 const gui = new dat.GUI();
                 gui.add(options, 'boxOffset',0, 1).name('Boxes offset');
-                gui.add(options, 'waveWidth',0, 10).name('Wave Width');
-                gui.add(options, 'waveScale',0, 10).name('Wave Scale');
+                gui.add(options, 'waveWidth',1, 10).name('Wave Width');
+                gui.add(options, 'waveScale',0, 10).step(.1).name('Wave Scale').listen();
             }
 
             const initAnimation = () => {
@@ -77,6 +77,7 @@ const Summary = (props) => {
                         canStart = true;
                     }
                 },'s-=1.1');
+                tl.to(options, 1.6, {waveScale:.5, ease: 'Power2.easeOut'});
             }
 
             const initLights = () => {
@@ -174,9 +175,6 @@ const Summary = (props) => {
                     for(let i=0; i<numOfBoxes; i++){
                         cubes[i].scale.y += (Math.max(0.001, ((Math.sin(timer-i / options.waveWidth) + 1)) * .5 * options.waveScale) - cubes[i].scale.y) * .1;                                            
                     }
-
-                    if(options.waveScale < .5)
-                        options.waveScale += 0.01;
                 }
 
                 // gui

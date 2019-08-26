@@ -21,14 +21,16 @@ const Summary = (props) => {
             const boxWidth = 3;
             const boxHeight = 2;
             const startTime = new Date();
-            const bgColor = 0x0547bd;
+            const bgColor = '#0547bd';
             const colors = [0x50feff, 0x41fe93, 0xb1fe39, 0xfef74a, 0xfe4ea5];
             const allMesh = new THREE.Group();
             let canStart = false;
-            const waveWidth = 3;
-            let waveScale = 0;
+            // const waveWidth = 3;
+            // let waveScale = 0;
             const options = {
-                boxOffset: 0
+                boxOffset: 0,
+                waveWidth: 3,
+                waveScale: 0
             }
 
             const initScene = () => {
@@ -60,6 +62,8 @@ const Summary = (props) => {
             const initGUI = () => {
                 const gui = new dat.GUI();
                 gui.add(options, 'boxOffset',0, 1).name('Boxes offset');
+                gui.add(options, 'waveWidth',0, 10).name('Wave Width');
+                gui.add(options, 'waveScale',0, 10).name('Wave Scale');
             }
 
             const initAnimation = () => {
@@ -112,9 +116,7 @@ const Summary = (props) => {
                 ctx.textAlign = "right"; 
                 ctx.textBaseline = "middle";
                 ctx.fillStyle = 'white';
-                ctx.fillText(text[i%5], ctx.canvas.width-ctx.canvas.height*.2, ctx.canvas.height/2);
-
-                // document.body.appendChild(ctx.canvas);
+                ctx.fillText(text[i%5], ctx.canvas.width-ctx.canvas.height*.3, ctx.canvas.height/2);
 
                 return canvas;
             }
@@ -130,7 +132,14 @@ const Summary = (props) => {
 
                 // add text
                 const textGeometry = new THREE.PlaneGeometry(boxThickness, boxWidth, 1);
-                const textMaterial = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(createTexture(i,boxThickness,boxWidth)),wireframe:false, transparent: true });
+                const textMaterial = new THREE.MeshBasicMaterial({ 
+                    map: new THREE.CanvasTexture(createTexture(i,boxThickness,boxWidth)), 
+                    wireframe:false, 
+                    transparent: true
+                });
+                textMaterial.blending = THREE.CustomBlending;
+                textMaterial.blendSrc = THREE.OneFactor;
+                textMaterial.blendDst = THREE.OneMinusSrcAlphaFactor;
                 textMaterial.map.rotation = 90 * Math.PI/180;
                 textMaterial.map.center.set(.5,.5);
                 const text = new THREE.Mesh( textGeometry, textMaterial );
@@ -151,7 +160,7 @@ const Summary = (props) => {
 
             const addGround = () => {
                 const geometry = new THREE.PlaneGeometry(50, 50, 1);
-                const material = new THREE.MeshPhongMaterial({ color: bgColor });
+                const material = new THREE.MeshPhongMaterial({ color: new THREE.Color(bgColor) });
                 const plane = new THREE.Mesh( geometry, material );
                 plane.rotation.x = -90 * (Math.PI/180);
                 plane.castShadow = true;
@@ -163,11 +172,11 @@ const Summary = (props) => {
                 if(canStart){
                     const timer = (new Date() - startTime) * .002;
                     for(let i=0; i<numOfBoxes; i++){
-                        cubes[i].scale.y += (Math.max(0.001, ((Math.sin(timer-i / waveWidth) + 1)) * .5 * waveScale) - cubes[i].scale.y) * .1;                                            
+                        cubes[i].scale.y += (Math.max(0.001, ((Math.sin(timer-i / options.waveWidth) + 1)) * .5 * options.waveScale) - cubes[i].scale.y) * .1;                                            
                     }
 
-                    if(waveScale < .5)
-                        waveScale += 0.01;
+                    if(options.waveScale < .5)
+                        options.waveScale += 0.01;
                 }
 
                 // gui

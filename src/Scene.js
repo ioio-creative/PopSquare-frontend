@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import Matter from 'matter-js';
 import { TimelineMax, Power4, TweenMax } from 'gsap';
 import webSocket from 'socket.io-client';
+import { Redirect } from 'react-router-dom';
 
 const Scene = (props) => {
     const [sceneElem, setSceneElem] = useState(null);
     const [bodiesWrap, setBodiesWrap] = useState(null);
     const [socket,setSocket] = useState(null);
+    const [isRedirect, setIsRedirect] = useState(false);
     let createBody = null;
 
     useEffect(()=>{
@@ -16,7 +18,14 @@ const Scene = (props) => {
         }
 
         if(socket){
-            socket.emit('getMessage', 'to server');
+            socket.emit('changePage', 'Redirect to summary page');
+            socket.on('changePage', (message)=>{ 
+                setTimeout(()=>{
+                    console.log(message); 
+                    setIsRedirect(true);
+                },3000);
+            });
+
             socket.on('addObject', addObject);
         }else{
             setSocket(webSocket('http://localhost:3333'));
@@ -365,6 +374,7 @@ const Scene = (props) => {
     },[sceneElem])
 
     return <>
+        { isRedirect && <Redirect to="/summary" /> }
         <div ref={(elem)=>{setBodiesWrap(elem)}} id="bodiesWrap"></div>
         <div ref={(elem)=>{setSceneElem(elem)}} id="scene"></div>
     </>

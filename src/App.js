@@ -1,15 +1,20 @@
 import React from 'react';
-import Scene from './Scene';
+import Dropping2d from './Dropping2d';
+import Dropping3d from './Dropping3d';
 import Summary from './Summary';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import './index.css';
 
 
-function App() {
+function App(props) {
   return (
     <Router>
-      <Route exact path="/" component={Scene} />
-      <Route path="/summary" component={Summary} />
+      <Switch>
+        <Route exact path="/dropping2d" component={Dropping2d} />
+        <Route path="/dropping3d" component={Dropping3d} />
+        <Route path="/summary" component={Summary} />
+        <Redirect to="/dropping2d" />
+      </Switch>
     </Router>
   )
 }

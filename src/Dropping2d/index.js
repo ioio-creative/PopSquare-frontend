@@ -4,7 +4,7 @@ import { TimelineMax, Power4, TweenMax } from 'gsap';
 import webSocket from 'socket.io-client';
 import { Redirect } from 'react-router-dom';
 
-const Scene = (props) => {
+const Dropping2d = (props) => {
     const [sceneElem, setSceneElem] = useState(null);
     const [bodiesWrap, setBodiesWrap] = useState(null);
     const [socket,setSocket] = useState(null);
@@ -22,7 +22,7 @@ const Scene = (props) => {
             socket.on('changePage', (message)=>{ 
                 setTimeout(()=>{
                     console.log(message); 
-                    setIsRedirect(true);
+                    // setIsRedirect(true);
                 },3000);
             });
 
@@ -380,4 +380,4 @@ const Scene = (props) => {
     </>
 }
 
-export default Scene;
+export default Dropping2d;

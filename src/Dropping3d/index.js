@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import * as THREE from 'three';
 import Orbitcontrols from 'three-orbitcontrols';
-import CANNON from 'cannon';
+import Ammo from 'ammo.js';
+// import CANNON from 'cannon';
+// import CannonDebugRenderer from './CannonDebugRenderer';
 
 const Dropping3d = (props) => {
     const [sceneElem, setSceneElem] = useState(null);
@@ -13,20 +15,27 @@ const Dropping3d = (props) => {
             let width = window.innerWidth,
                 height = window.innerHeight; 
             let scene, camera, renderer;
-            let world;
             const bgColor = '#0547bd';
             const colors = [0x50feff, 0x41fe93, 0xb1fe39, 0xfef74a, 0xfe4ea5];
             const numOfBoxes = 1;
-            const object = [];
-            const objectMesh = [];
-            let groundCM;
+            const bodies = [];
+            // let groundCM;
             const startTime = new Date();
+            let collisionConfiguration;
+			let dispatcher;
+			let broadphase;
+			let solver;
+            let physicsWorld,
+                transformAux1;
+            // let cannonDebugRenderer;
 
             const initScene = () => {
-                camera = new THREE.OrthographicCamera( width / - 50, width / 50, height / 50, height / - 50, 0.1, 1000 );
+                camera = new THREE.OrthographicCamera( width / - 30, width / 30, height / 30, height / - 30, 0.1, 1000 );
                 // camera = new THREE.PerspectiveCamera( 75, width / height, 0.1, 1000 );
 
-                camera.position.z = 100;
+                camera.position.x = 50;
+                camera.position.y = 50;
+                camera.position.z = 50;
 
                 scene = new THREE.Scene();
     
@@ -44,12 +53,20 @@ const Dropping3d = (props) => {
                 initLights();
                 initPhysics();
                 initGeometry();
+
+                // cannonDebugRenderer = new CannonDebugRenderer(scene, world);
             }
 
             const initPhysics = () => {
-                world = new CANNON.World();
-                world.broadphase = new CANNON.NaiveBroadphase();
-                world.gravity.set( 0, -20, 0);
+                // Physics configuration
+
+				collisionConfiguration = new Ammo.btDefaultCollisionConfiguration();
+				dispatcher = new Ammo.btCollisionDispatcher( collisionConfiguration );
+				broadphase = new Ammo.btDbvtBroadphase();
+				solver = new Ammo.btSequentialImpulseConstraintSolver();
+				physicsWorld = new Ammo.btDiscreteDynamicsWorld( dispatcher, broadphase, solver, collisionConfiguration );
+                physicsWorld.setGravity( new Ammo.btVector3( 0, -1, 0 ) );
+                transformAux1 = new Ammo.btTransform();
             }
 
             const initLights = () => {
@@ -73,127 +90,166 @@ const Dropping3d = (props) => {
             }
 
             const addObject = (i = Math.round(Math.random()*4)) => {
-                if(Math.round(Math.random()*1) === 0)
-                    addSphere(i);
-                else
-                    addBox(i);
+                const idx = Math.round(Math.random()*2);
+                if(idx === 0)
+                    addMesh(i,'sphere');
+                else if(idx === 1)
+                    addMesh(i,'box');
+                else if(idx === 2)
+                    addMesh(i,'cone');
+            }
+
+            const createRigidBody = (threeObject, physicsShape, mass, pos, quat) => {
+                var transform = new Ammo.btTransform();
+				transform.setIdentity();
+				transform.setOrigin( new Ammo.btVector3( pos.x, pos.y, pos.z ) );
+				transform.setRotation( new Ammo.btQuaternion( quat.x, quat.y, quat.z, quat.w ) );
+                var motionState = new Ammo.btDefaultMotionState( transform );
+                
+                var localInertia = new Ammo.btVector3( 0, 0, 0 );
+                physicsShape.calculateLocalInertia( mass, localInertia );
+                
+                var rbInfo = new Ammo.btRigidBodyConstructionInfo( mass, motionState, physicsShape, localInertia );
+                var body = new Ammo.btRigidBody( rbInfo );
+                
+                threeObject.userData.physicsBody = body;
+
+                if(mass > 0){
+					bodies.push( threeObject );
+
+					// Disable deactivation
+					body.setActivationState( 4 );
+				}
+
+                scene.add( threeObject );
+                physicsWorld.addRigidBody( body );
+console.log(physicsWorld);
+                return body;
             }
 
             
-            const addBox = (i) => {
-                const size = 3;
+            const addMesh = (i, type) => {
+                let size;
+                let geometry;
+                let shape;
                 const x = Math.round(Math.random()*20 -10);
-                const y = 20;
+                const y = 5;
                 const z = Math.round(Math.random()*20 -10);
-                const geometry = new THREE.BoxGeometry( size, size, size );
+
+                if(type === 'sphere'){
+                    size = 2;
+                    geometry = new THREE.SphereGeometry( size, 32, 32 );
+                    shape = new Ammo.btSphereShape( size );
+                    shape.setMargin( 0.05 );
+                }
+                else if(type === 'box'){
+                    size = 3;
+                    geometry = new THREE.BoxGeometry( size, size, size );
+                    shape = new Ammo.btBoxShape( new Ammo.btVector3( size * 0.5, size * 0.5, size * 0.5 ) );
+                    shape.setMargin( 0.05 );
+                }
+                else if(type === 'cone'){
+                    size = 2;
+                    geometry = new THREE.ConeBufferGeometry( size, size*2, 20, 2 )
+					shape = new Ammo.btConeShape( size, size*2 );
+                }
+
                 const material = new THREE.MeshPhongMaterial({ color: colors[i%5] });
-                const cube = new THREE.Mesh( geometry, material );
-                cube.position.x = x;
-                cube.position.y = y;
-                cube.castShadow = true;
-                cube.receiveShadow = true;
-                scene.add(cube);
+                const mesh = new THREE.Mesh( geometry, material );
+                mesh.position.x = x;
+                mesh.position.y = 10;
+                mesh.position.z = z;
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
 
-                const boxCM = new CANNON.Material();
-                const boxShape = new CANNON.Box(new CANNON.Vec3( size/2, size/2, size/2));
-                const boxBody = new CANNON.Body({ 
-                    mass: 5, 
-                    shape: boxShape,
-                    position: new CANNON.Vec3(x, y, z),
-                    material: boxCM
-                });
-                world.add( boxBody );
+                
+                
+                createRigidBody(mesh, shape, 1, mesh.position, mesh.quaternion);
 
-                const boxGroundContact = new CANNON.ContactMaterial(groundCM, boxCM, {
-                    friction: 0.5,
-                    restitution: 0.2
-                });
-                world.addContactMaterial(boxGroundContact);
-
-                object.push(boxBody);
-                objectMesh.push(cube);
+                // bodies.push(mesh);
+                // objPhys.push(boxBody);
             }
             
-            const addSphere = (i) => {
-                const size = 2;
-                const x = Math.round(Math.random()*20 -10);
-                const y = 20;
-                const z = Math.round(Math.random()*20 -10);
-                const geometry = new THREE.SphereGeometry( size, 32, 32 );
-                const material = new THREE.MeshPhongMaterial({ color: colors[i%5] });
-                const sphere = new THREE.Mesh( geometry, material );
-                sphere.castShadow = true;
-                sphere.receiveShadow = true;
-                scene.add(sphere);
+            // const addSphere = (i) => {
+            //     const size = 2;
+            //     const x = Math.round(Math.random()*20 -10);
+            //     const y = 20;
+            //     const z = Math.round(Math.random()*20 -10);
+            //     const geometry = new THREE.SphereGeometry( size, 32, 32 );
+            //     const material = new THREE.MeshPhongMaterial({ color: colors[i%5] });
+            //     const sphere = new THREE.Mesh( geometry, material );
+            //     sphere.castShadow = true;
+            //     sphere.receiveShadow = true;
+            //     scene.add(sphere);
 
-                const sphereCM = new CANNON.Material();
-                const sphereShape = new CANNON.Sphere(size);
-                const sphereBody = new CANNON.Body({ 
-                    mass: 5, 
-                    shape: sphereShape,
-                    position: new CANNON.Vec3(x, y, z),
-                    material: sphereCM
-                });
-                world.add( sphereBody );
+            //     const sphereCM = new CANNON.Material();
+            //     const sphereShape = new CANNON.Sphere(size);
+            //     const sphereBody = new CANNON.Body({ 
+            //         mass: 5, 
+            //         shape: sphereShape,
+            //         position: new CANNON.Vec3(x, y, z),
+            //         material: sphereCM
+            //     });
+            //     world.add( sphereBody );
 
-                const sphereGroundContact = new CANNON.ContactMaterial(groundCM, sphereCM, {
-                    friction: 0.5,
-                    restitution: 0.5 
-                });
-                world.addContactMaterial(sphereGroundContact);
+            //     const sphereGroundContact = new CANNON.ContactMaterial(groundCM, sphereCM, {
+            //         friction: 0.5,
+            //         restitution: 0.5 
+            //     });
+            //     world.addContactMaterial(sphereGroundContact);
                 
 
-                object.push(sphereBody);
-                objectMesh.push(sphere);
-            }
+            //     object.push(sphereBody);
+            //     bodies.push(sphere);
+            // }
 
             const addGround = () => {
                 const size = 20;
                 const geometry = new THREE.BoxGeometry(size, size, 1);
                 const material = new THREE.MeshPhongMaterial({ color: new THREE.Color(bgColor) });
                 const plane = new THREE.Mesh( geometry, material );
-                plane.position.y = -15;
+                // plane.position.y = -15;
                 plane.rotation.x = -90 * (Math.PI/180);
                 plane.castShadow = true;
                 plane.receiveShadow = true;
                 scene.add(plane);
 
-                groundCM = new CANNON.Material();
-                const groundShape = new CANNON.Box(new CANNON.Vec3(size/2,size/2,1/2));
-                const groundBody = new CANNON.Body({
-                    mass: 0,
-                    shape: groundShape,
-                    material: groundCM
-                });
-                groundBody.position.copy(plane.position);
-                groundBody.quaternion.copy(plane.quaternion);
-                world.add(groundBody);
+
+                const shape = new Ammo.btBoxShape( new Ammo.btVector3( size * 0.5, size * 0.5, 1 * 0.5 ) );
+                shape.setMargin( 0.05 );
+                createRigidBody(plane, shape, 0, plane.position, plane.quaternion);
             }
 
             const update = () => {
                 const timer = (new Date() - startTime) * 0.1;
-                world.step( 1 / 60);
-
-                if(Math.round(timer%9) === 0)
-                    addObject();
-
-                for (var i = 0, lth = object.length; i < lth; i++){
-                    const b = object[i];
-                    const m = objectMesh[i];
+                // Step world
+                physicsWorld.stepSimulation( timer, 10 );
                 
-                    if(b){
-                        m.position.copy(b.position);
-                        m.quaternion.copy(b.quaternion);
 
-                        if(b.position.y < -20){
-                            world.remove(b);
-                            object.splice(i,1);
+                // cannonDebugRenderer.update();
+                // if(Math.round(timer%9) === 0)
+                //     addObject();
 
-                            scene.remove(m);
-                            objectMesh.splice(i,1);
+                for (var i = 0, lth = bodies.length; i < lth; i++){
+                    const objThree = bodies[i];
+                    const objPhys = objThree.userData.physicsBody;
+                    const ms = objPhys.getMotionState();
+                    if(ms){
+                        ms.getWorldTransform( transformAux1 );
+						var p = transformAux1.getOrigin();
+						var q = transformAux1.getRotation();
+                        objThree.position.set(p.x(), p.y(), p.z());
+                        objThree.quaternion.set(q.x(), q.y(), q.z(), q.w());
 
-                            world.contactmaterials.splice(i,1);
-                        }
+                //         if(b.position.y < -20){
+                //             world.remove(b);
+                //             object.splice(i,1);
+
+                //             scene.remove(m);
+                //             objThree.splice(i,1);
+
+                //             world.contactmaterials.splice(i,1);
+                //         }
                     }
                 }
             }
@@ -211,10 +267,10 @@ const Dropping3d = (props) => {
             });
 
             onWindowResize = () => {
-                camera.left = -window.innerWidth / 50;
-                camera.right = window.innerWidth / 50;
-                camera.top = window.innerHeight / 50;
-                camera.bottom = -window.innerHeight / 50;
+                camera.left = -window.innerWidth / 30;
+                camera.right = window.innerWidth / 30;
+                camera.top = window.innerHeight / 30;
+                camera.bottom = -window.innerHeight / 30;
                 // camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 				renderer.setSize( window.innerWidth, window.innerHeight );

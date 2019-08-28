@@ -1,9 +1,9 @@
 {
-  "name": "Innovation",
+  "name": "PopSquare",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "cannon": "^0.6.2",
+    "ammo.js": "0.0.10",
     "dat.gui": "^0.7.6",
     "gsap": "^2.1.3",
     "matter-js": "^0.14.2",

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import * as THREE from 'three';
 import Orbitcontrols from 'three-orbitcontrols';
 import Ammo from 'ammo.js';
+import { TweenMax } from 'gsap';
 
 const Dropping3d = (props) => {
     const [sceneElem, setSceneElem] = useState(null);
@@ -25,7 +26,7 @@ const Dropping3d = (props) => {
 			    solver,
                 physicsWorld,
                 transformAux1;
-            const cameraDepth = 30;
+            const cameraDepth = 15;
             let addObjectTime = new Date(),
                 addForceTime = new Date();
 
@@ -33,8 +34,8 @@ const Dropping3d = (props) => {
                 camera = new THREE.OrthographicCamera( width / - cameraDepth, width / cameraDepth, height / cameraDepth, height / - cameraDepth, 0.1, 1000 );
                 // camera = new THREE.PerspectiveCamera( 75, width / height, 0.1, 1000 );
 
-                camera.position.x = 50;
-                camera.position.y = 50;
+                // camera.position.x = 50;
+                // camera.position.y = 50;
                 camera.position.z = 50;
 
                 scene = new THREE.Scene();
@@ -53,6 +54,8 @@ const Dropping3d = (props) => {
                 initLights();
                 initPhysics();
                 initGeometry();
+                
+                TweenMax.to(camera.position, 3, {delay:.6, x:50, y:50, ease: 'Power4.easeInOut'});
             }
 
             const initPhysics = () => {
@@ -137,19 +140,19 @@ const Dropping3d = (props) => {
                 const z = Math.round(Math.random()*15 - 8);
 
                 if(type === 'sphere'){
-                    size = 2;
+                    size = Math.random() * 1.5 + 1.5;
                     geometry = new THREE.SphereGeometry( size, 32, 32 );
                     shape = new Ammo.btSphereShape( size );
                     shape.setMargin( 0.05 );
                 }
                 else if(type === 'box'){
-                    size = 3;
+                    size = Math.random() * 1.5 + 1.5;
                     geometry = new THREE.BoxGeometry( size, size, size );
                     shape = new Ammo.btBoxShape( new Ammo.btVector3( size * 0.5, size * 0.5, size * 0.5 ) );
                     shape.setMargin( 0.05 );
                 }
                 else if(type === 'cone'){
-                    size = 2;
+                    size = Math.random() * 1.5 + 1.5;
                     geometry = new THREE.ConeBufferGeometry( size, size*2, 20, 2 )
 					shape = new Ammo.btConeShape( size, size*2 );
                 }
@@ -236,6 +239,8 @@ const Dropping3d = (props) => {
                         }
                     }
                 }
+
+                camera.lookAt(0,0,0);
             }
 
             const render = () => {
@@ -243,10 +248,9 @@ const Dropping3d = (props) => {
                 renderer.render( scene, camera );
             }
 
-            document.addEventListener('click',()=>{            
+            // document.addEventListener('click',()=>{            
                 // addObject();
-                
-            });
+            // });
             document.addEventListener('touchstart',()=>{            
                 addObject();
             });

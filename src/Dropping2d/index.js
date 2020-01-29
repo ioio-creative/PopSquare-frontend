@@ -146,7 +146,10 @@ const Dropping2d = (props) => {
             //     Body.rotate(triangle, -Math.PI/6);
             //     newobj = triangle;
             // }
+            
+            newobj.productID = Math.round(Math.random()*2);
             objects.push(newobj);
+
 
             World.add(engine.world, newobj);
 
@@ -165,20 +168,29 @@ const Dropping2d = (props) => {
             graphicsArray.push(graphics);
         }
 
-        // Events.on(engine, 'beforeUpdate', function() {
-        //     var gravity = engine.world.gravity;
-        
-        //     // if (noGravity) {
-        //         Body.applyForce(body, {
-        //             x: 0,
-        //             y: 0
-        //         }, {
-        //             x: -gravity.x * gravity.scale * body.mass,
-        //             y: -gravity.y * gravity.scale * body.mass
-        //         });
-        //     // }
-        // });
+        const removeSpecificObject = (pID) => {
+            let needToBeRemoved = [];
+            for(let i=0; i<objects.length; i++){
+                const obj = objects[i];
+                if(obj.productID === pID){
+                    needToBeRemoved.push(i);
+                }
+            }
 
+            for(let i=needToBeRemoved.length-1; i>=0; i--){
+                const p = needToBeRemoved[i];
+                removeObject(p);
+            }
+
+            needToBeRemoved = undefined;
+        }
+
+        const removeObject = (i) => {
+            Composite.remove(engine.world, objects[i]);
+            app.stage.removeChild(graphicsArray[i]);
+            objects.splice(i,1);
+            graphicsArray.splice(i,1);
+        }
 
 
         const initMatter = () => {
@@ -208,15 +220,14 @@ const Dropping2d = (props) => {
             sceneElem.current.prepend(app.view);
 
             const update = () => {
+                // console.log(objects)
                 for(let i=0; i<objects.length; i++){
                     const obj = objects[i];
                     graphicsArray[i].x = obj.position.x;
                     graphicsArray[i].y = obj.position.y;
                     
                     if(obj.position.y > wh+graphicsArray[i].height){
-                        objects.splice(i,1);
-                        graphicsArray.splice(i,1);
-                        Composite.remove(engine.world, obj);
+                        removeObject(i);
                     }
                 }
             }
@@ -225,7 +236,8 @@ const Dropping2d = (props) => {
         // handle key down
         const keyDown = (e) => {
             if(e.keyCode === 8){
-                explosion();
+                // explosion();
+                removeSpecificObject(2);
             }
             else{
                 createObject();

@@ -1,13 +1,13 @@
 import * as PIXI from 'pixi.js';
 import gsap from 'gsap';
 
-const Pie = function(app,sec){
+const Pie = function(app,min,sec){
     this.progress = 0;
     this.raduis = 300;
     this.x = window.innerWidth/3;
     this.y = window.innerHeight/2;
     this.end = false;
-    this.duration = sec;
+    this.duration = min*60+sec;
 
     const rightMask = new PIXI.Graphics();
     rightMask.beginFill(0xffffff, 1);

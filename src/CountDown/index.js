@@ -9,11 +9,13 @@ const CountDown = (props) => {
     const sceneElem = useRef(null);
     const timerElem = useRef(null);
     const [second, setSecond] = useState();
+    const [minute, setMinute] = useState();
 
 
     useEffect(()=>{
         let app = undefined;
         // const colors = ['8f2d56', '0496ff', '006ba6', 'd81159', 'ffbc42'];
+        const min = 1;
         const sec = 20;
         // const ww = window.innerWidth,
         //     wh = window.innerHeight;
@@ -36,13 +38,14 @@ const CountDown = (props) => {
             });
             sceneElem.current.prepend(app.view);
 
-            const pie = new Pie(app,sec);
-            const timer = new Counter(sec);
+            const pie = new Pie(app,min, sec);
+            const timer = new Counter(min, sec);
             pie.start();
             timer.start();
 
             const update = () => {
                 pie.update();
+                setMinute(timer.minutes);
                 setSecond(timer.seconds);
                 // timer.update();
             }
@@ -67,7 +70,7 @@ const CountDown = (props) => {
     return <>
         <div ref={sceneElem} id="scene" style={{backgroundColor:'#0547bd'}}></div>
         <div ref={timerElem} style={{position:'fixed',top:'50%',left:'60%',fontSize:60,color:'#fff'}}>
-            00:<span>{second < 10 ? `0${second}` : second }</span>
+        {minute < 10 ? `0${minute}` : minute }:<span>{second < 10 ? `0${second}` : second }</span>
         </div>
     </>
 }

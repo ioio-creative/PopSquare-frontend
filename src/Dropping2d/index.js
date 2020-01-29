@@ -5,6 +5,7 @@ import Matter from 'matter-js';
 // import { Redirect } from 'react-router-dom';
 import * as PIXI from 'pixi.js';
 
+
 const Dropping2d = (props) => {
     const sceneElem = useRef(null);
     const tempSceneElem = useRef(null);
@@ -126,7 +127,7 @@ const Dropping2d = (props) => {
             const y = 100;
             const radius = Math.round(Math.random() * (ww*.03) + 10);
             let newobj = null;
-            const num = Math.round(Math.random() * 3-1);
+            // const num = Math.round(Math.random() * 3-1);
             const params = {
                 restitution: 0.6,
             }
@@ -190,21 +191,6 @@ const Dropping2d = (props) => {
         }
 
         const initPIXI = () => {
-            const update = () => {
-                for(let i=0; i<objects.length; i++){
-
-                    const obj = objects[i];
-                    graphicsArray[i].x = obj.position.x;
-                    graphicsArray[i].y = obj.position.y;
-                    
-                    if(obj.position.y > wh+graphicsArray[i].height){
-                        objects.splice(i,1);
-                        graphicsArray.splice(i,1);
-                        Composite.remove(engine.world, obj);
-                    }
-                }
-
-            }
 
             const ticker = PIXI.Ticker.shared;
             ticker.add(() => {
@@ -220,6 +206,20 @@ const Dropping2d = (props) => {
                 transparent: true
             });
             sceneElem.current.prepend(app.view);
+
+            const update = () => {
+                for(let i=0; i<objects.length; i++){
+                    const obj = objects[i];
+                    graphicsArray[i].x = obj.position.x;
+                    graphicsArray[i].y = obj.position.y;
+                    
+                    if(obj.position.y > wh+graphicsArray[i].height){
+                        objects.splice(i,1);
+                        graphicsArray.splice(i,1);
+                        Composite.remove(engine.world, obj);
+                    }
+                }
+            }
         }
         
         // handle key down
@@ -240,6 +240,7 @@ const Dropping2d = (props) => {
 
         initMatter();
         initPIXI();
+
 
 
         // const loop = ()=>{

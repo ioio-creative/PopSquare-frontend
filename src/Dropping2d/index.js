@@ -276,6 +276,12 @@ const Dropping2d = (props) => {
             needToBeRemoved = undefined;
         }
 
+        const removeAllObjects = () => {
+            for(let i=objects.length-1; i>=0; i--){
+                removeObject(i);
+            }
+        }
+
         const removeObject = (i) => {
             Composite.remove(engine.world, objects[i]);
 
@@ -318,7 +324,7 @@ const Dropping2d = (props) => {
             // run the engine
             Engine.run(engine);
             // run the renderer
-            // Render.run(render);
+            Render.run(render);
         }
 
         const initPIXI = () => {
@@ -359,7 +365,8 @@ const Dropping2d = (props) => {
         const keyDown = (e) => {
             if(e.keyCode === 8){
                 // explosion();
-                removeSpecificObject(2);
+                removeAllObjects();
+                // removeSpecificObject(2);
             }
             else{
                 createObject();

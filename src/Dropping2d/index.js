@@ -46,6 +46,8 @@ const Dropping2d = (props) => {
         // let keyDown = null;
         let objects = [];
         let graphicsArray = [];
+        let detailsArray = [];
+        const shapes = [];
         const colors = ['8f2d56', '0496ff', '006ba6', 'd81159', 'ffbc42'];
         // module aliases
         const Engine = Matter.Engine,
@@ -62,7 +64,7 @@ const Dropping2d = (props) => {
         const ww = window.innerWidth,
             wh = window.innerHeight;
 
-        let seconds = 40;
+        let seconds = 30;
         const end = new Date();
         end.setSeconds(end.getSeconds() + seconds + 1);
 
@@ -84,7 +86,7 @@ const Dropping2d = (props) => {
         });
 
         const addWalls = () => {
-            const params = {isStatic: true, restitution: 1};
+            const params = { isStatic: true, restitution: .8 };
             const wallLeft = Bodies.rectangle(-30, wh/2, 60, wh, { ...params });
             const wallRight = Bodies.rectangle(ww+30, wh/2, 60, wh, { ...params });
             const ground = Bodies.rectangle(ww/2, wh+30, ww, 60, { ...params });
@@ -134,7 +136,7 @@ const Dropping2d = (props) => {
             const y = 100;
             const radius = Math.round(Math.random() * 30 + 70);
             const num = Math.round(Math.random() * 2);
-            const params = { restitution: 1 };
+            const params = { restitution: .8 };
             let newobj = null;
 
             if(num === 0){
@@ -212,18 +214,27 @@ const Dropping2d = (props) => {
         
         const createGraphic = (graphics) => {
             const container = new PIXI.Container();
-            container.addChild(graphics);
+            const graphicsContainer = new PIXI.Container();
+            const detailsContainer = new PIXI.Container();
+            const size = graphics.width*.1;
+            const cartName = '';
+            const productName = '';
+            
+            graphicsContainer.addChild(graphics);
+            createCartName(cartName, detailsContainer);
+            createProductName(productName, size, detailsContainer);
+
+            container.addChild(graphicsContainer);
+            container.addChild(detailsContainer);
+            app.stage.addChild(container);
+
+            // store data
+            graphicsArray.push(graphicsContainer);
+            detailsArray.push(detailsContainer);
+            shapes.push(container);
 
             gsap.set(graphics.scale, {x:0, y:0});
             gsap.to(graphics.scale, .8, {x:1, y:1, ease:'elastic.out(1, 0.4)'});
-
-            const cartName = '';
-            const productName = '';
-            createCartName(cartName, container);
-            createProductName(productName, container);
-
-            app.stage.addChild(container);
-            graphicsArray.push(container);
         }
 
         const createCartName = (cartName, container) => {
@@ -232,13 +243,13 @@ const Dropping2d = (props) => {
             // container.addChild();
         }
         
-        const createProductName = (productName, container) => {
+        const createProductName = (productName, size, container) => {
             // product name
             const style = new PIXI.TextStyle({
                 align: "center",
                 fill: "white",
                 fontFamily: "Comic Sans MS",
-                fontSize: 28,
+                fontSize: size,
                 fontWeight: "bold",
                 letterSpacing: 1
             });
@@ -267,9 +278,22 @@ const Dropping2d = (props) => {
 
         const removeObject = (i) => {
             Composite.remove(engine.world, objects[i]);
-            app.stage.removeChild(graphicsArray[i]);
+
+            while(graphicsArray[i].children[0]){
+                graphicsArray[i].removeChild(graphicsArray[i].children[0])
+            }
+            while(detailsArray[i].children[0]){
+                detailsArray[i].removeChild(detailsArray[i].children[0])
+            }
+            while(shapes[i].children[0]){
+                shapes[i].removeChild(shapes[i].children[0])
+            }
+
+            app.stage.removeChild(shapes[i]);
             objects.splice(i,1);
             graphicsArray.splice(i,1);
+            detailsArray.splice(i,1);
+            shapes.splice(i,1);
         }
 
         const updateTimer = () => {
@@ -294,7 +318,7 @@ const Dropping2d = (props) => {
             // run the engine
             Engine.run(engine);
             // run the renderer
-            Render.run(render);
+            // Render.run(render);
         }
 
         const initPIXI = () => {
@@ -320,8 +344,8 @@ const Dropping2d = (props) => {
                 for(let i=0; i<objects.length; i++){
                     const obj = objects[i];
 
-                    graphicsArray[i].x = obj.position.x;
-                    graphicsArray[i].y = obj.position.y;
+                    shapes[i].x = obj.position.x;
+                    shapes[i].y = obj.position.y;
                     graphicsArray[i].rotation = obj.angle;
                     
                     if(obj.position.y > wh+graphicsArray[i].height){

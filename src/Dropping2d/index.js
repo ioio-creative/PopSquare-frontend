@@ -47,6 +47,7 @@ const Dropping2d = (props) => {
         let objects = [];
         let graphicsArray = [];
         let detailsArray = [];
+        let eyesArray = [];
         const shapes = [];
         const colors = ['3e5bb7', 'fa8b43', '498e8b', 'ea7da4'];
         // module aliases
@@ -230,6 +231,7 @@ const Dropping2d = (props) => {
             tempgraphics.name = graphics.name;
             
             graphicsContainer.addChild(graphics);
+            createEyes(graphicsContainer);
             createCartName(cartName, detailsContainer);
             createProductName(productName, size, detailsContainer);
             createProductImage(productID, 'https://as1.ftcdn.net/jpg/02/12/43/28/500_F_212432820_Zf6CaVMwOXFIylDOEDqNqzURaYa7CHHc.jpg', detailsContainer, tempgraphics);
@@ -247,6 +249,43 @@ const Dropping2d = (props) => {
             gsap.to(graphics.scale, .6, {x:1, y:1, ease:'elastic.out(1, 0.6)'});
 
             tempgraphics = null;
+        }
+
+        const createEyes = (container) => {
+            const eyesContainer = new PIXI.Container();
+            const leftEye = new PIXI.Graphics();
+            leftEye.beginFill(0xffffff, 1);
+            leftEye.drawRoundedRect(0, 0, 5, 7, 2.5);
+            leftEye.endFill();
+            leftEye.pivot.x = leftEye.width/2;
+            leftEye.pivot.y = leftEye.height/2;
+
+            const rightEye = leftEye.clone();
+            rightEye.pivot.x = rightEye.width/2;
+            rightEye.pivot.y = rightEye.height/2;
+
+            leftEye.x = -8;
+            rightEye.x = 8;
+
+            leftEye.scale.y = 0;
+            rightEye.scale.y = 0;
+
+            const offset = (Math.round(Math.random()*3));
+            eyesContainer.y = -container.height/(3 + offset);
+
+            eyesContainer.addChild(leftEye);
+            eyesContainer.addChild(rightEye);
+            container.addChild(eyesContainer);
+
+            eyesArray.push(eyesContainer);
+
+            const tl = gsap.timeline({delay:Math.random()*10+1, repeat:-1, repeatDelay:Math.random()*10+3});
+            tl.to(eyesContainer, 1, {x:`-=${Math.random()*60-30}`, y:`-=${Math.random()*60-30}`, ease:'power3.out'},'s');
+            tl.to([leftEye.scale, rightEye.scale], .1, {y:1, ease:'power3.inOut'},'s');
+            tl.to([leftEye.scale, rightEye.scale], .1, {y:0, ease:'power3.inOut'},'s');
+            tl.to([leftEye.scale, rightEye.scale], .1, {y:1, ease:'power3.inOut'},'s');
+            tl.to(eyesContainer, 1, {x:`-=${Math.random()*60-30}`, y:`-=${Math.random()*60-30}`, ease:'power2.inout'},'e');
+            tl.to([leftEye.scale, rightEye.scale], .2, {y:0, ease:'power3.inOut'},'e+='+Math.random()*5+2);
         }
 
         const createCartName = (cartName, container) => {
@@ -334,6 +373,9 @@ const Dropping2d = (props) => {
         const removeObject = (i) => {
             Composite.remove(engine.world, objects[i]);
 
+            while(eyesArray[i].children[0]){
+                eyesArray[i].removeChild(eyesArray[i].children[0])
+            }
             while(graphicsArray[i].children[0]){
                 graphicsArray[i].removeChild(graphicsArray[i].children[0])
             }

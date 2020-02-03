@@ -48,7 +48,7 @@ const Dropping2d = (props) => {
         let graphicsArray = [];
         let detailsArray = [];
         const shapes = [];
-        const colors = ['8f2d56', '0496ff', '006ba6', 'd81159', 'ffbc42'];
+        const colors = ['3e5bb7', 'fa8b43', '498e8b', 'ea7da4'];
         // module aliases
         const Engine = Matter.Engine,
             Render = Matter.Render,
@@ -219,11 +219,15 @@ const Dropping2d = (props) => {
             const size = graphics.width*.1;
             const cartName = '';
             const productName = '';
+            const productID = 1;
+
+            let tempgraphics = graphics.clone();
             
             graphicsContainer.addChild(graphics);
             createCartName(cartName, detailsContainer);
             createProductName(productName, size, detailsContainer);
-
+            createProductImage(productID, 'https://as1.ftcdn.net/jpg/02/12/43/28/500_F_212432820_Zf6CaVMwOXFIylDOEDqNqzURaYa7CHHc.jpg', detailsContainer, tempgraphics);
+            
             container.addChild(graphicsContainer);
             container.addChild(detailsContainer);
             app.stage.addChild(container);
@@ -234,7 +238,9 @@ const Dropping2d = (props) => {
             shapes.push(container);
 
             gsap.set(graphics.scale, {x:0, y:0});
-            gsap.to(graphics.scale, .8, {x:1, y:1, ease:'elastic.out(1, 0.4)'});
+            gsap.to(graphics.scale, .6, {x:1, y:1, ease:'elastic.out(1, 0.6)'});
+
+            tempgraphics = null;
         }
 
         const createCartName = (cartName, container) => {
@@ -256,7 +262,36 @@ const Dropping2d = (props) => {
             const text = new PIXI.Text('Product\nName', style);
             text.pivot.x = text.width/2;
             text.pivot.y = text.height/2;
+            text.alpha = 0;
             container.addChild(text);
+        }
+
+        const createProductImage = (pID, url, container, graphics) => {
+            if(!app.loader.resources[`img_${pID}`]){
+                app.loader.add(`img_${pID}`,url);
+                app.loader.load((loader, resources) => {
+                    addImage(resources[`img_${pID}`].texture, container, graphics);
+                });
+            }
+            else{
+                addImage(app.loader.resources[`img_${pID}`].texture, container, graphics);
+            }
+        }
+
+        const addImage = (_texture, container, graphics) => {
+            const texture = _texture;
+            const image = new PIXI.Sprite.from(texture);
+            image.anchor.set(0.5);
+            image.alpha = 0;
+
+            const ratio = image.height/image.width;
+
+            if(image.width > graphics.width){
+                image.scale.x = graphics.width/(image.width+150);
+                image.scale.y = image.width * ratio / image.height;
+            }
+
+            container.addChild(image);
         }
 
         const removeSpecificObject = (pID) => {
@@ -307,7 +342,7 @@ const Dropping2d = (props) => {
             const distance = end - now;
             seconds = Math.floor( distance % (1000 * 60) / 1000);
 
-            console.log(seconds);
+            // console.log(seconds);
             if(seconds === 0){
                 console.log('end');
                 showProductDetails();
@@ -324,7 +359,7 @@ const Dropping2d = (props) => {
             // run the engine
             Engine.run(engine);
             // run the renderer
-            Render.run(render);
+            // Render.run(render);
         }
 
         const initPIXI = () => {
@@ -420,7 +455,7 @@ const Dropping2d = (props) => {
     },[])
 
     return <>
-        <div ref={sceneElem} id="scene" style={{backgroundColor:'#0547bd'}}></div>
+        <div ref={sceneElem} id="scene" style={{backgroundColor:'#fac05d'}}></div>
         <div ref={tempSceneElem} id="tempScene" style={{position:'fixed',top:0,pointerEvent:'none'}}></div>
     </>
 }

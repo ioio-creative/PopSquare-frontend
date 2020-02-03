@@ -172,29 +172,33 @@ const Dropping2d = (props) => {
         };
 
         const createCircle = (radius) => {
-            const color = colors[Math.round(Math.random()*4)];
+            const color = colors[Math.round(Math.random()*(colors.length-1))];
             const graphics = new PIXI.Graphics();
             graphics.beginFill(`0x${color}`, 1);
             graphics.drawCircle(0, 0, radius);
             graphics.endFill();
 
+            graphics.name = 'circle';
+
             createGraphic(graphics);
         }
 
         const createHalfCircle = (radius) => {
-            const color = colors[Math.round(Math.random()*4)];
+            const color = colors[Math.round(Math.random()*(colors.length-1))];
             const graphics = new PIXI.Graphics();
             graphics.beginFill(`0x${color}`, 1);
             graphics.arc(0, 0, radius, 1 * Math.PI, 2 * Math.PI);
             graphics.endFill();
 
             graphics.pivot.y = -(radius/2 - radius*.075);
+            
+            graphics.name = 'halfcircle';
 
             createGraphic(graphics);
         }
 
         const createTriangle = (vtx) => {
-            const color = colors[Math.round(Math.random()*4)];
+            const color = colors[Math.round(Math.random()*(colors.length-1))];
             const graphics = new PIXI.Graphics();
             graphics.beginFill(`0x${color}`, 1);
             for(let v=0; v<vtx.length; v+=2){
@@ -209,6 +213,8 @@ const Dropping2d = (props) => {
             graphics.pivot.x = graphics.width/2;
             graphics.pivot.y = graphics.height/1.5;
 
+            graphics.name = 'triangle';
+
             createGraphic(graphics);
         }
         
@@ -220,8 +226,8 @@ const Dropping2d = (props) => {
             const cartName = '';
             const productName = '';
             const productID = 1;
-
             let tempgraphics = graphics.clone();
+            tempgraphics.name = graphics.name;
             
             graphicsContainer.addChild(graphics);
             createCartName(cartName, detailsContainer);
@@ -287,7 +293,15 @@ const Dropping2d = (props) => {
             const ratio = image.height/image.width;
 
             if(image.width > graphics.width){
-                image.scale.x = graphics.width/(image.width+150);
+                if(graphics.name === 'halfcircle'){
+                    image.scale.x = graphics.width/(image.width+(graphics.width-graphics.height)*3);
+                }
+                else if(graphics.name === 'triangle'){
+                    image.scale.x = graphics.width/(image.width+600);
+                }
+                else{
+                    image.scale.x = graphics.width/(image.width+150);
+                }
                 image.scale.y = image.width * ratio / image.height;
             }
 

@@ -160,14 +160,17 @@ const Dropping2d = (props) => {
             else if(num === 2){
                 const r = radius * 2;
                 newobj = Bodies.rectangle(x, y, r*2, r, { 
-                    chamfer: { radius: [r*.99,r*.99,0] }
+                    chamfer: { radius: [r*.99,r*.99,0] },
+                    ...params
                 });
                 createHalfCircle(r);
             }
 
             const id = Math.round(Math.random()*2);
             newobj.productID = id;
+
             objects.push(newobj);
+            if(objects.length>4) removeObject(0);
 
             World.add(engine.world, newobj);
         };
@@ -245,6 +248,7 @@ const Dropping2d = (props) => {
             detailsArray.push(detailsContainer);
             shapes.push(container);
 
+
             gsap.set(graphics.scale, {x:0, y:0});
             gsap.to(graphics.scale, .6, {x:1, y:1, ease:'elastic.out(1, 0.6)'});
 
@@ -286,6 +290,8 @@ const Dropping2d = (props) => {
             tl.to([leftEye.scale, rightEye.scale], .1, {y:1, ease:'power3.inOut'},'s');
             tl.to(eyesContainer, 1, {x:`-=${Math.random()*60-30}`, y:`-=${Math.random()*60-30}`, ease:'power2.inout'},'e');
             tl.to([leftEye.scale, rightEye.scale], .2, {y:0, ease:'power3.inOut'},'e+='+Math.random()*5+2);
+
+            // todo remove animation when deleted
         }
 
         const createCartName = (cartName, container) => {
@@ -370,8 +376,26 @@ const Dropping2d = (props) => {
             }
         }
 
+        const removingShapeAnimation = function(i){
+            this.tempShapes = graphicsArray[i].children[0].clone();
+            this.tempShapes.pivot.x = graphicsArray[i].children[0].pivot.x;
+            this.tempShapes.pivot.y = graphicsArray[i].children[0].pivot.y;
+            this.tempShapes.x = shapes[i].x;
+            this.tempShapes.y = shapes[i].y;
+            this.tempShapes.rotation = graphicsArray[i].rotation;
+
+            app.stage.addChild(this.tempShapes);
+            gsap.to(this.tempShapes.scale, .3, {x:0, y:0, ease: 'back.in(1.7)',
+                onComplete:()=>{
+                    app.stage.removeChild(this.tempShapes);
+                }
+            })
+        }
+
         const removeObject = (i) => {
             Composite.remove(engine.world, objects[i]);
+
+            // new removingShapeAnimation(i);
 
             while(eyesArray[i].children[0]){
                 eyesArray[i].removeChild(eyesArray[i].children[0])
@@ -385,7 +409,6 @@ const Dropping2d = (props) => {
             while(shapes[i].children[0]){
                 shapes[i].removeChild(shapes[i].children[0])
             }
-
             app.stage.removeChild(shapes[i]);
             objects.splice(i,1);
             graphicsArray.splice(i,1);

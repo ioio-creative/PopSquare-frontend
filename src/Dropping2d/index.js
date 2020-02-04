@@ -395,7 +395,7 @@ const Dropping2d = (props) => {
         const removeObject = (i) => {
             Composite.remove(engine.world, objects[i]);
 
-            // new removingShapeAnimation(i);
+            new removingShapeAnimation(i);
 
             while(eyesArray[i].children[0]){
                 eyesArray[i].removeChild(eyesArray[i].children[0])

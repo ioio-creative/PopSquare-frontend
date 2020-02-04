@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 import gsap from 'gsap';
-import LoadingScene from './LoadingScene';
+// import LoadingScene from './LoadingScene';
 // import webSocket from 'socket.io-client';
 // import { Redirect } from 'react-router-dom';
 import * as PIXI from 'pixi.js';
@@ -81,8 +81,11 @@ const Dropping2d = (props) => {
         const end = new Date();
         end.setSeconds(end.getSeconds() + seconds + 1);
 
+
         // create an engine
         const engine = Engine.create();
+        
+        engine.world.gravity.y = 7;
 
         // create a renderer
         const render = Render.create({
@@ -99,7 +102,7 @@ const Dropping2d = (props) => {
         });
 
         const addWalls = () => {
-            const params = { isStatic: true, restitution: .8, collisionFilter: { group: group } };
+            const params = { isStatic: true, restitution: .5, collisionFilter: { group: group } };
             const top = Bodies.rectangle(ww/2,-30, ww, 60, { ...params });
             const wallLeft = Bodies.rectangle(-30, wh/2, 60, wh, { ...params });
             const wallRight = Bodies.rectangle(ww+30, wh/2, 60, wh, { ...params });
@@ -154,8 +157,8 @@ const Dropping2d = (props) => {
         const createShape = (shape, isloadingObject) => {
             const x = Math.max(ww*.2, Math.min(ww*.8, Math.random() * ww));
             const y = 100;
-            const radius = Math.round(Math.random() * 30 + 70);
-            const params = { restitution: .8, collisionFilter: { group: 0 } };
+            const radius = Math.round(Math.random() * 50 + 100);
+            const params = { restitution: .5, collisionFilter: { group: 0 } };
             const r = radius * 2;
             let body = null;
             let graphics = null;
@@ -304,7 +307,7 @@ const Dropping2d = (props) => {
             const eyesContainer = new PIXI.Container();
             const leftEye = new PIXI.Graphics();
             leftEye.beginFill(0xffffff, 1);
-            leftEye.drawRoundedRect(0, 0, 5, 7, 2.5);
+            leftEye.drawRoundedRect(0, 0, 10, 15, 5);
             leftEye.endFill();
             leftEye.pivot.x = leftEye.width/2;
             leftEye.pivot.y = leftEye.height/2;
@@ -313,8 +316,8 @@ const Dropping2d = (props) => {
             rightEye.pivot.x = rightEye.width/2;
             rightEye.pivot.y = rightEye.height/2;
 
-            leftEye.x = -8;
-            rightEye.x = 8;
+            leftEye.x = -12;
+            rightEye.x = 12;
 
             leftEye.scale.y = 0;
             rightEye.scale.y = 0;
@@ -407,18 +410,18 @@ const Dropping2d = (props) => {
 
             const ratio = image.height/image.width;
 
-            if(image.width > graphics.width){
-                if(graphics.name === 'halfcircle'){
-                    image.scale.x = graphics.width/(image.width+(graphics.width-graphics.height)*3);
-                }
-                else if(graphics.name === 'triangle'){
-                    image.scale.x = graphics.width/(image.width+600);
-                }
-                else{
-                    image.scale.x = graphics.width/(image.width+150);
-                }
-                image.scale.y = image.width * ratio / image.height;
+            // if(image.width > graphics.width){
+            if(graphics.name === 'halfCircle'){
+                image.scale.x = graphics.width/(image.width+(graphics.width-graphics.height)*2);
             }
+            else if(graphics.name === 'triangle'){
+                image.scale.x = graphics.width/(image.width+600);
+            }
+            else{
+                image.scale.x = graphics.width/(image.width+150);
+            }
+            image.scale.y = image.width * ratio / image.height;
+            // }
 
             container.addChild(image);
         }
@@ -427,15 +430,17 @@ const Dropping2d = (props) => {
         const showProductDetails = () => {
             for(let i=0; i<detailsArray.length; i++){
                 const detail = detailsArray[i];
-                const text = detail.children[0];
-                const image = detail.children[1];
-                
-                gsap.to(eyesArray, .3, {alpha:0, overwrite:true, ease:'power3.inOut'});
-                gsap.to(detailsArray, .3, {alpha:1, overwrite:true, ease:'power3.inOut'});
+                if(detail !== null){
+                    const text = detail.children[0];
+                    const image = detail.children[1];
+                    
+                    gsap.to(eyesArray, .3, {alpha:0, overwrite:true, ease:'power3.inOut'});
+                    gsap.to(detailsArray, .3, {alpha:1, overwrite:true, ease:'power3.inOut'});
 
-                const tl = gsap.timeline({delay:Math.random()*6+2, repeat:-1, repeatDelay:2, yoyo:true});
-                tl.to(text, .6, {alpha:1, ease:'power3.inOut'});
-                tl.to(image, .6, {alpha:1, ease:'power3.inOut'},3);
+                    const tl = gsap.timeline({delay:Math.random()*6+2, repeat:-1, repeatDelay:2, yoyo:true});
+                    tl.to(text, .6, {alpha:1, ease:'power3.inOut'});
+                    tl.to(image, .6, {alpha:1, ease:'power3.inOut'},3);
+                }
             }
         }
 
@@ -608,7 +613,7 @@ const Dropping2d = (props) => {
                 var body = bodies[i];
     
                 if (!body.isStatic) {
-                    var forceMagnitude = .06 * body.mass;
+                    var forceMagnitude = .1 * body.mass;
     
                     Body.applyForce(body, body.position, {
                         x: (forceMagnitude + Common.random() * forceMagnitude) * Common.choose([1, -1]), 

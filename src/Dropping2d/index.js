@@ -129,14 +129,13 @@ const Dropping2d = (props) => {
             const num = Math.round(Math.random() * 2);
             const params = { restitution: .8 };
             let newobj = null;
+            const r = radius * 2;
 
             if(num === 0){
-                const r = radius * 2;
                 newobj = Bodies.circle(x, y, r, {...params });
                 createCircle(r);
             }
             else if(num === 1){
-                const r = radius * 2;
                 const vtx = [
                     [r,0],
                     [r*2,r*2],
@@ -148,7 +147,6 @@ const Dropping2d = (props) => {
                 createTriangle(path);
             }
             else if(num === 2){
-                const r = radius * 2;
                 newobj = Bodies.rectangle(x, y, r*2, r, { 
                     chamfer: { radius: [r*.99,r*.99,0] },
                     ...params
@@ -166,33 +164,30 @@ const Dropping2d = (props) => {
         };
 
         const createCircle = (radius) => {
-            const color = colors[Math.round(Math.random()*(colors.length-1))];
+            const color = colors[0];
             const graphics = new PIXI.Graphics();
             graphics.beginFill(`0x${color}`, 1);
             graphics.drawCircle(0, 0, radius);
             graphics.endFill();
-
             graphics.name = 'circle';
 
             createGraphic(graphics);
         }
 
         const createHalfCircle = (radius) => {
-            const color = colors[Math.round(Math.random()*(colors.length-1))];
+            const color = colors[1];
             const graphics = new PIXI.Graphics();
             graphics.beginFill(`0x${color}`, 1);
             graphics.arc(0, 0, radius, 1 * Math.PI, 2 * Math.PI);
             graphics.endFill();
-
             graphics.pivot.y = -(radius/2 - radius*.075);
-            
             graphics.name = 'halfcircle';
 
             createGraphic(graphics);
         }
 
         const createTriangle = (vtx) => {
-            const color = colors[Math.round(Math.random()*(colors.length-1))];
+            const color = colors[2];
             const graphics = new PIXI.Graphics();
             graphics.beginFill(`0x${color}`, 1);
             for(let v=0; v<vtx.length; v+=2){
@@ -552,33 +547,6 @@ const Dropping2d = (props) => {
         initMatter();
         initPIXI();
 
-
-
-        // const loop = ()=>{
-        //     animId = requestAnimationFrame(loop);
-
-        //     for(let i=0; i<objects.length; i++){
-        //         const body = objects[i];
-        //         const domBody = domBodies[i];
-        //         const { width, height } = getWidthHeight(body);
-        //         let additionalRotation = 0;
-
-        //         if(body.label === 'triangle')
-        //             additionalRotation = (Math.PI/6)*(180/Math.PI);
-                
-
-        //         if(domBody)
-        //             domBody.style.transform = `translate3d(${body.position.x-width/2}px,${body.position.y-height/2}px,0) rotate(${body.angle*(180/Math.PI)+additionalRotation}deg)`;
-
-
-        //         if(body.position.y > h+height){
-        //             objects.splice(i,1);
-        //             domBodies.splice(i,1);
-        //             Composite.remove(engine.world, body);
-        //             domBody.remove();
-        //         }
-        //     }
-        // }
         
         window.addEventListener('resize',(e)=>onResize(app));
         window.addEventListener("keydown", keyDown);

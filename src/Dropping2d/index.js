@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 import gsap from 'gsap';
+import LoadingScene from './LoadingScene';
 // import webSocket from 'socket.io-client';
 // import { Redirect } from 'react-router-dom';
 import * as PIXI from 'pixi.js';
@@ -50,11 +51,16 @@ const Dropping2d = (props) => {
         let eyesArray = [];
         const shapes = [];
         const colors = ['3e5bb7', 'fa8b43', '498e8b', 'ea7da4'];
+        let timeScaleTarget = 1;
+        const images = [
+            {pID:1, src:'https://as1.ftcdn.net/jpg/02/12/43/28/500_F_212432820_Zf6CaVMwOXFIylDOEDqNqzURaYa7CHHc.jpg'}
+        ]
         // module aliases
         const Engine = Matter.Engine,
             Render = Matter.Render,
             World = Matter.World,
             Body = Matter.Body,
+            Events = Matter.Events,
             Bodies = Matter.Bodies,
             Composite = Matter.Composite,
             Common = Matter.Common,
@@ -88,12 +94,13 @@ const Dropping2d = (props) => {
 
         const addWalls = () => {
             const params = { isStatic: true, restitution: .8 };
+            const top = Bodies.rectangle(ww/2,-30, ww, 60, { ...params });
             const wallLeft = Bodies.rectangle(-30, wh/2, 60, wh, { ...params });
             const wallRight = Bodies.rectangle(ww+30, wh/2, 60, wh, { ...params });
             const ground = Bodies.rectangle(ww/2, wh+30, ww, 60, { ...params });
-            ground.label = 'ground';
+            // ground.label = 'ground';
 
-            World.add(engine.world, [wallLeft, wallRight, ground]);
+            World.add(engine.world, [top, wallLeft, wallRight, ground]);
         }
         
 
@@ -112,23 +119,6 @@ const Dropping2d = (props) => {
             World.add(engine.world, mouseConstraint);
         }
 
-
-        var explosion = function() {
-            var bodies = Composite.allBodies(engine.world);
-    
-            for (var i = 0; i < bodies.length; i++) {
-                var body = bodies[i];
-    
-                if (!body.isStatic) {
-                    var forceMagnitude = .02 * body.mass;
-    
-                    Body.applyForce(body, body.position, {
-                        x: (forceMagnitude + Common.random() * forceMagnitude) * Common.choose([1, -1]), 
-                        y: -forceMagnitude + Common.random() * -forceMagnitude
-                    });
-                }
-            }
-        };
 
 
         // create body
@@ -227,17 +217,18 @@ const Dropping2d = (props) => {
             const graphicsContainer = new PIXI.Container();
             const detailsContainer = new PIXI.Container();
             const size = graphics.width*.1;
-            const cartName = '';
+            const cartName = 'Cart1';
             const productName = '';
             const productID = 1;
             let tempgraphics = graphics.clone();
             tempgraphics.name = graphics.name;
+            detailsContainer.alpha = 0;
             
             graphicsContainer.addChild(graphics);
             createEyes(graphicsContainer);
-            createCartName(cartName, detailsContainer);
             createProductName(productName, size, detailsContainer);
-            createProductImage(productID, 'https://as1.ftcdn.net/jpg/02/12/43/28/500_F_212432820_Zf6CaVMwOXFIylDOEDqNqzURaYa7CHHc.jpg', detailsContainer, tempgraphics);
+            createProductImage(productID, detailsContainer, tempgraphics);
+            createCartName(cartName, detailsContainer, graphicsContainer);
             
             container.addChild(graphicsContainer);
             container.addChild(detailsContainer);
@@ -294,10 +285,36 @@ const Dropping2d = (props) => {
             // todo remove animation when deleted
         }
 
-        const createCartName = (cartName, container) => {
-            // cart name
+        const createCartName = (cartName, container, graphicsContainer) => {
+            const cartContainer = new PIXI.Container();
 
-            // container.addChild();
+            const style = new PIXI.TextStyle({
+                align: "center",
+                fill: "white",
+                fontFamily: "Comic Sans MS",
+                fontSize: 20,
+                fontWeight: "bold",
+                letterSpacing: 1,
+                fill: '#333333'
+            });
+            const text = new PIXI.Text(cartName, style);
+            text.pivot.x = text.width/2;
+            text.pivot.y = text.height/2;
+
+            
+            const bg = new PIXI.Graphics();
+            bg.beginFill(0xffffff, 1);
+            bg.drawRoundedRect(0, 0, text.width+30, 50, 28);
+            bg.pivot.x = bg.width/2;
+            bg.pivot.y = bg.height/2;
+
+            cartContainer.addChild(bg);
+            cartContainer.addChild(text);
+
+            cartContainer.x = graphicsContainer.width/3;
+            cartContainer.y = graphicsContainer.height/3;
+
+            container.addChild(cartContainer);
         }
         
         const createProductName = (productName, size, container) => {
@@ -313,20 +330,19 @@ const Dropping2d = (props) => {
             const text = new PIXI.Text('Product\nName', style);
             text.pivot.x = text.width/2;
             text.pivot.y = text.height/2;
-            text.alpha = 0;
+            // text.alpha = 0;
             container.addChild(text);
         }
 
-        const createProductImage = (pID, url, container, graphics) => {
-            if(!app.loader.resources[`img_${pID}`]){
-                app.loader.add(`img_${pID}`,url);
-                app.loader.load((loader, resources) => {
-                    addImage(resources[`img_${pID}`].texture, container, graphics);
-                });
+        const preloadImage = () => {
+            for(let i=0; i<images.length; i++){
+                app.loader.add(`img_${images[i].pID}`,images[i].src);
+                app.loader.load((loader, resources) => {});
             }
-            else{
-                addImage(app.loader.resources[`img_${pID}`].texture, container, graphics);
-            }
+        }
+
+        const createProductImage = (pID, container, graphics) => {
+            addImage(app.loader.resources[`img_${pID}`].texture, container, graphics);
         }
 
         const addImage = (_texture, container, graphics) => {
@@ -424,13 +440,30 @@ const Dropping2d = (props) => {
             // console.log(seconds);
             if(seconds === 0){
                 console.log('end');
+                explosion();
                 showProductDetails();
             }
         }
 
         const showProductDetails = () => {
+            for(let i=0; i<detailsArray.length; i++){
+                const detail = detailsArray[i];
+                const text = detail.children[0];
+                const image = detail.children[1];
+                
+                gsap.to(eyesArray, .3, {alpha:0, overwrite:true, ease:'power3.inOut'});
+                gsap.to(detailsArray, .3, {alpha:1, overwrite:true, ease:'power3.inOut'});
 
+                const tl = gsap.timeline({delay:2, repeat:-1, repeatDelay:2, yoyo:true});
+                tl.to(text, .6, {alpha:1, ease:'power3.inOut'});
+                tl.to(image, .6, {alpha:1, ease:'power3.inOut'},3);
+            }
         }
+
+        Events.on(engine, 'afterUpdate', function() {
+            engine.timing.timeScale += (timeScaleTarget - engine.timing.timeScale) * 0.05;
+        });
+           
 
         const initMatter = () => {
             addWalls();
@@ -458,6 +491,8 @@ const Dropping2d = (props) => {
             });
             sceneElem.current.prepend(app.view);
 
+            preloadImage();
+
             const update = () => {
                 if(seconds > 0) updateTimer();
 
@@ -474,12 +509,33 @@ const Dropping2d = (props) => {
                 }
             }
         }
+
+        
+
+        var explosion = function() {
+            timeScaleTarget = 0.01;
+            var bodies = Composite.allBodies(engine.world);
+    
+            for (var i = 0; i < bodies.length; i++) {
+                var body = bodies[i];
+    
+                if (!body.isStatic) {
+                    var forceMagnitude = .06 * body.mass;
+    
+                    Body.applyForce(body, body.position, {
+                        x: (forceMagnitude + Common.random() * forceMagnitude) * Common.choose([1, -1]), 
+                        y: -forceMagnitude + Common.random() * -forceMagnitude
+                    });
+                }
+            }
+        };
         
         // handle key down
         const keyDown = (e) => {
             if(e.keyCode === 8){
-                // explosion();
-                removeAllObjects();
+                explosion();
+                showProductDetails();
+                // removeAllObjects();
                 // removeSpecificObject(2);
             }
             else{
@@ -534,8 +590,11 @@ const Dropping2d = (props) => {
     },[])
 
     return <>
-        <div ref={sceneElem} id="scene" style={{backgroundColor:'#fac05d'}}></div>
-        <div ref={tempSceneElem} id="tempScene" style={{position:'fixed',top:0,pointerEvent:'none'}}></div>
+        {/* <LoadingScene /> */}
+        <div style={{position:'fixed',top:0}}>
+            <div ref={sceneElem} id="scene" style={{backgroundColor:'#fac05d'}}></div>
+            <div ref={tempSceneElem} id="tempScene" style={{position:'absolute',top:0,pointerEvent:'none'}}></div>
+        </div>
     </>
 }
 

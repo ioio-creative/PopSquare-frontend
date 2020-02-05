@@ -353,7 +353,7 @@ const Dropping2d = (props) => {
                 align: "center",
                 fill: "#333333",
                 fontFamily: "Comic Sans MS",
-                fontSize: 20,
+                fontSize: 30,
                 fontWeight: "bold",
                 letterSpacing: 1
             });
@@ -364,7 +364,7 @@ const Dropping2d = (props) => {
             
             const bg = new PIXI.Graphics();
             bg.beginFill(0xffffff, 1);
-            bg.drawRoundedRect(0, 0, text.width+30, 50, 28);
+            bg.drawRoundedRect(0, 0, text.width+60, text.height+40, text.height+5);
             bg.pivot.x = bg.width/2;
             bg.pivot.y = bg.height/2;
 
@@ -413,7 +413,6 @@ const Dropping2d = (props) => {
 
             const ratio = image.height/image.width;
 
-            // if(image.width > graphics.width){
             if(graphics.name === 'halfCircle'){
                 image.scale.x = graphics.width/(image.width+(graphics.width-graphics.height)*2);
             }
@@ -424,7 +423,6 @@ const Dropping2d = (props) => {
                 image.scale.x = graphics.width/(image.width+150);
             }
             image.scale.y = image.width * ratio / image.height;
-            // }
 
             container.addChild(image);
         }
@@ -505,21 +503,26 @@ const Dropping2d = (props) => {
                 productDetailsTween.splice(i,1);
             }
 
-            while(eyesArray[i].children[0]){
-                eyesArray[i].removeChild(eyesArray[i].children[0])
-            }
-            while(graphicsArray[i].children[0]){
-                graphicsArray[i].removeChild(graphicsArray[i].children[0])
-            }
-            if(detailsArray[i])
-                while(detailsArray[i].children[0]){
-                    detailsArray[i].removeChild(detailsArray[i].children[0])
-                }
-            while(shapes[i].children[0]){
-                shapes[i].removeChild(shapes[i].children[0])
-            }
+            // while(eyesArray[i].children[0]){
+            //     eyesArray[i].removeChild(eyesArray[i].children[0])
+            // }
+            // while(graphicsArray[i].children[0]){
+            //     graphicsArray[i].removeChild(graphicsArray[i].children[0])
+            // }
+            // if(detailsArray[i])
+            //     while(detailsArray[i].children[0]){
+            //         detailsArray[i].removeChild(detailsArray[i].children[0])
+            //     }
+            // while(shapes[i].children[0]){
+            //     shapes[i].removeChild(shapes[i].children[0])
+            // }
             
             app.stage.removeChild(shapes[i]);
+            
+            eyesArray[i].destroy({children: true, texture: false, baseTexture: false});
+            graphicsArray[i].destroy({children: true, texture: false, baseTexture: false});
+            if(detailsArray[i]) detailsArray[i].destroy({children: true, texture: false, baseTexture: false});
+            shapes[i].destroy({children: true, texture: false, baseTexture: false});
 
             objects[i] = null;
             graphicsArray[i] = null;

@@ -15,6 +15,8 @@ const Dropping2d = (props) => {
     const pick = useRef(null);
     const up = useRef(null);
     const bg = useRef(null);
+    const ranking = useRef(null);
+    const rankingBg = useRef(null);
     // const [socket,setSocket] = useState(null);
 
 
@@ -58,6 +60,7 @@ const Dropping2d = (props) => {
         let started = false;
         let timeScaleTarget = 1;
         let group = -1;
+        let page = 'loading';
         const images = [
             {pID:1, src:'https://as1.ftcdn.net/jpg/02/12/43/28/500_F_212432820_Zf6CaVMwOXFIylDOEDqNqzURaYa7CHHc.jpg'}
         ]
@@ -79,7 +82,6 @@ const Dropping2d = (props) => {
 
         let seconds = 5;
         const end = new Date();
-        end.setSeconds(end.getSeconds() + seconds + 1);
 
 
         // create an engine
@@ -89,7 +91,7 @@ const Dropping2d = (props) => {
 
         // create a renderer
         const render = Render.create({
-            element: tempSceneElem.current,
+            // element: tempSceneElem.current,
             engine: engine,
             options:{
                 width: ww,
@@ -157,7 +159,7 @@ const Dropping2d = (props) => {
         const createShape = (shape, isloadingObject) => {
             const x = Math.max(ww*.2, Math.min(ww*.8, Math.random() * ww));
             const y = 100;
-            const radius = Math.round(Math.random() * 50 + 100);
+            const radius = Math.round(Math.random() * 50 + 90);
             const params = { restitution: .5, collisionFilter: { group: 0 } };
             const r = radius * 2;
             let body = null;
@@ -347,12 +349,11 @@ const Dropping2d = (props) => {
 
             const style = new PIXI.TextStyle({
                 align: "center",
-                fill: "white",
+                fill: "#333333",
                 fontFamily: "Comic Sans MS",
                 fontSize: 20,
                 fontWeight: "bold",
-                letterSpacing: 1,
-                fill: '#333333'
+                letterSpacing: 1
             });
             const text = new PIXI.Text(cartName, style);
             text.pivot.x = text.width/2;
@@ -437,7 +438,7 @@ const Dropping2d = (props) => {
                     gsap.to(eyesArray, .3, {alpha:0, overwrite:true, ease:'power3.inOut'});
                     gsap.to(detailsArray, .3, {alpha:1, overwrite:true, ease:'power3.inOut'});
 
-                    const tl = gsap.timeline({delay:Math.random()*6+2, repeat:-1, repeatDelay:2, yoyo:true});
+                    const tl = gsap.timeline({delay:Math.random()*3+1, repeat:-1, repeatDelay:2, yoyo:true});
                     tl.to(text, .6, {alpha:1, ease:'power3.inOut'});
                     tl.to(image, .6, {alpha:1, ease:'power3.inOut'},3);
                 }
@@ -508,19 +509,49 @@ const Dropping2d = (props) => {
             shapes.splice(i,1);
         }
 
+        const setTimer = (seconds) => {
+            end.setSeconds(end.getSeconds() + seconds + 1);
+        }
+
         const updateTimer = () => {
             const now = new Date().getTime();
             const distance = end - now;
             seconds = Math.floor( distance % (1000 * 60) / 1000);
 
-            // console.log(seconds);
-            if(seconds === 0){
+            console.log(seconds);
+            if(seconds === 10){
                 if(started){
-                    explosion();
-                    showProductDetails();
+                    if(page === 'loading'){ // end in loading page
+                        page = 'details';
+                        explosion();
+                        showProductDetails();
+                    }
                 }
-                else{
-                    // ranking
+            }
+            if(seconds <= 0){
+                if(page === 'loading' || page === 'details'){ // end in loading page
+                    page = 'ranking';
+                    started = false;
+                    setTimer(10-1);
+                    removeAllObjects();
+                    rankingAnimtion();
+                }
+                else if(page === 'ranking'){ // end in ranking page
+                    page = 'loading';
+                    ranking.current.className = 'active out';
+                    setTimeout(()=>{
+                        ranking.current.className = '';
+                    },1000);
+                    timeScaleTarget = 1;
+                    setTimer(40-1);
+                    createObject(true);
+                    createObject(true);
+                    createObject(true);
+                    createObject(true);
+                    
+                    pick.current.className = 'text';
+                    up.current.className = 'text';
+                    bg.current.className = '';
                 }
             }
         }
@@ -528,13 +559,13 @@ const Dropping2d = (props) => {
         let doOnce = false;
         let idx = 0;
         let by = 0;
-        let counter = 0;
+        // let counter = 0;
         Events.on(engine, 'beforeUpdate', function(event) {
             const timer = performance.now()/1000;
-            counter += 1;
+            // counter += 1;
 
-            if(!started){
-                if(Math.round(timer % 10) === 0){
+            if(!started && objects.length){
+                if(Math.round(timer % 7) === 0){
                     if(!doOnce){
                         doOnce = true;
                         by = 0;
@@ -544,13 +575,13 @@ const Dropping2d = (props) => {
                 if(timer % 10 > 8){
                     if(doOnce)
                         doOnce = false;
-                    by += 1;
+                    by += 1.7;
                     Body.setVelocity(objects[idx], {x: 0, y: -by});
                 }
-                if(counter >= 60 * 1.5){
-                    Body.setVelocity(objects[Math.round(Math.random() * (objects.length-1))], {x: 0, y: -10});
-                    counter = 0;
-                }
+                // if(counter >= 60 * 1.5){
+                //     Body.setVelocity(objects[Math.round(Math.random() * (objects.length-1))], {x: 0, y: -10});
+                //     counter = 0;
+                // }
             }
         })
         Events.on(engine, 'afterUpdate', function() {
@@ -568,7 +599,22 @@ const Dropping2d = (props) => {
         }
 
         const initPIXI = () => {
+            
+            const update = () => {
+                updateTimer();
 
+                for(let i=0; i<objects.length; i++){
+                    const obj = objects[i];
+
+                    shapes[i].x = obj.position.x;
+                    shapes[i].y = obj.position.y;
+                    graphicsArray[i].rotation = obj.angle;
+                    
+                    if(obj.position.y > wh+graphicsArray[i].height){
+                        removeObject(i);
+                    }
+                }
+            }
             const ticker = PIXI.Ticker.shared;
             ticker.add(() => {
                 update();
@@ -585,27 +631,90 @@ const Dropping2d = (props) => {
             sceneElem.current.prepend(app.view);
 
             preloadImage();
-
-            const update = () => {
-                if(seconds > 0) updateTimer();
-
-                for(let i=0; i<objects.length; i++){
-                    const obj = objects[i];
-
-                    shapes[i].x = obj.position.x;
-                    shapes[i].y = obj.position.y;
-                    graphicsArray[i].rotation = obj.angle;
-                    
-                    if(obj.position.y > wh+graphicsArray[i].height){
-                        removeObject(i);
-                    }
-                }
-            }
+            setTimer(40);
         }
 
-        
+        const length = 2;
+        const a = {b:0}
+        const rankingAnimtion = () => {
+            const spans = document.querySelectorAll('#productName span');
+            const divs = document.querySelectorAll('#list li div');
 
-        var explosion = function() {
+            ranking.current.className = 'active';
+
+            runRankingAnimation(spans, divs);
+
+            gsap.to(a, 5, {b:1, repeat:length-1, 
+                onRepeat:function(){
+                    runRankingAnimation(spans, divs);
+                },
+                onComplete:function(){
+                }
+            })
+        }
+
+        const runRankingAnimation = (spans, divs) => {
+            rankingIn(spans, divs);
+            setTimeout(()=>{
+                rankingOut(spans, divs);
+            },4000);
+        }
+
+        const rankingIn = (spans, divs) => {
+            
+            // logo
+            gsap.fromTo('#logo', .6, {scale:0}, {delay:.7, scale: 1, overwrite:true, ease:'elastic.out(1, 0.75)'})
+
+            // product name
+            gsap.set(spans, {autoAlpha:0});
+            const tl = gsap.timeline({delay:.3});
+            for(let i=0; i<spans.length; i++){
+                const span = spans[i];
+                tl.set(span, {autoAlpha:1, overwrite:true}, `-=${i>0?.35:0}`);
+                tl.to(span, .6, {startAt:{force3D:true, y:'-50%'}, y:'0%',ease:'power3.out'}, `-=${i>0?.35:0}`);
+            }
+
+            // list text
+            gsap.set(divs, {autoAlpha:0});
+            const tl2 = gsap.timeline({delay:.3});
+            for(let i=0; i<divs.length; i++){
+                const div = divs[i];
+                tl2.set(div, {autoAlpha:1, overwrite:true}, `-=${i>0?.5:0}`);
+                tl2.to(div, .6, {startAt:{force3D:true, y:'-50%'}, y:'0%',ease:'power3.out'}, `-=${i>0?.5:0}`);
+            }
+
+            // list bottom line
+            gsap.set('#list li span', {force3D:true, x:'-100%', overwrite:true});
+            gsap.to('#list li span', 1, {x:'0%',stagger:.1, ease:'power3.inOut'});
+
+        }
+        
+        const rankingOut = (spans, divs) => {
+
+            // logo
+            gsap.to('#logo', .6, {scale:0, ease:'back.in(1.75)'});
+
+            // product name
+            const tl = gsap.timeline();
+            for(let i=0; i<spans.length; i++){
+                const span = spans[i];
+                tl.to(span, .3, {autoAlpha:0}, 's+=.3');
+                tl.to(span, .5, {y:'30%',ease:'power3.in'}, 's');
+            }
+
+            // list text
+            const tl2 = gsap.timeline();
+            for(let i=0; i<divs.length; i++){
+                const div = divs[i];
+                tl2.to(div, .3, {autoAlpha:0}, 's+=.3');
+                tl2.to(div, .5, {y:'30%',ease:'power3.in'}, 's');
+            }
+
+            // list bottom line
+            gsap.to('#list li span', 1, {x:'100%',stagger:.1, ease:'power3.inOut'});
+        }
+
+        const explosion = function() {
             timeScaleTarget = 0.01;
             var bodies = Composite.allBodies(engine.world);
     
@@ -671,13 +780,35 @@ const Dropping2d = (props) => {
 
     return <>
         {/* <LoadingScene /> */}
-        <div style={{position:'fixed',top:0}}>
+        <div id="wrap">
             <div ref={sceneElem} id="scene"></div>
             <div ref={tempSceneElem} id="tempScene"></div>
             <span ref={pick} id="pick" className="text">Pick</span>
             <span ref={up} id="up" className="text">up</span>
-            <div id="ranking">
-
+            <div ref={ranking} id="ranking">
+                <div id="logo">
+                    <div className="img active" style={{backgroundImage:'url()'}}></div>
+                </div>
+                <div id="productName"><span>Foldabel</span> <br/><span>Changing</span><br/> <span>Mat</span></div>
+                <div id="image"></div>
+                <ul id="list">
+                    <li>
+                        <div className="title">Top daily<br/> Pick up</div>
+                        <div className="value">Top 1</div>
+                        <span></span>
+                    </li>
+                    <li>
+                        <div className="title">Top daily Pick up<br/>/times</div>
+                        <div className="value">50</div>
+                        <span></span>
+                    </li>
+                    <li>
+                        <div className="title">Top daily<br/> Pick up</div>
+                        <div className="value">21</div>
+                        <span></span>
+                    </li>
+                </ul>
+                <div ref={rankingBg} id="rankingBg"></div>
             </div>
             <div ref={bg} id="bg"></div>
         </div>

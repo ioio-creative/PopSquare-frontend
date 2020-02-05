@@ -87,7 +87,7 @@ const Dropping2d = (props) => {
         // create an engine
         const engine = Engine.create();
         
-        engine.world.gravity.y = 7;
+        engine.world.gravity.y = 5;
 
         // create a renderer
         const render = Render.create({
@@ -518,7 +518,7 @@ const Dropping2d = (props) => {
             const distance = end - now;
             seconds = Math.floor( distance % (1000 * 60) / 1000);
 
-            // console.log(seconds);
+            console.log(seconds);
             if(seconds === 10){
                 if(started){
                     if(page === 'loading'){ // end in loading page
@@ -631,14 +631,14 @@ const Dropping2d = (props) => {
             sceneElem.current.prepend(app.view);
 
             preloadImage();
-            setTimer(40);
+            setTimer(1);
         }
 
         const length = 2;
         const a = {b:0}
         const rankingAnimtion = () => {
-            const spans = document.querySelectorAll('#productName span');
-            const divs = document.querySelectorAll('#list li div');
+            const spans = document.querySelectorAll('#ranking #productName span');
+            const divs = document.querySelectorAll('#ranking #list li div');
 
             ranking.current.className = 'active';
 
@@ -663,7 +663,13 @@ const Dropping2d = (props) => {
         const rankingIn = (spans, divs) => {
             
             // logo
-            gsap.fromTo('#logo', .6, {scale:0}, {delay:.7, scale: 1, overwrite:true, ease:'elastic.out(1, 0.75)'})
+            gsap.fromTo('#ranking #logo', .6, {scale:0}, {delay:.7, scale: 1, overwrite:true, ease:'elastic.out(1, 0.75)'});
+
+            // image
+            gsap.fromTo('#ranking #image', .6, {scale:0}, {delay:1, scale: 1, overwrite:true, ease:'elastic.out(1, 0.75)'});
+            
+            // shape
+            gsap.fromTo('#ranking #shape', .6, {scale:0}, {delay:1.3, scale: 1, overwrite:true, ease:'elastic.out(1, 0.75)'});
 
             // product name
             gsap.set(spans, {autoAlpha:0, overwrite:true});
@@ -684,15 +690,21 @@ const Dropping2d = (props) => {
             }
 
             // list bottom line
-            gsap.set('#list li span', {force3D:true, x:'-100%', overwrite:true});
-            gsap.to('#list li span', 1, {x:'0%',stagger:.1, ease:'power3.inOut'});
+            gsap.set('#ranking #list li span', {force3D:true, x:'-100%', overwrite:true});
+            gsap.to('#ranking #list li span', 1, {x:'0%',stagger:.1, ease:'power3.inOut'});
 
         }
         
         const rankingOut = (spans, divs) => {
 
             // logo
-            gsap.to('#logo', .6, {scale:0, ease:'back.in(1.75)'});
+            gsap.to('#ranking #logo', .6, {scale:0, ease:'back.in(1.75)'});
+            
+            // image
+            gsap.to('#ranking #image', .6, {scale:0, ease:'back.in(1.75)'});
+            
+            // shape
+            gsap.to('#ranking #shape', .6, {scale:0, ease:'back.in(1.75)'});
 
             // product name
             const tl = gsap.timeline();
@@ -711,7 +723,7 @@ const Dropping2d = (props) => {
             }
 
             // list bottom line
-            gsap.to('#list li span', 1, {x:'100%',stagger:.1, ease:'power3.inOut'});
+            gsap.to('#ranking #list li span', 1, {x:'100%',stagger:.1, ease:'power3.inOut'});
         }
 
         const explosion = function() {
@@ -790,25 +802,27 @@ const Dropping2d = (props) => {
                     <div className="img active" style={{backgroundImage:'url()'}}></div>
                 </div>
                 <div id="productName"><span>Foldabel</span> <br/><span>Changing</span><br/> <span>Mat</span></div>
-                <div id="image"></div>
+                <div id="image">
+                    <div style={{backgroundImage:'url()'}}></div>
+                </div>
                 <ul id="list">
                     <li>
-                        <div className="title">Top daily<br/> Pick up</div>
+                        <div className="title">Hottest <br/> item ranking</div>
                         <div className="value">Top 1</div>
                         <span></span>
                     </li>
                     <li>
-                        <div className="title">Top daily Pick up<br/>/times</div>
+                        <div className="title">Daily <br/>Pick up<br/>/times</div>
                         <div className="value">50</div>
                         <span></span>
                     </li>
                     <li>
-                        <div className="title">Top daily<br/> Pick up</div>
+                        <div className="title">Weekly <br/> Purchased <br/>/times</div>
                         <div className="value">21</div>
                         <span></span>
                     </li>
                 </ul>
-                <div ref={rankingBg} id="rankingBg"></div>
+                <div ref={rankingBg} id="rankingBg"><div id="wrap"><div id="shape"></div></div></div>
             </div>
             <div ref={bg} id="bg">
                 <div id="outerWrap">

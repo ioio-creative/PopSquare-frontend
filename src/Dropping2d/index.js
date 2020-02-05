@@ -159,7 +159,7 @@ const Dropping2d = (props) => {
         const createShape = (shape, isloadingObject) => {
             const x = Math.max(ww*.2, Math.min(ww*.8, Math.random() * ww));
             const y = 100;
-            const radius = Math.round(Math.random() * 50 + 90);
+            const radius = Math.round(Math.random() * 50 + 100);
             const params = { restitution: .5, collisionFilter: { group: 0 } };
             const r = radius * 2;
             let body = null;
@@ -518,7 +518,7 @@ const Dropping2d = (props) => {
             const distance = end - now;
             seconds = Math.floor( distance % (1000 * 60) / 1000);
 
-            console.log(seconds);
+            // console.log(seconds);
             if(seconds === 10){
                 if(started){
                     if(page === 'loading'){ // end in loading page
@@ -559,10 +559,10 @@ const Dropping2d = (props) => {
         let doOnce = false;
         let idx = 0;
         let by = 0;
-        // let counter = 0;
+        let counter = 0;
         Events.on(engine, 'beforeUpdate', function(event) {
             const timer = performance.now()/1000;
-            // counter += 1;
+            counter += 1;
 
             if(!started && objects.length){
                 if(Math.round(timer % 7) === 0){
@@ -575,13 +575,13 @@ const Dropping2d = (props) => {
                 if(timer % 10 > 8){
                     if(doOnce)
                         doOnce = false;
-                    by += 1.7;
+                    by += .7;
                     Body.setVelocity(objects[idx], {x: 0, y: -by});
                 }
-                // if(counter >= 60 * 1.5){
-                //     Body.setVelocity(objects[Math.round(Math.random() * (objects.length-1))], {x: 0, y: -10});
-                //     counter = 0;
-                // }
+                if(counter >= 60 * 2){
+                    Body.setVelocity(objects[Math.round(Math.random() * (objects.length-1))], {x: 0, y: -50});
+                    counter = 0;
+                }
             }
         })
         Events.on(engine, 'afterUpdate', function() {
@@ -623,7 +623,7 @@ const Dropping2d = (props) => {
             app = new PIXI.Application({
                 width: window.innerWidth, 
                 height: window.innerHeight,
-                resolution: window.devicePixelRatio || 1,
+                // resolution: 1,
                 antialias:true,
                 autoResize: true,
                 transparent: true

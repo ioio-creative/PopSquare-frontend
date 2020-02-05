@@ -666,20 +666,20 @@ const Dropping2d = (props) => {
             gsap.fromTo('#logo', .6, {scale:0}, {delay:.7, scale: 1, overwrite:true, ease:'elastic.out(1, 0.75)'})
 
             // product name
-            gsap.set(spans, {autoAlpha:0});
+            gsap.set(spans, {autoAlpha:0, overwrite:true});
             const tl = gsap.timeline({delay:.3});
             for(let i=0; i<spans.length; i++){
                 const span = spans[i];
-                tl.set(span, {autoAlpha:1, overwrite:true}, `-=${i>0?.35:0}`);
+                tl.set(span, {autoAlpha:1}, `-=${i>0?.35:0}`);
                 tl.to(span, .6, {startAt:{force3D:true, y:'-50%'}, y:'0%',ease:'power3.out'}, `-=${i>0?.35:0}`);
             }
 
             // list text
-            gsap.set(divs, {autoAlpha:0});
+            gsap.set(divs, {autoAlpha:0, overwrite:true});
             const tl2 = gsap.timeline({delay:.3});
             for(let i=0; i<divs.length; i++){
                 const div = divs[i];
-                tl2.set(div, {autoAlpha:1, overwrite:true}, `-=${i>0?.5:0}`);
+                tl2.set(div, {autoAlpha:1}, `-=${i>0?.5:0}`);
                 tl2.to(div, .6, {startAt:{force3D:true, y:'-50%'}, y:'0%',ease:'power3.out'}, `-=${i>0?.5:0}`);
             }
 
@@ -810,7 +810,11 @@ const Dropping2d = (props) => {
                 </ul>
                 <div ref={rankingBg} id="rankingBg"></div>
             </div>
-            <div ref={bg} id="bg"></div>
+            <div ref={bg} id="bg">
+                <div id="outerWrap">
+                    <div id="innerWrap"></div>
+                </div>
+            </div>
         </div>
     </>
 }

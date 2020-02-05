@@ -60,6 +60,8 @@ const Dropping2d = (props) => {
         let started = false;
         let timeScaleTarget = 1;
         let group = -1;
+        const eyesTween = [];
+        const productDetailsTween = [];
         let page = 'loading';
         const images = [
             {pID:1, src:'https://as1.ftcdn.net/jpg/02/12/43/28/500_F_212432820_Zf6CaVMwOXFIylDOEDqNqzURaYa7CHHc.jpg'}
@@ -308,7 +310,7 @@ const Dropping2d = (props) => {
         const createEyes = (container) => {
             const eyesContainer = new PIXI.Container();
             const leftEye = new PIXI.Graphics();
-            leftEye.beginFill(0xffffff, 1);
+            leftEye.beginFill(0x333333, 1);
             leftEye.drawRoundedRect(0, 0, 10, 15, 5);
             leftEye.endFill();
             leftEye.pivot.x = leftEye.width/2;
@@ -318,8 +320,8 @@ const Dropping2d = (props) => {
             rightEye.pivot.x = rightEye.width/2;
             rightEye.pivot.y = rightEye.height/2;
 
-            leftEye.x = -12;
-            rightEye.x = 12;
+            leftEye.x = -15;
+            rightEye.x = 15;
 
             leftEye.scale.y = 0;
             rightEye.scale.y = 0;
@@ -334,14 +336,14 @@ const Dropping2d = (props) => {
             eyesArray.push(eyesContainer);
 
             const tl = gsap.timeline({delay:Math.random()*10+1, repeat:-1, repeatDelay:Math.random()*10+3});
-            tl.to(eyesContainer, 1, {x:`-=${Math.random()*60-30}`, y:`-=${Math.random()*60-30}`, ease:'power3.out'},'s');
+            tl.to(eyesContainer, 1, {x:`+=${Math.random()*120-60}`, y:`+=${Math.random()*120-60}`, ease:'power3.out'},'s');
             tl.to([leftEye.scale, rightEye.scale], .1, {y:1, ease:'power3.inOut'},'s');
             tl.to([leftEye.scale, rightEye.scale], .1, {y:0, ease:'power3.inOut'},'s');
             tl.to([leftEye.scale, rightEye.scale], .1, {y:1, ease:'power3.inOut'},'s');
-            tl.to(eyesContainer, 1, {x:`-=${Math.random()*60-30}`, y:`-=${Math.random()*60-30}`, ease:'power2.inout'},'e');
+            tl.to(eyesContainer, 1, {x:`+=${Math.random()*120-60}`, y:`+=${Math.random()*120-60}`, ease:'power2.inout'},'e');
             tl.to([leftEye.scale, rightEye.scale], .2, {y:0, ease:'power3.inOut'},'e+='+Math.random()*5+2);
 
-            // todo remove animation when deleted
+            eyesTween.push(tl);
         }
 
         const createCartName = (cartName, container, graphicsContainer) => {
@@ -441,6 +443,8 @@ const Dropping2d = (props) => {
                     const tl = gsap.timeline({delay:Math.random()*3+1, repeat:-1, repeatDelay:2, yoyo:true});
                     tl.to(text, .6, {alpha:1, ease:'power3.inOut'});
                     tl.to(image, .6, {alpha:1, ease:'power3.inOut'},3);
+
+                    productDetailsTween.push(tl);
                 }
             }
         }
@@ -486,8 +490,20 @@ const Dropping2d = (props) => {
 
         const removeObject = (i) => {
             Composite.remove(engine.world, objects[i]);
-
+            
             new removingShapeAnimation(i);
+
+            if(eyesTween[i]){
+                eyesTween[i].kill();
+                eyesTween[i] = null;
+                eyesTween.splice(i,1);
+            }
+
+            if(productDetailsTween[i]){
+                productDetailsTween[i].kill();
+                productDetailsTween[i] = null;
+                productDetailsTween.splice(i,1);
+            }
 
             while(eyesArray[i].children[0]){
                 eyesArray[i].removeChild(eyesArray[i].children[0])
@@ -502,7 +518,14 @@ const Dropping2d = (props) => {
             while(shapes[i].children[0]){
                 shapes[i].removeChild(shapes[i].children[0])
             }
+            
             app.stage.removeChild(shapes[i]);
+
+            objects[i] = null;
+            graphicsArray[i] = null;
+            detailsArray[i] = null;
+            shapes[i] = null;
+
             objects.splice(i,1);
             graphicsArray.splice(i,1);
             detailsArray.splice(i,1);
@@ -518,7 +541,7 @@ const Dropping2d = (props) => {
             const distance = end - now;
             seconds = Math.floor( distance % (1000 * 60) / 1000);
 
-            console.log(seconds);
+            // console.log(seconds);
             if(seconds === 10){
                 if(started){
                     if(page === 'loading'){ // end in loading page
@@ -532,16 +555,18 @@ const Dropping2d = (props) => {
                 if(page === 'loading' || page === 'details'){ // end in loading page
                     page = 'ranking';
                     started = false;
-                    setTimer(10-1);
+                    setTimer((rankingDataLength*5)-1);
                     removeAllObjects();
                     rankingAnimtion();
                 }
                 else if(page === 'ranking'){ // end in ranking page
                     page = 'loading';
                     ranking.current.className = 'active out';
+                    
                     setTimeout(()=>{
                         ranking.current.className = '';
-                    },1000);
+                    },600);
+
                     timeScaleTarget = 1;
                     setTimer(40-1);
                     createObject(true);
@@ -631,10 +656,10 @@ const Dropping2d = (props) => {
             sceneElem.current.prepend(app.view);
 
             preloadImage();
-            setTimer(1);
+            setTimer(40);
         }
 
-        const length = 2;
+        const rankingDataLength = 2;
         const a = {b:0}
         const rankingAnimtion = () => {
             const spans = document.querySelectorAll('#ranking #productName span');
@@ -644,7 +669,7 @@ const Dropping2d = (props) => {
 
             runRankingAnimation(spans, divs);
 
-            gsap.to(a, 5, {b:1, repeat:length-1, 
+            gsap.to(a, 5, {b:1, repeat:rankingDataLength-1, 
                 onRepeat:function(){
                     runRankingAnimation(spans, divs);
                 },
@@ -672,26 +697,26 @@ const Dropping2d = (props) => {
             gsap.fromTo('#ranking #shape', .6, {scale:0}, {delay:1.3, scale: 1, overwrite:true, ease:'elastic.out(1, 0.75)'});
 
             // product name
-            gsap.set(spans, {autoAlpha:0, overwrite:true});
-            const tl = gsap.timeline({delay:.3});
+            gsap.set(spans, {autoAlpha:0,  y:'-50%', overwrite:true});
+            const tl = gsap.timeline({delay:.6});
             for(let i=0; i<spans.length; i++){
                 const span = spans[i];
-                tl.set(span, {autoAlpha:1}, `-=${i>0?.35:0}`);
-                tl.to(span, .6, {startAt:{force3D:true, y:'-50%'}, y:'0%',ease:'power3.out'}, `-=${i>0?.35:0}`);
+                tl.set(span, {autoAlpha:1, overwrite:true}, `-=${i>0?.35:0}`);
+                tl.to(span, .6, {force3D:true, y:'0%',ease:'power3.out'}, `-=${i>0?.35:0}`);
             }
 
             // list text
-            gsap.set(divs, {autoAlpha:0, overwrite:true});
-            const tl2 = gsap.timeline({delay:.3});
+            gsap.set(divs, {autoAlpha:0, y:'-50%', overwrite:true});
+            const tl2 = gsap.timeline({delay:.6});
             for(let i=0; i<divs.length; i++){
                 const div = divs[i];
-                tl2.set(div, {autoAlpha:1}, `-=${i>0?.5:0}`);
-                tl2.to(div, .6, {startAt:{force3D:true, y:'-50%'}, y:'0%',ease:'power3.out'}, `-=${i>0?.5:0}`);
+                tl2.set(div, {autoAlpha:1, overwrite:true}, `-=${i>0?.5:0}`);
+                tl2.to(div, .6, {force3D:true, y:'0%',ease:'power3.out'}, `-=${i>0?.5:0}`);
             }
 
             // list bottom line
             gsap.set('#ranking #list li span', {force3D:true, x:'-100%', overwrite:true});
-            gsap.to('#ranking #list li span', 1, {x:'0%',stagger:.1, ease:'power3.inOut'});
+            gsap.to('#ranking #list li span', 1, {delay:.3, x:'0%',stagger:.1, ease:'power3.inOut'});
 
         }
         

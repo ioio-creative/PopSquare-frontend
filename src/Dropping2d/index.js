@@ -7,7 +7,6 @@ import gsap from 'gsap';
 import * as PIXI from 'pixi.js';
 import './style.scss';
 import Game from '../Game';
-import { startGame } from '../Game/function';
 import '../Game/style.scss';
 import decomp from 'poly-decomp';
 window.decomp = decomp;
@@ -20,7 +19,7 @@ const Dropping2d = (props) => {
     const bg = useRef(null);
     const ranking = useRef(null);
     const rankingBg = useRef(null);
-    const gameElem = useRef(null);
+    
     // const [socket,setSocket] = useState(null);
 
 
@@ -814,11 +813,6 @@ const Dropping2d = (props) => {
         createObject(true);
         createObject(true);
         createObject(true);
-
-        startGame(gameElem);
-        // setTimeout(()=>{
-        //     closeGame();
-        // },1000)
         
         window.addEventListener('resize',(e)=>onResize(app));
         window.addEventListener("keydown", keyDown);
@@ -868,7 +862,7 @@ const Dropping2d = (props) => {
                 </div>
             </div>
 
-            <Game gameElem={gameElem}/>
+            <Game />
         </div>
     </>
 }

@@ -1,6 +1,8 @@
 import gsap from "gsap";
+import { useSelector, useDispatch } from 'react-redux';
 
 let gameElem = null;
+// const timeElem = document.querySelector('#time');
 
 export const startGame = (_gameElem) => {
     gameElem = _gameElem;
@@ -8,7 +10,7 @@ export const startGame = (_gameElem) => {
     
     setTimeout(()=>{
         limitedOfferOut();
-    },1000)
+    },1000 * 50); // 50s
 
     initSlider();
     initQuestion();
@@ -98,9 +100,11 @@ const transformToClock = () => {
     const tl = gsap.timeline();
     tl.to('#character2 .wrap', 1, {scale:4, left:'50vw', top:'50vh', y:0, ease:'power2.inOut'},'s');
     tl.to('#character1 .wrap', 1, {left:0, top:'-6vh', boxShadow:'0px 0px 0px #333', ease: 'elastic.out(1, 0.75)'},'b-=.6');
-    tl.to('#character1 .wrap', 1, {scale:2.6, ease: 'elastic.out(1, 0.3)'},'b-=.6');
+    tl.to('#character1 .wrap', 1, {scale:2.7, ease: 'elastic.out(1, 0.3)'},'b-=.6');
     tl.to('#character1 .eyes', .3, {autoAlpha:0, ease: 'power1.inOut'},'b-=.6');
     tl.to('#question #smallTitle', .3, {autoAlpha:1, ease: 'power1.inOut'});
     tl.to('#clock div', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},.3);
     tl.to('#pointer span', .6, {scale:1, stagger:.1, ease: 'elastic.out(1, 0.75)'},.8);
+
+    useDispatch({type:'START_COUNTER'});
 }

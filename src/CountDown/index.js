@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 // import webSocket from 'socket.io-client';
 import * as PIXI from 'pixi.js';
 import Pie from './pie';
-import Counter from './counter';
+import Counter from '../Game/counter';
 
 const CountDown = (props) => {
     const sceneElem = useRef(null);

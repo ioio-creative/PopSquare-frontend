@@ -1,5 +1,5 @@
 
-const Counter = function(m, s){
+const Counter = function(m, s, callback){
     this.minutes = m;
     this.seconds = s;
     this.end = undefined;
@@ -24,6 +24,8 @@ const Counter = function(m, s){
     this.stop = function(){
         this.loop &&
         clearInterval(this.loop);
+
+        callback();
         // console.log('stop')
     }
 

@@ -185,14 +185,18 @@
             }
         }
         #smallTitle{
-            width: calc(80% - 6vh);
+            width: 100%;
             font-size: 2.55vh;
             line-height: 4vh;
             color: #fff;
             position: absolute;
             top: 5vh;
-            opacity: 0;
-            visibility: hidden;
+            span{
+                width:100%;
+                display: inline-block;
+                opacity: 0;
+                visibility: hidden;
+            }
         }
         #tips{
             color:#42d3d3;
@@ -211,6 +215,26 @@
             font-size: 6vh;
             color:#fff;
         }
+        #timesup{
+            width:100%;
+            font-size: 6vh;
+            color:#fff;
+            position: absolute;
+            top:0;
+            opacity: 0;
+            visibility: hidden;
+        }
+    }
+    #timesupBg{
+        width: 100px;
+        height: 100px;
+        position: absolute;
+        top:45%;
+        left:50%;
+        z-index: -1;
+        border-radius: 50%;
+        background:#ea7da4;
+        transform: translate3d(-50%,-50%,0) scale(0);
     }
     .center{
         width:0;

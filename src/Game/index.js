@@ -11,12 +11,14 @@ const Game = props => {
     const gameStarted = useSelector(state => state.gameStarted);
     const counterStarted = useSelector(state => state.counterStarted);
     const dispatch = useDispatch();
+    const [isPicked, setIsPicked] = useState(false);
     const [size, setSize] = useState(null);
     const [second, setSecond] = useState(sec);
     const [minute, setMinute] = useState(min);
     const gameElem = useRef(null);
     const startGameFunc = useRef(null);
     const startCounterFunc = useRef(null);
+    const endCounterFunc = useRef(null);
 
     // setMinute(timer.minutes);
     // setSecond(timer.seconds);
@@ -30,7 +32,6 @@ const Game = props => {
             player = requestAnimationFrame(updateCounter);
 
             if(timer.seconds !== oldSeconds){
-                console.log(timer.seconds)
                 gsap.to('#pointer', .6, {rotation: (-timer.seconds * 6)+'_short', overwrite:true, ease:'elastic.out(1, 0.4)'});
                 oldSeconds = timer.seconds;
             }
@@ -40,11 +41,16 @@ const Game = props => {
         }
 
         const endCounter = () => {
-            gsap.to('#pointer', .6, {rotation: (-timer.seconds * 6)+'_short', overwrite:true, ease:'elastic.out(1, 0.4)'});
-            setSecond(timer.seconds);
+            if(timer){
+                gsap.to('#pointer', .6, {rotation: (-timer.seconds * 6)+'_short', overwrite:true, ease:'elastic.out(1, 0.4)'});
+                setSecond(timer.seconds);
+                timer.stop();
+            }
+            animateToTimesup();
             dispatch({type:'END_COUNTER'});
             cancelAnimationFrame(player);
         }
+        endCounterFunc.current = {endCounter};
 
         const startCounter = () => {
             timer = new Counter(min, sec, endCounter);
@@ -140,27 +146,43 @@ const Game = props => {
         const questionOut = () => {
             const tl = gsap.timeline();
             tl.to(['#question #symbol', '#question #title span', '#question #tips'], .6, {autoAlpha:0, y:'-100%', stagger:.1, ease: 'power3.in'});
-            tl.call(transformToClock, null);
+            tl.call(animateToClock, null);
         }
         
         ////////////////////////
         ////////////////////////
         
         const initClock = () => {
-            gsap.set('#clock div', {force3D:true, autoAlpha:0, y:'-100%', stagger:.1});
+            gsap.set('#question #smallTitle span', {force3D:true, autoAlpha:0, y:'-100%'});
+            gsap.set('#clock .text', {force3D:true, autoAlpha:0, y:'-100%'});
             gsap.set('#pointer span', {force3D:true, scale:0, stagger:.1});
+            gsap.set('#clock #timesup', {force3D:true, autoAlpha:0, y:'-50%'});
+            gsap.set('#timesupBg', {force3D:true, scale:0});
         }
         
-        const transformToClock = () => {
+        const animateToClock = () => {
             const tl = gsap.timeline();
             tl.to('#character2 .wrap', 1, {scale:4, left:'50vw', top:'50vh', y:0, ease:'power2.inOut'},'s');
             tl.to('#character1 .wrap', 1, {left:0, top:'-6vh', boxShadow:'0px 0px 0px #333', ease: 'elastic.out(1, 0.75)'},'b-=.6');
             tl.to('#character1 .wrap', 1, {scale:2.7, ease: 'elastic.out(1, 0.3)'},'b-=.6');
             tl.to('#character1 .eyes', .3, {autoAlpha:0, ease: 'power1.inOut'},'b-=.6');
-            tl.to('#question #smallTitle', .3, {autoAlpha:1, ease: 'power1.inOut'});
-            tl.to('#clock div', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},.3);
+            tl.to('#question #smallTitle span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'-=.6');
+            tl.to('#clock .text', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},.3);
             tl.to('#pointer span', .6, {scale:1, stagger:.1, ease: 'elastic.out(1, 0.75)'},.8);
             tl.call(()=>{dispatch({type:'START_COUNTER'})}, null, '-=.8');
+        }
+
+        const animateToTimesup = () => {
+            const tl = gsap.timeline();
+            tl.to('#timesupBg', 1, {scale:25, ease: 'power3.out'},'s');
+            tl.to('#question #smallTitle span', .3, {autoAlpha:0, y:'-100%', stagger:.1, ease: 'power3.in'},'s');
+            tl.to('#clock .text', .3, {autoAlpha:0, y:'50%', stagger:.1, overwrite:true, ease: 'power3.out'},'s+=.1');
+            tl.to('#clock #timesup', .6, {autoAlpha:1, y:'0%', ease: 'power3.out'},'e-=.6');
+            tl.to('#character2 .wrap', .6, {left:'75vw', top:'40vh', ease:'power2.in'},'e-=.8');
+        }
+
+        const clockOut = () => {
+            
         }
 
 
@@ -178,10 +200,17 @@ const Game = props => {
                 setSize('vertical');
         }
         onResize();
+        
+
+        const keyDown = () => {
+            setIsPicked(true);
+        }
 
         window.addEventListener('resize',onResize);
+        window.addEventListener("keydown", keyDown);
         return() => {
             window.removeEventListener('resize',onResize);
+            window.removeEventListener("keydown", keyDown);
         }
     },[]);
     
@@ -201,6 +230,13 @@ const Game = props => {
         }
     },[counterStarted]);
 
+    useEffect(()=>{
+        if(isPicked && counterStarted){
+            endCounterFunc.current.endCounter();
+        }
+    },[isPicked, counterStarted])
+
+    
     return (
         <div ref={gameElem} id="game">
             <div id="container" className={size}>
@@ -263,14 +299,19 @@ const Game = props => {
                         <span>a better smile</span>
                     </div>
                     <div id="smallTitle">
-                        Find out the product which give you a better smile !
+                        <span>Find out the product which</span>
+                        <span>give you a better smile !</span>
                     </div>
                     <div id="tips">You will have 1 min to find it!</div>
                 </div>
                 <div id="clock">
-                    <div id="time">{minute < 10 ? `0${minute}` : minute }:{second < 10 ? `0${second}` : second }</div>
-                    <div>left</div>
+                    <div id="time">
+                        <div className="text">{minute < 10 ? `0${minute}` : minute }:{second < 10 ? `0${second}` : second }</div>
+                        <div id="timesup">Time's Up!</div>
+                    </div>
+                    <div className="text">left</div>
                 </div>
+                <div id="timesupBg"></div>
                 <div className="center">
                     <div id="character1" className="character">
                         <div className="wrap">

@@ -4,6 +4,7 @@ const Counter = function(m, s, callback){
     this.seconds = s;
     this.end = undefined;
     this.loop = undefined;
+    this.callback = callback;
     
     this.init = function(){
         this.end = new Date();
@@ -17,17 +18,18 @@ const Counter = function(m, s, callback){
         this.minutes = Math.floor( distance % (1000 * 60 * 60) / (1000 * 60));
         this.seconds = Math.floor( distance % (1000 * 60) / 1000);
 
-        if(this.minutes <= 0 && this.seconds <= 0)
+        if(this.minutes <= 0 && this.seconds <= 0){
             this.stop();
+            this.callback();
+        }
     }
 
-    this.stop = function(){
-        this.loop &&
-        clearInterval(this.loop);
+    // this.stop = function(){
+    //     this.loop &&
+    //     clearInterval(this.loop);
 
-        callback();
-        // console.log('stop')
-    }
+    //     callback();
+    // }
 
     this.init();
 }
@@ -36,6 +38,11 @@ Counter.prototype.start = function(){
     this.loop = setInterval(()=>{
         this.update();
     },1000/60);
+}
+
+Counter.prototype.stop = function(){
+    this.loop &&
+    clearInterval(this.loop);
 }
 
 export default Counter;

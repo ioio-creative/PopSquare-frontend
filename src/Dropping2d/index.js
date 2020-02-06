@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Matter from 'matter-js';
 import gsap from 'gsap';
 // import LoadingScene from './LoadingScene';
@@ -12,6 +13,7 @@ import decomp from 'poly-decomp';
 window.decomp = decomp;
 
 const Dropping2d = (props) => {
+    const gameStarted = useSelector(state => state.gameStarted);
     const sceneElem = useRef(null);
     const tempSceneElem = useRef(null);
     const pick = useRef(null);
@@ -19,6 +21,8 @@ const Dropping2d = (props) => {
     const bg = useRef(null);
     const ranking = useRef(null);
     const rankingBg = useRef(null);
+    const removeAllObjectsFunc = useRef(null);
+    const createObjectFunc = useRef(null);
     
     // const [socket,setSocket] = useState(null);
 
@@ -53,7 +57,6 @@ const Dropping2d = (props) => {
 
     useEffect(()=>{
         let app = undefined;
-        // let keyDown = null;
         let objects = [];
         let graphicsArray = [];
         let detailsArray = [];
@@ -160,6 +163,7 @@ const Dropping2d = (props) => {
 
             World.add(engine.world, _obj);
         };
+        createObjectFunc.current = {createObject};
 
         const createShape = (shape, isloadingObject) => {
             const x = Math.max(ww*.2, Math.min(ww*.8, Math.random() * ww));
@@ -472,6 +476,7 @@ const Dropping2d = (props) => {
                 removeObject(i);
             }
         }
+        removeAllObjectsFunc.current = {removeAllObjects}
 
         const removingShapeAnimation = function(i){
             this.tempShapes = graphicsArray[i].children[0].clone();
@@ -822,6 +827,15 @@ const Dropping2d = (props) => {
             window.removeEventListener("keydown", keyDown);
         }
     },[])
+
+    useEffect(()=>{
+        if(gameStarted){
+            removeAllObjectsFunc.current.removeAllObjects();
+        }
+        else{
+
+        }
+    },[gameStarted]);
 
     return <>
         <div id="wrap">

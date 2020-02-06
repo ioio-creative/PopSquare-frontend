@@ -11,6 +11,16 @@
   user-select: none; /* Standard syntax */
 }
 
+@font-face {
+  font-family: 'Inter';
+  src: url('./fonts/Inter-Black.woff2') format('woff2'),
+      url('./fonts/Inter-Black.woff') format('woff'),
+      url('./fonts/Inter-Black.ttf') format('truetype'),
+      url('./fonts/Inter-Black.svg#Inter-Black') format('svg');
+  font-weight: 900;
+  font-style: normal;
+}
+
 html, body{
   width:100%;
   height:100%;
@@ -19,9 +29,8 @@ html, body{
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: .2vw;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;

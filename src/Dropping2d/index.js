@@ -6,6 +6,9 @@ import gsap from 'gsap';
 // import { Redirect } from 'react-router-dom';
 import * as PIXI from 'pixi.js';
 import './style.scss';
+import Game from '../Game';
+import { startGame } from '../Game/function';
+import '../Game/style.scss';
 import decomp from 'poly-decomp';
 window.decomp = decomp;
 
@@ -17,6 +20,7 @@ const Dropping2d = (props) => {
     const bg = useRef(null);
     const ranking = useRef(null);
     const rankingBg = useRef(null);
+    const gameElem = useRef(null);
     // const [socket,setSocket] = useState(null);
 
 
@@ -161,7 +165,7 @@ const Dropping2d = (props) => {
         const createShape = (shape, isloadingObject) => {
             const x = Math.max(ww*.2, Math.min(ww*.8, Math.random() * ww));
             const y = 200;
-            const radius = Math.round(Math.random() * 50 + 100);
+            const radius = Math.round(Math.random() * 50 + (ww > wh ? wh*.1 : ww*.1));
             const params = { restitution: .5, collisionFilter: { group: 0 } };
             const r = radius * 2;
             let body = null;
@@ -604,10 +608,13 @@ const Dropping2d = (props) => {
                     if(doOnce)
                         doOnce = false;
                     by += .7;
-                    Body.setVelocity(objects[idx], {x: 0, y: -by});
+                    if(objects[idx])
+                        Body.setVelocity(objects[idx], {x: 0, y: -by});
                 }
                 if(counter >= 60 * 2){
-                    Body.setVelocity(objects[Math.round(Math.random() * (objects.length-1))], {x: 0, y: -50});
+                    const target = objects[Math.round(Math.random() * (objects.length-1))];
+                    if(target)
+                        Body.setVelocity(target, {x: 0, y: -50});
                     counter = 0;
                 }
             }
@@ -808,6 +815,10 @@ const Dropping2d = (props) => {
         createObject(true);
         createObject(true);
 
+        startGame(gameElem);
+        // setTimeout(()=>{
+        //     closeGame();
+        // },1000)
         
         window.addEventListener('resize',(e)=>onResize(app));
         window.addEventListener("keydown", keyDown);
@@ -819,7 +830,6 @@ const Dropping2d = (props) => {
     },[])
 
     return <>
-        {/* <LoadingScene /> */}
         <div id="wrap">
             <div ref={sceneElem} id="scene"></div>
             <div ref={tempSceneElem} id="tempScene"></div>
@@ -857,6 +867,8 @@ const Dropping2d = (props) => {
                     <div id="innerWrap"></div>
                 </div>
             </div>
+
+            <Game gameElem={gameElem}/>
         </div>
     </>
 }

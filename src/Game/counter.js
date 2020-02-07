@@ -1,5 +1,5 @@
 
-const Counter = function(m, s, callback){
+const Counter = function(m, s, onUpdate, callback){
     this.minutes = m;
     this.seconds = s;
     this.end = undefined;
@@ -17,6 +17,8 @@ const Counter = function(m, s, callback){
         const distance =  this.end - now;
         this.minutes = Math.floor( distance % (1000 * 60 * 60) / (1000 * 60));
         this.seconds = Math.floor( distance % (1000 * 60) / 1000);
+
+        onUpdate();
 
         if(this.minutes <= 0 && this.seconds <= 0){
             this.stop();

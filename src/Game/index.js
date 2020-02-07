@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import gsap from "gsap";
+import QRCode from "qrcode.react";
 // import { startGame } from './function';
 import Counter from './counter';
+import ParticlesAnim from './particles';
 
 const min = 1;
 const sec = 0;
@@ -16,6 +18,7 @@ const Game = props => {
     const [second, setSecond] = useState(sec);
     const [minute, setMinute] = useState(min);
     const gameElem = useRef(null);
+    const shapesWrapElem = useRef(null);
     const startGameFunc = useRef(null);
     const startCounterFunc = useRef(null);
     const endCounterFunc = useRef(null);
@@ -24,13 +27,11 @@ const Game = props => {
     // setSecond(timer.seconds);
 
     useEffect(()=>{
-        let player = null;
         let timer = null;
         let oldSeconds = -1;
-        
-        const updateCounter = () => {
-            player = requestAnimationFrame(updateCounter);
+        const particlesAnim = new ParticlesAnim(shapesWrapElem.current);
 
+        const updateCounter = () => {
             if(timer.seconds !== oldSeconds){
                 gsap.to('#pointer', .6, {rotation: (-timer.seconds * 6)+'_short', overwrite:true, ease:'elastic.out(1, 0.4)'});
                 oldSeconds = timer.seconds;
@@ -48,12 +49,11 @@ const Game = props => {
             }
             animateToTimesup();
             dispatch({type:'END_COUNTER'});
-            cancelAnimationFrame(player);
         }
         endCounterFunc.current = {endCounter};
 
         const startCounter = () => {
-            timer = new Counter(min, sec, endCounter);
+            timer = new Counter(min, sec, updateCounter, endCounter);
             timer.start();
             updateCounter();
         }
@@ -61,6 +61,7 @@ const Game = props => {
 
 
         const startGame = () => {
+            gsap.set('#game *',{clearProps:true});
             gameElem.current.className = 'active';
             
             setTimeout(()=>{
@@ -70,6 +71,7 @@ const Game = props => {
             initSlider();
             initQuestion();
             initClock();
+            initComplete();
         }
         startGameFunc.current = {startGame};
         
@@ -146,7 +148,7 @@ const Game = props => {
         const questionOut = () => {
             const tl = gsap.timeline();
             tl.to(['#question #symbol', '#question #title span', '#question #tips'], .6, {autoAlpha:0, y:'-100%', stagger:.1, ease: 'power3.in'});
-            tl.call(animateToClock, null);
+            tl.call(clockIn, null);
         }
         
         ////////////////////////
@@ -157,10 +159,10 @@ const Game = props => {
             gsap.set('#clock .text', {force3D:true, autoAlpha:0, y:'-100%'});
             gsap.set('#pointer span', {force3D:true, scale:0, stagger:.1});
             gsap.set('#clock #timesup', {force3D:true, autoAlpha:0, y:'-50%'});
-            gsap.set('#timesupBg', {force3D:true, scale:0});
+            gsap.set(['#timesupBg', '#timesupBg span'], {force3D:true, scale:0, autoAlpha:1});
         }
         
-        const animateToClock = () => {
+        const clockIn = () => {
             const tl = gsap.timeline();
             tl.to('#character2 .wrap', 1, {scale:4, left:'50vw', top:'50vh', y:0, ease:'power2.inOut'},'s');
             tl.to('#character1 .wrap', 1, {left:0, top:'-6vh', boxShadow:'0px 0px 0px #333', ease: 'elastic.out(1, 0.75)'},'b-=.6');
@@ -174,16 +176,54 @@ const Game = props => {
 
         const animateToTimesup = () => {
             const tl = gsap.timeline();
-            tl.to('#timesupBg', 1, {scale:25, ease: 'power3.out'},'s');
-            tl.to('#question #smallTitle span', .3, {autoAlpha:0, y:'-100%', stagger:.1, ease: 'power3.in'},'s');
+            tl.to('#timesupBg', .8, {scale:25, ease: 'power3.out'},'s');
+            tl.to('#question #smallTitle span', .3, {autoAlpha:0, y:'-100%', stagger:.1, overwrite:true, ease: 'power3.in'},'s');
             tl.to('#clock .text', .3, {autoAlpha:0, y:'50%', stagger:.1, overwrite:true, ease: 'power3.out'},'s+=.1');
             tl.to('#clock #timesup', .6, {autoAlpha:1, y:'0%', ease: 'power3.out'},'e-=.6');
             tl.to('#character2 .wrap', .6, {left:'75vw', top:'40vh', ease:'power2.in'},'e-=.8');
+            tl.call(clockOut, null);
         }
 
         const clockOut = () => {
-            
+            const tl = gsap.timeline();
+            tl.to('#pointer span', .6, {scale:0, stagger:.1, ease: 'back.in(1.7)'},'s');
+            tl.to('#clock #timesup', .6, {autoAlpha:0, y:'100%', ease: 'power3.in'},'s');
+            tl.to('#timesupBg span', .8, {scale:1, ease: 'power3.out'},'s+=.1');
+            tl.set('#timesupBg', {autoAlpha:0});
+            tl.call(completeIn, null);
         }
+
+        const initComplete = () => {
+            gsap.set('#complete #title span', {force3D:true, scale:0});
+            gsap.set('#complete #tips span', {force3D:true, autoAlpha:0, y:'-100%'});
+            gsap.set('#complete #lose span', {force3D:true, autoAlpha:0, y:'-100%'});
+            gsap.set('#character2 #qrcode', {force3D:true, scale:0});
+        }
+
+        const completeIn = () => {
+            const tl = gsap.timeline();
+            tl.set('#character1 .wrap', {className:'wrap lookdown'});
+            tl.to('#character2 .wrap', 1, {left:'24vw', top:'12vh', scale: 2, boxShadow:'0px 0px 0px #333', ease:'power3.inOut'},'s');
+            tl.to('#character1 .eyes', .3, {autoAlpha:1, ease: 'power1.inOut'},'s');
+
+            // win
+            // tl.to('#complete #title span', .8, {scale:1, stagger:.08, ease: 'elastic.out(1, 0.3)'},'s');
+            // tl.to('#complete #tips span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
+            // tl.to('#character2 .eyes', .3, {autoAlpha:0, ease: 'power1.inOut'},1.8);
+            // tl.to('#character2 .wrap', .6, {scale: 3.5, ease:'elastic.out(1, 0.75)'},1.8);
+            // tl.to('#character2 #qrcode', .6, {scale:1, ease:'elastic.out(1, 0.75)'},2);
+
+            //lose
+            tl.to('#complete #lose span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
+
+
+            particlesAnim.start();
+            
+            setTimeout(()=>{
+                particlesAnim.stop();
+            },1000 * 30);
+        }
+
 
 
         setTimeout(()=>{
@@ -311,8 +351,23 @@ const Game = props => {
                     </div>
                     <div className="text">left</div>
                 </div>
-                <div id="timesupBg"></div>
+                <div id="timesupBg"><span></span></div>
+                <div id="complete" className="fix">
+                    <div id="title">
+                        <span>Mission</span>
+                        <span>Completed!</span>
+                    </div>
+                    <div id="tips">
+                        <span>Here is the promotion</span>
+                        <span>code for the prize</span>
+                    </div>
+                    <div id="lose">
+                        <span>Try again and</span>
+                        <span>Good luck!</span>
+                    </div>
+                </div>
                 <div className="center">
+                    <div ref={shapesWrapElem} id="shapesWrap"></div>
                     <div id="character1" className="character">
                         <div className="wrap">
                             <div className="eyes"><span></span><span></span></div>
@@ -325,6 +380,9 @@ const Game = props => {
                     <div id="character2" className="character">
                         <div className="wrap">
                             <div className="eyes"><span></span><span></span></div>
+                            <div id="qrcode">
+                                <QRCode value={'https://google.com'} renderAs="svg" includeMargin={true}/>
+                            </div>
                         </div>
                     </div>
                 </div>

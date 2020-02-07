@@ -22,11 +22,13 @@ const Game = props => {
     const startGameFunc = useRef(null);
     const startCounterFunc = useRef(null);
     const endCounterFunc = useRef(null);
+    const closeGameFunc = useRef(null);
 
     // setMinute(timer.minutes);
     // setSecond(timer.seconds);
 
     useEffect(()=>{
+        let started = false;
         let timer = null;
         let oldSeconds = -1;
         const particlesAnim = new ParticlesAnim(shapesWrapElem.current);
@@ -41,6 +43,7 @@ const Game = props => {
             setSecond(timer.seconds);
         }
 
+
         const endCounter = () => {
             if(timer){
                 gsap.to('#pointer', .6, {rotation: (-timer.seconds * 6)+'_short', overwrite:true, ease:'elastic.out(1, 0.4)'});
@@ -52,6 +55,7 @@ const Game = props => {
         }
         endCounterFunc.current = {endCounter};
 
+
         const startCounter = () => {
             timer = new Counter(min, sec, updateCounter, endCounter);
             timer.start();
@@ -61,12 +65,13 @@ const Game = props => {
 
 
         const startGame = () => {
+            started = true;
             gsap.set('#game *',{clearProps:true});
             gameElem.current.className = 'active';
             
             setTimeout(()=>{
                 limitedOfferOut();
-            },1000 * 1); // 50s
+            },1000 * 50); // 50s
         
             initSlider();
             initQuestion();
@@ -77,12 +82,23 @@ const Game = props => {
         }
         startGameFunc.current = {startGame};
         
+
         const closeGame = () => {
-            gameElem.current.className = 'active out';
-            setTimeout(()=>{
-                gameElem.current.className = '';
-            },1000)
+            if(started){
+                started = false;
+                setIsPicked(false);
+                gameElem.current.className = 'active out';
+                setTimeout(()=>{
+                    gameElem.current.className = '';
+                },1000)
+
+                
+                setTimeout(()=>{
+                    dispatch({type:'START_GAME'});
+                },3000)
+            }
         }
+        closeGameFunc.current = {closeGame};
         
         const limitedOfferOut = () => {
             gsap.set('#game #limitedOffer', {autoAlpha:1, scale:1});
@@ -128,7 +144,7 @@ const Game = props => {
             sliderInAnim.to('#character2 .eyes', .6, {x:'-100%'},1);
             sliderInAnim.to('#character2 .eyes', 1, {x:'-50%', y:'-100%', repeat:-1, repeatDelay:1, yoyo:true, ease:'power3.inOut'},1.6);
             sliderInAnim.to('#character2 .wrap', .3, {y:'-20%', repeat:-1, yoyo:true, ease:'power3.out'},1);
-            sliderInAnim.call(sliderOut, null, 3);
+            sliderInAnim.call(sliderOut, null, 20);
         }
         
         const sliderOut = () => {
@@ -156,7 +172,7 @@ const Game = props => {
             tl.to('#character1 .wrap', 1, {left:'-20vw',top:'19vh', ease: 'power3.inOut'},'s');
             tl.to('#character2 .wrap', 1, {left:'-2.4vw',top:'26vh', className:'wrap stop', ease: 'power3.inOut'},'s');
             tl.to(['#question #symbol', '#question #title span', '#question #tips'], .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},.2);
-            tl.call(questionOut, null);
+            tl.call(questionOut, null, 10);
         }
         
         const questionOut = () => {
@@ -178,6 +194,7 @@ const Game = props => {
         
         const clockIn = () => {
             const tl = gsap.timeline();
+            tl.to('#character2 .eyes', .3, {x:'-100%', y:'0%', ease: 'power1.inOut'},'s');
             tl.to('#character2 .wrap', 1, {scale:1, left:'50vw', top:'50vh', y:0, ease:'power2.inOut'},'s');
             tl.to('#character1 .wrap', 1, {left:0, top:'-6vh', boxShadow:'0px 0px 0px rgba(0,0,0,0)', ease: 'elastic.out(1, 0.75)'},'b-=.6');
             tl.to('#character1 .wrap', 1, {scale:1.55, ease: 'elastic.out(1, 0.3)'},'b-=.6');
@@ -224,19 +241,19 @@ const Game = props => {
             tl.to('#character1 .eyes', 1, {y:'550%', repeat:-1, repeatDelay:3, yoyo:true, ease:'power3.inOut'},1.6);
 
             // win
-            // tl.to('#complete #title span', .8, {scale:1, stagger:.08, ease: 'elastic.out(1, 0.3)'},'s');
-            // tl.to('#complete #tips span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
-            // tl.to('#character2 .eyes', .3, {autoAlpha:0, ease: 'power1.inOut'},1.8);
-            // tl.to('#character2 .wrap', .6, {scale: .8, ease:'elastic.out(1, 0.75)'},1.8);
-            // tl.to('#character2 #qrcode', .6, {scale:1, ease:'elastic.out(1, 0.75)'},2);
+            tl.to('#complete #title span', .8, {scale:1, stagger:.08, ease: 'elastic.out(1, 0.3)'},'s');
+            tl.to('#complete #tips span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
+            tl.to('#character2 .eyes', .3, {autoAlpha:0, ease: 'power1.inOut'},1.8);
+            tl.to('#character2 .wrap', .6, {scale: .8, ease:'elastic.out(1, 0.75)'},1.8);
+            tl.to('#character2 #qrcode', .6, {scale:1, ease:'elastic.out(1, 0.75)'},2);
 
             //lose
-            tl.to('#complete #lose span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
-            tl.to('#character2 .eyes', .6, {y:'600%', overwrite:true, ease: 'power3.inOut'},1);
-            tl.call(nextOfferIn, null);
+            // tl.to('#complete #lose span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
+            // tl.to('#character2 .eyes', .6, {y:'600%', overwrite:true, ease: 'power3.inOut'},1);
+
+            tl.call(nextOfferIn, null, 30);
 
             particlesAnim.start();
-            
             setTimeout(()=>{
                 particlesAnim.stop();
             },1000 * 25);
@@ -246,22 +263,29 @@ const Game = props => {
             gsap.set('#nextOffer span', {force3D:true, autoAlpha:0, y:'-100%'});
         }
 
+        let nextOfferInAnim = null;
         const nextOfferIn = () => {
-            const tl = gsap.timeline();
-            tl.to('#character1 .eyes', .6, {x:'-100%', y:'0%', overwrite:true, ease: 'power3.inOut'},'s');
-            tl.to('#character1 .wrap', 1, {top: '0', boxShadow:'1vh 0.3vh 0 #333', ease: 'power3.inOut'},'s');
-            tl.to('#character2 .eyes', .6, {x:'-100%', y:'0%', ease: 'power3.inOut'},'s');
-            tl.to('#character2 .wrap', 1, {top: '18.5vh', boxShadow:'4vh 2.5vh 0 #333', scale: .3, ease: 'power3.inOut'},'s');
-            tl.to('#nextOffer span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
+            nextOfferInAnim = gsap.timeline();
+            nextOfferInAnim.to('#character1 .eyes', .6, {x:'-100%', y:'0%', overwrite:true, ease: 'power3.inOut'},'s');
+            nextOfferInAnim.to('#character1 .wrap', 1, {top: '0', boxShadow:'1vh 0.3vh 0 #333', ease: 'power3.inOut'},'s');
+            nextOfferInAnim.to('#character2 .eyes', .6, {x:'-100%', y:'0%', ease: 'power3.inOut'},'s');
+            nextOfferInAnim.to('#character2 .wrap', 1, {top: '18.5vh', boxShadow:'4vh 2.5vh 0 #333', scale: .3, ease: 'power3.inOut'},'s');
+            nextOfferInAnim.to('#nextOffer span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
+
+            //win
+            nextOfferInAnim.to(['#complete #title span','#complete #tips span'], .3, {autoAlpha:0, y:'-100%', stagger:.1, ease: 'power3.in'},'s');
+            nextOfferInAnim.to('#character2 .eyes', .3, {autoAlpha:1, ease: 'power1.inOut'},'s');
+            nextOfferInAnim.to('#character2 #qrcode', .6, {scale:0, ease:'power3.out'},'s');
 
             //lose
-            tl.to('#complete #lose span', .3, {autoAlpha:0, y:'100%', stagger:.1, ease: 'power3.in'},'s');
-            tl.call(nextOfferOut, null);
+            // tl.to('#complete #lose span', .3, {autoAlpha:0, y:'100%', stagger:.1, ease: 'power3.in'},'s');
+            nextOfferInAnim.call(nextOfferOut, null, 15);
         }
         
         const nextOfferOut = () => {
+            nextOfferInAnim.kill();
             const tl = gsap.timeline();
-            tl.to('#nextOffer span', .6, {autoAlpha:0, y:'100%', stagger:.1, ease: 'power3.in'},'s');
+            tl.to('#nextOffer span', .3, {autoAlpha:0, y:'-100%', stagger:.1, ease: 'power3.in'},'s');
             tl.call(seeyouIn, null)
         }
 
@@ -277,12 +301,12 @@ const Game = props => {
             tl.to('#character1 .wrap', .3, {boxShadow:'0px 0px 0 rgba(0,0,0,0)', ease: 'power3.inOut'},'s');
             tl.to('#character2 .wrap', 1, {scale:1, left:'50vw', top:'50vh', ease:'power2.inOut'},'s');
             tl.to('#seeyouBg', .8, {scale:25, ease: 'power3.out'},'s');
+            tl.call(()=>dispatch({type:'END_GAME'}), null, 15);
         }
-
 
         setTimeout(()=>{
             dispatch({type:'START_GAME'});
-        },1000);
+        },3000);
 
 
 
@@ -314,7 +338,7 @@ const Game = props => {
             startGameFunc.current.startGame();
         }
         else{
-
+            closeGameFunc.current.closeGame();
         }
     },[gameStarted]);
 

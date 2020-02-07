@@ -5,19 +5,23 @@ import Dropping3d from './Dropping3d';
 import Particles from './Particles';
 import Summary from './Summary';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
+import {createBrowserHistory} from 'history/';
+
 import './index.css';
 
 
 function App(props) {
+  const history = createBrowserHistory({ basename: '/popsquare/' });
+
   return (
-    <Router>
+    <Router history={history} basename="/popsquare/">
       <Switch>
         <Route exact path="/countdown" component={CountDown} />
-        <Route exact path="/dropping2d" component={Dropping2d} />
+        <Route exact path="/" component={Dropping2d} />
         <Route path="/dropping3d" component={Dropping3d} />
         <Route path="/summary" component={Summary} />
         <Route path="/particles" component={Particles} />
-        <Redirect to="/dropping2d" />
+        {/* <Redirect to="/dropping2d" /> */}
       </Switch>
     </Router>
   )

@@ -72,6 +72,8 @@ const Game = props => {
             initQuestion();
             initClock();
             initComplete();
+            initNextOffer();
+            initSeeyou();
         }
         startGameFunc.current = {startGame};
         
@@ -104,23 +106,35 @@ const Game = props => {
             gsap.set('#product',{force3D:true, autoAlpha:1, y:'-60vh'});
             gsap.set('#product #rader',{autoAlpha:0});
             gsap.set('#character1', {force3D:true, x:'-50vw', scale:1});
+            gsap.set('#character1 .wrap', {force3D:true, scale:.56});
             gsap.set('#character2', {force3D:true, x:'50vw', scale:1});
+            gsap.set('#character2 .wrap', {force3D:true, scale:.2});
+            gsap.set('#character1 .eyes', {force3D:true, x:'-50%', y:0, overwrite:true});
+            gsap.set('#character2 .eyes', {force3D:true, x:'-50%', y:0});
         }
         
+        let sliderInAnim = null;
         const sliderIn = () => {
-            const tl = gsap.timeline();
-            tl.to('#cart', 1, {y:'-50%', ease: 'power4.out'});
-            tl.to('#buttons', 1, {y:0, ease: 'power4.out'},.4);
-            tl.to('#texts', 1, {y:0, ease: 'power4.out'},.2);
-            tl.to('#product', 1, {y:0, ease: 'power4.out'},.3);
-            tl.to('#product #rader', 2, {autoAlpha:1, ease: 'power1.inOut'},1);
-            tl.to('#character1', 1, {x:0, ease: 'power3.out'},.4);
-            tl.to('#character2', .6, {x:0, ease: 'power3.out'},.6);
-            tl.call(sliderOut, null);
+            sliderInAnim = gsap.timeline();
+            sliderInAnim.to('#cart', 1, {y:'-50%', ease: 'power4.out'});
+            sliderInAnim.to('#buttons', 1, {y:0, ease: 'power4.out'},.4);
+            sliderInAnim.to('#texts', 1, {y:0, ease: 'power4.out'},.2);
+            sliderInAnim.to('#product', 1, {y:0, ease: 'power4.out'},.3);
+            sliderInAnim.to('#product #rader', 2, {autoAlpha:1, ease: 'power1.inOut'},1);
+            sliderInAnim.to('#character1', 1, {x:0, ease: 'power3.out'},.4);
+            sliderInAnim.to('#character2', .6, {x:0, ease: 'power3.out'},.6);
+            sliderInAnim.to('#character1 .eyes', .6, {x:'70%'},1);
+            sliderInAnim.to('#character1 .eyes', 1, {y:'-100%', repeat:-1, repeatDelay:.3, yoyo:true, ease:'power3.inOut'},1);
+            sliderInAnim.to('#character2 .eyes', .6, {x:'-100%'},1);
+            sliderInAnim.to('#character2 .eyes', 1, {x:'-50%', y:'-100%', repeat:-1, repeatDelay:1, yoyo:true, ease:'power3.inOut'},1.6);
+            sliderInAnim.to('#character2 .wrap', .3, {y:'-20%', repeat:-1, yoyo:true, ease:'power3.out'},1);
+            sliderInAnim.call(sliderOut, null, 3);
         }
         
         const sliderOut = () => {
+            sliderInAnim.kill();
             const tl = gsap.timeline();
+            tl.to('#character2 .wrap', .6, {y:'0%', overwrite:true, ease:'power3.out'},'s');
             tl.to('#buttons', .6, {y:'-12vh', ease: 'power4.inOut'},'s');
             tl.to('#texts', .6, {y:'-28vh', ease: 'power4.inOut'},'s+=.2');
             tl.to('#cart', .6, {y:'-300%', ease: 'power4.inOut'},'s+=.4');
@@ -137,8 +151,8 @@ const Game = props => {
         
         const questionIn = () => {
             const tl = gsap.timeline();
-            tl.to('#character1 .wrap', 1, {scale:1.3, ease: 'power3.inOut'},'s');
-            tl.to('#character2 .wrap', 1, {scale:1.3, ease: 'power3.inOut'},'s');
+            tl.to('#character1 .wrap', 1, {scale:.75, ease: 'power3.inOut'},'s');
+            tl.to('#character2 .wrap', 1, {scale:.28, overwrite:true, ease: 'power3.inOut'},'s');
             tl.to('#character1 .wrap', 1, {left:'-20vw',top:'19vh', ease: 'power3.inOut'},'s');
             tl.to('#character2 .wrap', 1, {left:'-2.4vw',top:'26vh', className:'wrap stop', ease: 'power3.inOut'},'s');
             tl.to(['#question #symbol', '#question #title span', '#question #tips'], .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},.2);
@@ -164,13 +178,14 @@ const Game = props => {
         
         const clockIn = () => {
             const tl = gsap.timeline();
-            tl.to('#character2 .wrap', 1, {scale:4, left:'50vw', top:'50vh', y:0, ease:'power2.inOut'},'s');
-            tl.to('#character1 .wrap', 1, {left:0, top:'-6vh', boxShadow:'0px 0px 0px #333', ease: 'elastic.out(1, 0.75)'},'b-=.6');
-            tl.to('#character1 .wrap', 1, {scale:2.7, ease: 'elastic.out(1, 0.3)'},'b-=.6');
+            tl.to('#character2 .wrap', 1, {scale:1, left:'50vw', top:'50vh', y:0, ease:'power2.inOut'},'s');
+            tl.to('#character1 .wrap', 1, {left:0, top:'-6vh', boxShadow:'0px 0px 0px rgba(0,0,0,0)', ease: 'elastic.out(1, 0.75)'},'b-=.6');
+            tl.to('#character1 .wrap', 1, {scale:1.55, ease: 'elastic.out(1, 0.3)'},'b-=.6');
             tl.to('#character1 .eyes', .3, {autoAlpha:0, ease: 'power1.inOut'},'b-=.6');
             tl.to('#question #smallTitle span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'-=.6');
             tl.to('#clock .text', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},.3);
             tl.to('#pointer span', .6, {scale:1, stagger:.1, ease: 'elastic.out(1, 0.75)'},.8);
+            tl.set('#pointer span', {clearProps:true});
             tl.call(()=>{dispatch({type:'START_COUNTER'})}, null, '-=.8');
         }
 
@@ -180,7 +195,7 @@ const Game = props => {
             tl.to('#question #smallTitle span', .3, {autoAlpha:0, y:'-100%', stagger:.1, overwrite:true, ease: 'power3.in'},'s');
             tl.to('#clock .text', .3, {autoAlpha:0, y:'50%', stagger:.1, overwrite:true, ease: 'power3.out'},'s+=.1');
             tl.to('#clock #timesup', .6, {autoAlpha:1, y:'0%', ease: 'power3.out'},'e-=.6');
-            tl.to('#character2 .wrap', .6, {left:'75vw', top:'40vh', ease:'power2.in'},'e-=.8');
+            tl.to('#character2 .wrap', .6, {left:'75vw', top:'40vh', scale: .4, ease:'power2.in'},'e-=.8');
             tl.call(clockOut, null);
         }
 
@@ -203,27 +218,66 @@ const Game = props => {
         const completeIn = () => {
             const tl = gsap.timeline();
             tl.set('#character1 .wrap', {className:'wrap lookdown'});
-            tl.to('#character2 .wrap', 1, {left:'24vw', top:'12vh', scale: 2, boxShadow:'0px 0px 0px #333', ease:'power3.inOut'},'s');
-            tl.to('#character1 .eyes', .3, {autoAlpha:1, ease: 'power1.inOut'},'s');
+            tl.to('#character2 .wrap', 1, {left:'23vw', top:'10vh', scale: .5, boxShadow:'0px 0px 0px rgba(0,0,0,0)', ease:'power3.inOut'},'s');
+            tl.to('#character1 .eyes', .3, {autoAlpha:1, overwrite:true, ease: 'power1.inOut'},'s');
+            tl.to('#character1 .eyes', .6, {y:'500%', ease: 'power3.inOut'},1);
+            tl.to('#character1 .eyes', 1, {y:'550%', repeat:-1, repeatDelay:3, yoyo:true, ease:'power3.inOut'},1.6);
 
             // win
             // tl.to('#complete #title span', .8, {scale:1, stagger:.08, ease: 'elastic.out(1, 0.3)'},'s');
             // tl.to('#complete #tips span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
             // tl.to('#character2 .eyes', .3, {autoAlpha:0, ease: 'power1.inOut'},1.8);
-            // tl.to('#character2 .wrap', .6, {scale: 3.5, ease:'elastic.out(1, 0.75)'},1.8);
+            // tl.to('#character2 .wrap', .6, {scale: .8, ease:'elastic.out(1, 0.75)'},1.8);
             // tl.to('#character2 #qrcode', .6, {scale:1, ease:'elastic.out(1, 0.75)'},2);
 
             //lose
             tl.to('#complete #lose span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
-
+            tl.to('#character2 .eyes', .6, {y:'600%', overwrite:true, ease: 'power3.inOut'},1);
+            tl.call(nextOfferIn, null);
 
             particlesAnim.start();
             
             setTimeout(()=>{
                 particlesAnim.stop();
-            },1000 * 30);
+            },1000 * 25);
         }
 
+        const initNextOffer = () => {
+            gsap.set('#nextOffer span', {force3D:true, autoAlpha:0, y:'-100%'});
+        }
+
+        const nextOfferIn = () => {
+            const tl = gsap.timeline();
+            tl.to('#character1 .eyes', .6, {x:'-100%', y:'0%', overwrite:true, ease: 'power3.inOut'},'s');
+            tl.to('#character1 .wrap', 1, {top: '0', boxShadow:'1vh 0.3vh 0 #333', ease: 'power3.inOut'},'s');
+            tl.to('#character2 .eyes', .6, {x:'-100%', y:'0%', ease: 'power3.inOut'},'s');
+            tl.to('#character2 .wrap', 1, {top: '18.5vh', boxShadow:'4vh 2.5vh 0 #333', scale: .3, ease: 'power3.inOut'},'s');
+            tl.to('#nextOffer span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
+
+            //lose
+            tl.to('#complete #lose span', .3, {autoAlpha:0, y:'100%', stagger:.1, ease: 'power3.in'},'s');
+            tl.call(nextOfferOut, null);
+        }
+        
+        const nextOfferOut = () => {
+            const tl = gsap.timeline();
+            tl.to('#nextOffer span', .6, {autoAlpha:0, y:'100%', stagger:.1, ease: 'power3.in'},'s');
+            tl.call(seeyouIn, null)
+        }
+
+        const initSeeyou = () => {
+            gsap.set('#seeyou span', {force3D:true, autoAlpha:0, y:'-100%'});
+            gsap.set('#seeyouBg', {force3D:true, scale:0});
+        }
+
+        const seeyouIn = () => {
+            const tl = gsap.timeline();
+            tl.to('#seeyou span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
+            tl.to('#character1 .eyes', .6, {x:'100%', y:'800%', ease: 'power3.inOut'},'s');
+            tl.to('#character1 .wrap', .3, {boxShadow:'0px 0px 0 rgba(0,0,0,0)', ease: 'power3.inOut'},'s');
+            tl.to('#character2 .wrap', 1, {scale:1, left:'50vw', top:'50vh', ease:'power2.inOut'},'s');
+            tl.to('#seeyouBg', .8, {scale:25, ease: 'power3.out'},'s');
+        }
 
 
         setTimeout(()=>{
@@ -365,6 +419,16 @@ const Game = props => {
                         <span>Try again and</span>
                         <span>Good luck!</span>
                     </div>
+                </div>
+                <div id="nextOffer" className="fix">
+                    <span>Our next limited offer </span>
+                    <span>will be started at </span>
+                    <span id="big">6:30pm</span>
+                </div>
+                <div id="seeyou" className="fix">
+                    <span>See you</span>
+                    <span>next time !</span>
+                    <div id="seeyouBg"></div>
                 </div>
                 <div className="center">
                     <div ref={shapesWrapElem} id="shapesWrap"></div>

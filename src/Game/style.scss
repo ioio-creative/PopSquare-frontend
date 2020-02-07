@@ -274,6 +274,39 @@
             top:75vh;
         }
     }
+    #nextOffer{
+        color:#fff;
+        font-size: 2.5vh;
+        line-height: 3.5vh;
+        padding:5vh 5vh 0;
+        #big{
+            font-size: 6vh;
+            line-height: normal;
+        }
+        span{
+            display: block;
+        }
+    }
+    #seeyou{
+        color:#fff;
+        font-size: 6vh;
+        padding:5vh 5vh 0;
+        span{
+            display: block;
+        }
+        #seeyouBg{
+            width: 100px;
+            height: 100px;
+            display: block;
+            position: absolute;
+            top:50%;
+            left:50%;
+            border-radius: 50%;
+            background:#42d3d3;
+            transform: translate3d(-50%,-50%,0) scale(0);
+            z-index: -1;
+        }
+    }
     .center{
         width:0;
         height:0;
@@ -320,30 +353,42 @@
             &.stop{
                 animation:none !important;
             }
+            .eyes{
+                top:20%;
+                left:50%;
+                transform: translate3d(-50%,0,0);
+                span{
+                    transform: translate3d(0,0,0) scale(1);
+                    animation: wink 2s ease infinite;
+                }
+            }
             // &.toClock{
             //     box-shadow: none;
             // }
         }
         &#character1{
-            width:17vh;
-            height:17vh;
+            width:30vh;
+            height:30vh;
             z-index: -1;
             .wrap{
                 top: 12vh;
                 left: -14vh;
                 background:#42d3d3;
-                box-shadow: -1vh 1vh 0 #333;
-                &.lookdown{
-                    .eyes{
-                        transform: translate3d(0,600%,0);
-                        animation: lookdown 5s ease infinite;
-                    }
-                }
-                .eyes{
-                    top:20%;
-                    left:60%;
-                    animation: moveeyes 5s ease infinite;
-                }
+                box-shadow: -2vh 1vh 0 #333;
+                // &.lookup{
+                //     .eyes{
+                //         animation: moveeyes2 5s ease infinite;
+                //     }
+                // }
+                // &.lookdown{
+                //     .eyes{
+                //         transform: translate3d(0,600%,0);
+                //         animation: lookdown 5s ease infinite;
+                //     }
+                // }
+                // .eyes{
+                    // animation: moveeyes 5s ease infinite;
+                // }
                 #pointer{
                     width:0;
                     height:0;
@@ -354,14 +399,14 @@
                         display: inline-block;
                         border-radius:2vh;
                         &:nth-child(1){
-                            width:2.3vh;
-                            height:7vh;
+                            width:3.5vh;
+                            height:12vh;
                             background:#fff;
-                            transform: translate3d(-50%,calc(-100% + 1.15vh),0);
+                            transform: translate3d(-50%, calc(-100% + 1.75vh),0);
                         }
                         &:nth-child(2){
-                            width: 1.4vh;
-                            height: 1.4vh;
+                            width: 2.2vh;
+                            height: 2.2vh;
                             background:#ea7da4;
                             transform: translate3d(-50%,-50%,0);
                             position: absolute;
@@ -372,23 +417,28 @@
             }
         }
         &#character2{
-            width:6.3vh;
-            height:6.3vh;
+            width:30vh;
+            height:30vh;
             .wrap{
                 top: 19.5vh;
                 left: 10.6vh;
                 background:#ea7da4;
-                box-shadow: .8vh 0.3vh 0 #333;
-                animation: jump 2s ease infinite alternate-reverse;
+                box-shadow: 4vh 2.5vh 0 #333;
+                // animation: jump 2s ease infinite alternate-reverse;
                 .eyes{
                     width:20%;
                     height: 8%;
-                    top:20%;
-                    left:20%;
-                    animation: moveeyes2 5s ease infinite 3s;
+                    // top:20%;
+                    // left:50%;
+                    // transform: translate3d(-50%,0,0);
+                    // animation: moveeyes2 5s ease infinite 3s;
+                    span{
+                        animation-delay: 5s;
+                        // animation-direction: reverse;
+                    }
                 }
                 #qrcode{
-                    padding: 20%;
+                    padding: 22%;
                     svg{
                         width:100%;
                         height:100%;
@@ -458,41 +508,56 @@
     }
 }
 
-@keyframes moveeyes{
-    30%{
-        transform: translate3d(0,0%,0);
+@keyframes wink{
+    0%{
+        transform: translate3d(0,0,0) scale(1, 0);
     }
-    60%{
-        transform: translate3d(50%,0%,0);
+    5%{
+        transform: translate3d(0,0,0) scale(1, 1);
     }
-    80%{
-        transform: translate3d(30%,-100%,0);
+    10%{
+        transform: translate3d(0,0,0) scale(1, 0);
     }
-}
-
-@keyframes moveeyes2{
-    30%{
-        transform: translate3d(0,0%,0);
-    }
-    60%{
-        transform: translate3d(-50%,0%,0);
-    }
-    80%{
-        transform: translate3d(-30%,-100%,0);
+    15%{
+        transform: translate3d(0,0,0) scale(1, 1);
     }
 }
 
-@keyframes lookdown{
-    30%{
-        transform: translate3d(0,600%,0);
-    }
-    60%{
-        transform: translate3d(0%,700%,0);
-    }
-    80%{
-        transform: translate3d(0%,600%,0);
-    }
-}
+// @keyframes moveeyes{
+//     30%{
+//         transform: translate3d(0,0%,0);
+//     }
+//     60%{
+//         transform: translate3d(50%,0%,0);
+//     }
+//     80%{
+//         transform: translate3d(30%,-100%,0);
+//     }
+// }
+
+// @keyframes moveeyes2{
+//     30%{
+//         transform: translate3d(0,0%,0);
+//     }
+//     60%{
+//         transform: translate3d(-50%,0%,0);
+//     }
+//     80%{
+//         transform: translate3d(-30%,-100%,0);
+//     }
+// }
+
+// @keyframes lookdown{
+//     30%{
+//         transform: translate3d(0,600%,0);
+//     }
+//     60%{
+//         transform: translate3d(0%,700%,0);
+//     }
+//     80%{
+//         transform: translate3d(0%,600%,0);
+//     }
+// }
 
 @keyframes jump{
     0%{

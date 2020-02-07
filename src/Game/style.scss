@@ -123,6 +123,13 @@
             font-size: 3.9vh;
             color:#fff;
             text-align: center;
+            div{
+                position: absolute;
+                top:0;
+            }
+            span{
+                display: inline-block;
+            }
         }
         #cart{
             width:40.5vh;

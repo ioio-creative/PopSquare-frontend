@@ -93,9 +93,9 @@ const Game = props => {
                 },1000)
 
                 
-                // setTimeout(()=>{
-                //     dispatch({type:'START_GAME'});
-                // },3000)
+                setTimeout(()=>{
+                    dispatch({type:'START_GAME'});
+                },3000)
             }
         }
         closeGameFunc.current = {closeGame};

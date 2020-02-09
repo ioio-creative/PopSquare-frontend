@@ -23,6 +23,8 @@ const Dropping2d = (props) => {
     const rankingBg = useRef(null);
     const removeAllObjectsFunc = useRef(null);
     const createObjectFunc = useRef(null);
+    const startTimerFunc = useRef(null);
+    const stopTimerFunc = useRef(null);
     
     // const [socket,setSocket] = useState(null);
 
@@ -64,11 +66,13 @@ const Dropping2d = (props) => {
         const shapes = [];
         const colors = ['3e5bb7', 'fa8b43', '498e8b', 'ea7da4'];
         let started = false;
+        let paused = false;
         let timeScaleTarget = 1;
         let group = -1;
         const eyesTween = [];
         const productDetailsTween = [];
         let page = 'loading';
+        let end = new Date();
         const images = [
             {pID:1, src:'https://as1.ftcdn.net/jpg/02/12/43/28/500_F_212432820_Zf6CaVMwOXFIylDOEDqNqzURaYa7CHHc.jpg'}
         ]
@@ -88,8 +92,6 @@ const Dropping2d = (props) => {
         const ww = window.innerWidth,
             wh = window.innerHeight;
 
-        let seconds = 5;
-        const end = new Date();
 
 
         // create an engine
@@ -166,7 +168,7 @@ const Dropping2d = (props) => {
         createObjectFunc.current = {createObject};
 
         const createShape = (shape, isloadingObject) => {
-            const x = Math.max(ww*.2, Math.min(ww*.8, Math.random() * ww));
+            const x = Math.max(ww*.3, Math.min(ww*.7, Math.random() * ww));
             const y = 200;
             const radius = Math.round(Math.random() * 50 + (ww > wh ? wh*.1 : ww*.1));
             const params = { restitution: .5, collisionFilter: { group: 0 } };
@@ -544,15 +546,16 @@ const Dropping2d = (props) => {
         }
 
         const setTimer = (seconds) => {
+            end = new Date();
             end.setSeconds(end.getSeconds() + seconds + 1);
         }
 
         const updateTimer = () => {
             const now = new Date().getTime();
             const distance = end - now;
-            seconds = Math.floor( distance % (1000 * 60) / 1000);
+            const seconds = Math.floor( distance % (1000 * 60) / 1000);
 
-            // console.log(seconds);
+            console.log(seconds);
             if(seconds === 10){
                 if(started){
                     if(page === 'loading'){ // end in loading page
@@ -591,6 +594,22 @@ const Dropping2d = (props) => {
                 }
             }
         }
+
+        const startTimer = () => {
+            createObject(true);
+            createObject(true);
+            createObject(true);
+            createObject(true);
+            setTimer(40-1);
+            paused = false;
+        }
+        startTimerFunc.current = {startTimer};
+
+        const stopTimer = () => {
+            paused = true;
+        }
+        stopTimerFunc.current = {stopTimer};
+
 
         let doOnce = false;
         let idx = 0;
@@ -638,19 +657,21 @@ const Dropping2d = (props) => {
         }
 
         const initPIXI = () => {
-            
+            // setTimer(40);
             const update = () => {
-                updateTimer();
+                if(!paused){
+                    updateTimer();
 
-                for(let i=0; i<objects.length; i++){
-                    const obj = objects[i];
+                    for(let i=0; i<objects.length; i++){
+                        const obj = objects[i];
 
-                    shapes[i].x = obj.position.x;
-                    shapes[i].y = obj.position.y;
-                    graphicsArray[i].rotation = obj.angle;
-                    
-                    if(obj.position.y > wh+graphicsArray[i].height){
-                        removeObject(i);
+                        shapes[i].x = obj.position.x;
+                        shapes[i].y = obj.position.y;
+                        graphicsArray[i].rotation = obj.angle;
+                        
+                        if(obj.position.y > wh+graphicsArray[i].height){
+                            removeObject(i);
+                        }
                     }
                 }
             }
@@ -670,7 +691,6 @@ const Dropping2d = (props) => {
             sceneElem.current.prepend(app.view);
 
             preloadImage();
-            setTimer(40);
         }
 
         const rankingDataLength = 2;
@@ -686,8 +706,6 @@ const Dropping2d = (props) => {
             gsap.to(a, 5, {b:1, repeat:rankingDataLength-1, 
                 onRepeat:function(){
                     runRankingAnimation(spans, divs);
-                },
-                onComplete:function(){
                 }
             })
         }
@@ -785,24 +803,23 @@ const Dropping2d = (props) => {
         
         // handle key down
         const keyDown = (e) => {
-            if(e.keyCode === 8){
-                explosion();
-                showProductDetails();
-                // removeAllObjects();
-                // removeSpecificObject(2);
-            }
-            else{
-                if(!started){
-                    started = true;
-                    // for(let i=0; i<objects.length; i++){
-                    //     objects[i].collisionFilter.group = -1;
-                    // }
-                    removeAllObjects();
+            if(!paused){
+                if(e.keyCode === 8){
+                    explosion();
+                    showProductDetails();
+                    // removeAllObjects();
+                    // removeSpecificObject(2);
                 }
-                createObject();
-                pick.current.className = 'text active';
-                up.current.className = 'text active';
-                bg.current.className = 'active';
+                else{
+                    if(!started){
+                        started = true;
+                        removeAllObjects();
+                    }
+                    createObject();
+                    pick.current.className = 'text active';
+                    up.current.className = 'text active';
+                    bg.current.className = 'active';
+                }
             }
         }
         
@@ -814,10 +831,6 @@ const Dropping2d = (props) => {
 
         initMatter();
         initPIXI();
-        createObject(true);
-        createObject(true);
-        createObject(true);
-        createObject(true);
         
         window.addEventListener('resize',(e)=>onResize(app));
         window.addEventListener("keydown", keyDown);
@@ -831,9 +844,10 @@ const Dropping2d = (props) => {
     useEffect(()=>{
         if(gameStarted){
             removeAllObjectsFunc.current.removeAllObjects();
+            stopTimerFunc.current.stopTimer();
         }
         else{
-
+            startTimerFunc.current.startTimer();
         }
     },[gameStarted]);
 

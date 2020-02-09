@@ -64,6 +64,7 @@ const ParticlesAnim = function(elem){
 }
 
 ParticlesAnim.prototype.start = function(){
+    this.stopCreateParticles = false;
     this.updateParticles();
 }
 

@@ -71,7 +71,7 @@ const Game = props => {
             
             setTimeout(()=>{
                 limitedOfferOut();
-            },1000 * 1); // 50s
+            },1000 * 50); // 50s
         
             initSlider();
             initQuestion();
@@ -320,9 +320,9 @@ const Game = props => {
             tl.call(()=>dispatch({type:'END_GAME'}), null, 15);
         }
 
-        setTimeout(()=>{
-            dispatch({type:'START_GAME'});
-        },3000);
+        // setTimeout(()=>{
+        //     dispatch({type:'START_GAME'});
+        // },3000);
 
 
 
@@ -336,8 +336,12 @@ const Game = props => {
         onResize();
         
 
-        const keyDown = () => {
-            setIsPicked(true);
+        const keyDown = (e) => {
+            if(e.keyCode === 13){
+                if(!started)
+                    dispatch({type:'START_GAME'});
+            }
+            if(started) setIsPicked(true);
         }
 
         window.addEventListener('resize',onResize);

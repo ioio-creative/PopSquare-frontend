@@ -555,7 +555,7 @@ const Dropping2d = (props) => {
             const distance = end - now;
             const seconds = Math.floor( distance % (1000 * 60) / 1000);
 
-            console.log(seconds);
+            // console.log(seconds);
             if(seconds === 10){
                 if(started){
                     if(page === 'loading'){ // end in loading page

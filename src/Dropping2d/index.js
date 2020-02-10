@@ -545,6 +545,18 @@ const Dropping2d = (props) => {
             shapes.splice(i,1);
         }
 
+        const reset = () => {
+            started = false;
+            createObject(true);
+            createObject(true);
+            createObject(true);
+            createObject(true);
+            timeScaleTarget = 1;
+            pick.current.className = 'text';
+            up.current.className = 'text';
+            bg.current.className = '';
+        }
+
         const setTimer = (seconds) => {
             end = new Date();
             end.setSeconds(end.getSeconds() + seconds + 1);
@@ -581,25 +593,15 @@ const Dropping2d = (props) => {
                         ranking.current.className = '';
                     },600);
 
-                    timeScaleTarget = 1;
                     setTimer(40-1);
-                    createObject(true);
-                    createObject(true);
-                    createObject(true);
-                    createObject(true);
-                    
-                    pick.current.className = 'text';
-                    up.current.className = 'text';
-                    bg.current.className = '';
+                    reset();
                 }
             }
         }
 
         const startTimer = () => {
-            createObject(true);
-            createObject(true);
-            createObject(true);
-            createObject(true);
+            reset();
+            ranking.current.className = '';
             setTimer(40-1);
             paused = false;
         }
@@ -811,14 +813,16 @@ const Dropping2d = (props) => {
                     // removeSpecificObject(2);
                 }
                 else{
-                    if(!started){
-                        started = true;
-                        removeAllObjects();
+                    if(!paused){
+                        if(!started){
+                            started = true;
+                            removeAllObjects();
+                        }
+                        createObject();
+                        pick.current.className = 'text active';
+                        up.current.className = 'text active';
+                        bg.current.className = 'active';
                     }
-                    createObject();
-                    pick.current.className = 'text active';
-                    up.current.className = 'text active';
-                    bg.current.className = 'active';
                 }
             }
         }

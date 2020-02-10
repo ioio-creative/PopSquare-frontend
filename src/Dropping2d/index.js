@@ -170,7 +170,7 @@ const Dropping2d = (props) => {
         const createShape = (shape, isloadingObject) => {
             const x = Math.max(ww*.3, Math.min(ww*.7, Math.random() * ww));
             const y = 200;
-            const radius = Math.round(Math.random() * 50 + (ww > wh ? wh*.1 : ww*.1));
+            const radius = Math.round(Math.random() * 40 + (ww > wh ? wh*.1 : ww*.1));
             const params = { restitution: .5, collisionFilter: { group: 0 } };
             const r = radius * 2;
             let body = null;

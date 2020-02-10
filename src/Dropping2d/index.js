@@ -115,10 +115,10 @@ const Dropping2d = (props) => {
 
         const addWalls = () => {
             const params = { isStatic: true, restitution: .5, collisionFilter: { group: group } };
-            const top = Bodies.rectangle(ww/2,-30, ww, 60, { ...params });
-            const wallLeft = Bodies.rectangle(-30, wh/2, 60, wh, { ...params });
-            const wallRight = Bodies.rectangle(ww+30, wh/2, 60, wh, { ...params });
-            const ground = Bodies.rectangle(ww/2, wh+30, ww, 60, { ...params });
+            const top = Bodies.rectangle(ww/2,-100, ww, 200, { ...params });
+            const wallLeft = Bodies.rectangle(-100, wh/2, 200, wh, { ...params });
+            const wallRight = Bodies.rectangle(ww+100, wh/2, 200, wh, { ...params });
+            const ground = Bodies.rectangle(ww/2, wh+100, ww, 200, { ...params });
             // ground.label = 'ground';
 
             World.add(engine.world, [top, wallLeft, wallRight, ground]);
@@ -320,7 +320,7 @@ const Dropping2d = (props) => {
             const eyesContainer = new PIXI.Container();
             const leftEye = new PIXI.Graphics();
             leftEye.beginFill(0x333333, 1);
-            leftEye.drawRoundedRect(0, 0, 10, 15, 5);
+            leftEye.drawRoundedRect(0, 0, 18, 25, (23)/2);
             leftEye.endFill();
             leftEye.pivot.x = leftEye.width/2;
             leftEye.pivot.y = leftEye.height/2;
@@ -329,11 +329,11 @@ const Dropping2d = (props) => {
             rightEye.pivot.x = rightEye.width/2;
             rightEye.pivot.y = rightEye.height/2;
 
-            leftEye.x = -15;
-            rightEye.x = 15;
+            leftEye.x = -23;
+            rightEye.x = 23;
 
-            leftEye.scale.y = 0;
-            rightEye.scale.y = 0;
+            // leftEye.scale.y = 0;
+            // rightEye.scale.y = 0;
 
             const offset = (Math.round(Math.random()*3));
             eyesContainer.y = -container.height/(3 + offset);
@@ -344,13 +344,14 @@ const Dropping2d = (props) => {
 
             eyesArray.push(eyesContainer);
 
-            const tl = gsap.timeline({delay:Math.random()*10+1, repeat:-1, repeatDelay:Math.random()*10+3});
-            tl.to(eyesContainer, 1, {x:`+=${Math.random()*120-60}`, y:`+=${Math.random()*120-60}`, ease:'power3.out'},'s');
-            tl.to([leftEye.scale, rightEye.scale], .1, {y:1, ease:'power3.inOut'},'s');
-            tl.to([leftEye.scale, rightEye.scale], .1, {y:0, ease:'power3.inOut'},'s');
-            tl.to([leftEye.scale, rightEye.scale], .1, {y:1, ease:'power3.inOut'},'s');
-            tl.to(eyesContainer, 1, {x:`+=${Math.random()*120-60}`, y:`+=${Math.random()*120-60}`, ease:'power2.inout'},'e');
-            tl.to([leftEye.scale, rightEye.scale], .2, {y:0, ease:'power3.inOut'},'e+='+Math.random()*5+2);
+            const tl = gsap.timeline({delay:Math.random()*6+1, repeat:-1, repeatDelay:Math.random()*7+3});
+            tl.to(eyesContainer, 1, {x:`+=${Math.random()*120-60}`, y:`+=${Math.random()*120-30}`, ease:'power3.out'},'s');
+            tl.to([leftEye.scale, rightEye.scale], .1, {y:0, ease:'power3.inOut'},1.1);
+            tl.to([leftEye.scale, rightEye.scale], .1, {y:1, ease:'power3.inOut'},1.23);
+            tl.to([leftEye.scale, rightEye.scale], .1, {y:0, ease:'power3.inOut'},1.33);
+            tl.to([leftEye.scale, rightEye.scale], .1, {y:1, ease:'power3.inOut'},1.43);
+            tl.to(eyesContainer, 1, {x:`+=${Math.random()*120-60}`, y:`+=${Math.random()*60-60}`, ease:'power2.inout'},1);
+            tl.to(eyesContainer, 1, {x:0, y:-container.height/(3 + offset), ease:'power2.inout'},Math.random()*3+5);
 
             eyesTween.push(tl);
         }

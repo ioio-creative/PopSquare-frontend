@@ -30,7 +30,7 @@ html, body{
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
-  letter-spacing: .2vw;
+  letter-spacing: .1vw;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;

@@ -24,14 +24,23 @@ const Game = props => {
     const endCounterFunc = useRef(null);
     const closeGameFunc = useRef(null);
 
-    // setMinute(timer.minutes);
-    // setSecond(timer.seconds);
+
 
     useEffect(()=>{
         let started = false;
         let timer = null;
         let oldSeconds = -1;
         const particlesAnim = new ParticlesAnim(shapesWrapElem.current);
+        let screenOrientation = null;
+        
+
+        const startCounter = () => {
+            timer = new Counter(min, sec, updateCounter, endCounter);
+            timer.start();
+            updateCounter();
+        }
+        startCounterFunc.current = {startCounter}
+
 
         const updateCounter = () => {
             if(timer.seconds !== oldSeconds){
@@ -56,22 +65,14 @@ const Game = props => {
         endCounterFunc.current = {endCounter};
 
 
-        const startCounter = () => {
-            timer = new Counter(min, sec, updateCounter, endCounter);
-            timer.start();
-            updateCounter();
-        }
-        startCounterFunc.current = {startCounter}
-
-
         const startGame = () => {
             started = true;
             gsap.set('#game *',{clearProps:true});
             gameElem.current.className = 'active';
             
             setTimeout(()=>{
-                limitedOfferOut();
-            },1000 * 50); // 50s
+                openingOut();
+            },1000 * 1); // 50s
         
             initSlider();
             initQuestion();
@@ -91,16 +92,12 @@ const Game = props => {
                 setTimeout(()=>{
                     gameElem.current.className = '';
                 },1000)
-
-                
-                // setTimeout(()=>{
-                //     dispatch({type:'START_GAME'});
-                // },3000)
             }
         }
         closeGameFunc.current = {closeGame};
         
-        const limitedOfferOut = () => {
+
+        const openingOut = () => {
             gsap.set('#game #limitedOffer', {autoAlpha:1, scale:1});
         
             const tl = gsap.timeline();
@@ -117,18 +114,25 @@ const Game = props => {
         
         const initSlider = () => {
             gsap.set('#buttons',{force3D:true, y:'-12vh'});
-            gsap.set('#texts',{force3D:true, y:'-28vh'});
+            gsap.set('#texts',{force3D:true, y:'-35vh'});
             gsap.set('#cart',{force3D:true, y:'-300%'});
             gsap.set('#product',{force3D:true, autoAlpha:1, y:'-60vh'});
             gsap.set('#product #rader',{autoAlpha:0});
             gsap.set('#character1', {force3D:true, x:'-50vw', scale:1});
-            gsap.set('#character1 .wrap', {force3D:true, scale:.56});
             gsap.set('#character2', {force3D:true, x:'50vw', scale:1});
-            gsap.set('#character2 .wrap', {force3D:true, scale:.2});
             gsap.set('#character1 .eyes', {force3D:true, x:'-50%', y:0, overwrite:true});
             gsap.set('#character2 .eyes', {force3D:true, x:'-50%', y:0});
             gsap.set('#texts div span', {force3D:true, autoAlpha:0, y:'-100%'});
             gsap.set('#texts div:nth-child(1) span', {force3D:true, autoAlpha:1, y:'0%'});
+
+            if(screenOrientation === 'horizontal'){
+                gsap.set('#character1 .wrap', {force3D:true, scale:.76});
+                gsap.set('#character2 .wrap', {force3D:true, scale:.27});
+            }
+            else{
+                gsap.set('#character1 .wrap', {force3D:true, scale:.56});
+                gsap.set('#character2 .wrap', {force3D:true, scale:.2});
+            }
         }
         
         let sliderInAnim = null;
@@ -168,7 +172,7 @@ const Game = props => {
             const tl = gsap.timeline();
             tl.to('#character2 .wrap', .6, {y:'0%', overwrite:true, ease:'power3.out'},'s');
             tl.to('#buttons', .6, {y:'-12vh', ease: 'power4.inOut'},'s');
-            tl.to('#texts', .6, {y:'-28vh', ease: 'power4.inOut'},'s+=.2');
+            tl.to('#texts', .6, {y:'-35vh', ease: 'power4.inOut'},'s+=.2');
             tl.to('#cart', .6, {y:'-300%', ease: 'power4.inOut'},'s+=.4');
             tl.to('#product', 1, {autoAlpha:0, ease: 'power1.inOut'},'s');
             tl.call(questionIn, null);
@@ -183,10 +187,19 @@ const Game = props => {
         
         const questionIn = () => {
             const tl = gsap.timeline();
-            tl.to('#character1 .wrap', 1, {scale:.75, ease: 'power3.inOut'},'s');
-            tl.to('#character2 .wrap', 1, {scale:.28, overwrite:true, ease: 'power3.inOut'},'s');
-            tl.to('#character1 .wrap', 1, {left:'-20vw',top:'19vh', ease: 'power3.inOut'},'s');
-            tl.to('#character2 .wrap', 1, {left:'-2.4vw',top:'26vh', className:'wrap stop', ease: 'power3.inOut'},'s');
+            
+            if(screenOrientation === 'horizontal'){
+                tl.to('#character1 .wrap', 1, {scale:1, ease: 'power3.inOut'},'s');
+                tl.to('#character2 .wrap', 1, {scale:.5, overwrite:true, ease: 'power3.inOut'},'s');
+                tl.to('#character1 .wrap', 1, {left:'-30vw',top:'27vh', ease: 'power3.inOut'},'s');
+                tl.to('#character2 .wrap', 1, {left:'-22.4vw',top:'34.6vh', className:'wrap stop', ease: 'power3.inOut'},'s');
+            }
+            else{
+                tl.to('#character1 .wrap', 1, {scale:.75, ease: 'power3.inOut'},'s');
+                tl.to('#character2 .wrap', 1, {scale:.28, overwrite:true, ease: 'power3.inOut'},'s');
+                tl.to('#character1 .wrap', 1, {left:'-20vw',top:'19vh', ease: 'power3.inOut'},'s');
+                tl.to('#character2 .wrap', 1, {left:'-2.4vw',top:'26vh', className:'wrap stop', ease: 'power3.inOut'},'s');
+            }
             tl.to(['#question #symbol', '#question #title span', '#question #tips'], .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},.2);
             tl.call(questionOut, null, 10);
         }
@@ -210,10 +223,19 @@ const Game = props => {
         
         const clockIn = () => {
             const tl = gsap.timeline();
-            tl.to('#character2 .eyes', .3, {x:'-100%', y:'0%', ease: 'power1.inOut'},'s');
-            tl.to('#character2 .wrap', 1, {scale:1, left:'50vw', top:'50vh', y:0, ease:'power2.inOut'},'s');
-            tl.to('#character1 .wrap', 1, {left:0, top:'-6vh', boxShadow:'0px 0px 0px rgba(0,0,0,0)', ease: 'elastic.out(1, 0.75)'},'b-=.6');
-            tl.to('#character1 .wrap', 1, {scale:1.55, ease: 'elastic.out(1, 0.3)'},'b-=.6');
+            
+            if(screenOrientation === 'horizontal'){
+                tl.to('#character2 .eyes', .3, {x:'-130%', y:'-70%', scale:.6, ease: 'power1.inOut'},'s');
+                tl.to('#character2 .wrap', 1, {scale:1.4, left:'50vw', top:'50vh', y:0, ease:'power2.inOut'},'s');
+                tl.to('#character1 .wrap', 1, {left:0, top:0, boxShadow:'0px 0px 0px rgba(0,0,0,0)', ease: 'elastic.out(1, 0.75)'},'b-=.6');
+                tl.to('#character1 .wrap', 1, {scale:2, ease: 'elastic.out(1, 0.3)'},'b-=.6');
+            }
+            else{
+                tl.to('#character2 .eyes', .3, {x:'-100%', y:'0%', ease: 'power1.inOut'},'s');
+                tl.to('#character2 .wrap', 1, {scale:1, left:'50vw', top:'50vh', y:0, ease:'power2.inOut'},'s');
+                tl.to('#character1 .wrap', 1, {left:0, top:'-6vh', boxShadow:'0px 0px 0px rgba(0,0,0,0)', ease: 'elastic.out(1, 0.75)'},'b-=.6');
+                tl.to('#character1 .wrap', 1, {scale:1.55, ease: 'elastic.out(1, 0.3)'},'b-=.6');
+            }
             tl.to('#character1 .eyes', .3, {autoAlpha:0, ease: 'power1.inOut'},'b-=.6');
             tl.to('#question #smallTitle span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'-=.6');
             tl.to('#clock .text', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},.3);
@@ -221,7 +243,7 @@ const Game = props => {
             tl.set('#pointer span', {clearProps:true});
             tl.call(()=>{dispatch({type:'START_COUNTER'})}, null, '-=.8');
         }
-
+        
         const animateToTimesup = () => {
             const tl = gsap.timeline();
             tl.to('#timesupBg', .8, {scale:25, ease: 'power3.out'},'s');
@@ -235,11 +257,14 @@ const Game = props => {
         const clockOut = () => {
             const tl = gsap.timeline();
             tl.to('#pointer span', .6, {scale:0, stagger:.1, ease: 'back.in(1.7)'},'s');
-            tl.to('#clock #timesup', .6, {autoAlpha:0, y:'100%', ease: 'power3.in'},'s');
+            tl.to('#clock #timesup', .3, {autoAlpha:0, y:'100%', ease: 'power3.in'},'s');
             tl.to('#timesupBg span', .8, {scale:1, ease: 'power3.out'},'s+=.1');
             tl.set('#timesupBg', {autoAlpha:0});
             tl.call(completeIn, null);
         }
+
+        ////////////////////////
+        ////////////////////////
 
         const initComplete = () => {
             gsap.set('#complete #title span', {force3D:true, scale:0});
@@ -250,8 +275,10 @@ const Game = props => {
 
         const completeIn = () => {
             const tl = gsap.timeline();
-            tl.set('#character1 .wrap', {className:'wrap lookdown'});
-            tl.to('#character2 .wrap', 1, {left:'23vw', top:'10vh', scale: .5, boxShadow:'0px 0px 0px rgba(0,0,0,0)', ease:'power3.inOut'},'s');
+            if(screenOrientation === 'horizontal')
+                tl.to('#character2 .wrap', 1, {left:'9vw', top:'20vh', scale: 1, boxShadow:'0px 0px 0px rgba(0,0,0,0)', ease:'power3.inOut'},'s');
+            else
+                tl.to('#character2 .wrap', 1, {left:'23vw', top:'10vh', scale: .5, boxShadow:'0px 0px 0px rgba(0,0,0,0)', ease:'power3.inOut'},'s');
             tl.to('#character1 .eyes', .3, {autoAlpha:1, overwrite:true, ease: 'power1.inOut'},'s');
             tl.to('#character1 .eyes', .6, {y:'500%', ease: 'power3.inOut'},1);
             tl.to('#character1 .eyes', 1, {y:'550%', repeat:-1, repeatDelay:3, yoyo:true, ease:'power3.inOut'},1.6);
@@ -264,6 +291,7 @@ const Game = props => {
             tl.to('#character2 #qrcode', .6, {scale:1, ease:'elastic.out(1, 0.75)'},2);
 
             //lose
+            // tl.to('#character2 .wrap', .6, {scale: .8, ease:'elastic.out(1, 0.75)'},1);
             // tl.to('#complete #lose span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
             // tl.to('#character2 .eyes', .6, {y:'600%', overwrite:true, ease: 'power3.inOut'},1);
 
@@ -274,6 +302,9 @@ const Game = props => {
                 particlesAnim.stop();
             },1000 * 25);
         }
+        
+        ////////////////////////
+        ////////////////////////
 
         const initNextOffer = () => {
             gsap.set('#nextOffer span', {force3D:true, autoAlpha:0, y:'-100%'});
@@ -283,9 +314,14 @@ const Game = props => {
         const nextOfferIn = () => {
             nextOfferInAnim = gsap.timeline();
             nextOfferInAnim.to('#character1 .eyes', .6, {x:'-100%', y:'0%', overwrite:true, ease: 'power3.inOut'},'s');
-            nextOfferInAnim.to('#character1 .wrap', 1, {top: '0', boxShadow:'1vh 0.3vh 0 #333', ease: 'power3.inOut'},'s');
-            nextOfferInAnim.to('#character2 .eyes', .6, {x:'-100%', y:'0%', ease: 'power3.inOut'},'s');
-            nextOfferInAnim.to('#character2 .wrap', 1, {top: '18.5vh', boxShadow:'4vh 2.5vh 0 #333', scale: .3, ease: 'power3.inOut'},'s');
+            nextOfferInAnim.to('#character2 .eyes', .6, {x:'-100%', y:'0%', scale:1, ease: 'power3.inOut'},'s');
+            if(screenOrientation === 'horizontal'){
+                nextOfferInAnim.to('#character1 .wrap', 1, {left:'25vw', top: '7vh', boxShadow:'1vh 0.3vh 0 #333', ease: 'power3.inOut'},'s');
+                nextOfferInAnim.to('#character2 .wrap', 1, {left:'37vw', top: '31vh', boxShadow:'4vh 2.5vh 0 #333', scale: .4, ease: 'power3.inOut'},'s');
+            }else{
+                nextOfferInAnim.to('#character1 .wrap', 1, {top: '0', boxShadow:'1vh 0.3vh 0 #333', ease: 'power3.inOut'},'s');
+                nextOfferInAnim.to('#character2 .wrap', 1, {top: '18.5vh', boxShadow:'4vh 2.5vh 0 #333', scale: .3, ease: 'power3.inOut'},'s');
+            }
             nextOfferInAnim.to('#nextOffer span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
 
             //win
@@ -293,8 +329,9 @@ const Game = props => {
             nextOfferInAnim.to('#character2 .eyes', .3, {autoAlpha:1, ease: 'power1.inOut'},'s');
             nextOfferInAnim.to('#character2 #qrcode', .6, {scale:0, ease:'power3.out'},'s');
 
-            //lose
-            // tl.to('#complete #lose span', .3, {autoAlpha:0, y:'100%', stagger:.1, ease: 'power3.in'},'s');
+            // lose
+            // nextOfferInAnim.to('#complete #lose span', .3, {autoAlpha:0, y:'100%', stagger:.1, ease: 'power3.in'},'s');
+
             nextOfferInAnim.call(nextOfferOut, null, 15);
         }
         
@@ -304,6 +341,9 @@ const Game = props => {
             tl.to('#nextOffer span', .3, {autoAlpha:0, y:'-100%', stagger:.1, ease: 'power3.in'},'s');
             tl.call(seeyouIn, null)
         }
+        
+        ////////////////////////
+        ////////////////////////
 
         const initSeeyou = () => {
             gsap.set('#seeyou span', {force3D:true, autoAlpha:0, y:'-100%'});
@@ -315,23 +355,25 @@ const Game = props => {
             tl.to('#seeyou span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
             tl.to('#character1 .eyes', .6, {x:'100%', y:'800%', ease: 'power3.inOut'},'s');
             tl.to('#character1 .wrap', .3, {boxShadow:'0px 0px 0 rgba(0,0,0,0)', ease: 'power3.inOut'},'s');
-            tl.to('#character2 .wrap', 1, {scale:1, left:'50vw', top:'50vh', ease:'power2.inOut'},'s');
+            if(screenOrientation === 'horizontal'){
+                tl.to('#character2 .wrap', 1, {scale:1.5, left:'50vw', top:'50vh', ease:'power2.inOut'},'s');
+            }
+            else{
+                tl.to('#character2 .wrap', 1, {scale:1, left:'50vw', top:'50vh', ease:'power2.inOut'},'s');
+            }
             tl.to('#seeyouBg', .8, {scale:25, ease: 'power3.out'},'s');
             tl.call(()=>dispatch({type:'END_GAME'}), null, 15);
         }
 
-        // setTimeout(()=>{
-        //     dispatch({type:'START_GAME'});
-        // },3000);
-
-
 
 
         const onResize = () => {
-            if(window.innerWidth > window.innerHeight)
-                setSize('horizontal');
-            else
-                setSize('vertical');
+            if(window.innerWidth > window.innerHeight){
+                screenOrientation = 'horizontal';
+            }else{
+                screenOrientation = 'vertical';
+            }
+            setSize(screenOrientation);
         }
         onResize();
         
@@ -443,11 +485,9 @@ const Game = props => {
                     <div id="tips">You will have 1 min to find it!</div>
                 </div>
                 <div id="clock">
-                    <div id="time">
-                        <div className="text">{minute < 10 ? `0${minute}` : minute }:{second < 10 ? `0${second}` : second }</div>
-                        <div id="timesup">Time's Up!</div>
-                    </div>
+                    <div id="time" className="text">{minute < 10 ? `0${minute}` : minute }:{second < 10 ? `0${second}` : second }</div>
                     <div className="text">left</div>
+                    <div id="timesup">Time's Up!</div>
                 </div>
                 <div id="timesupBg"><span></span></div>
                 <div id="complete" className="fix">

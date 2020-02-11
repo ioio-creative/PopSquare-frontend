@@ -350,7 +350,7 @@ const Game = props => {
             window.removeEventListener('resize',onResize);
             window.removeEventListener("keydown", keyDown);
         }
-    },[]);
+    },[dispatch]);
     
     
     useEffect(()=>{

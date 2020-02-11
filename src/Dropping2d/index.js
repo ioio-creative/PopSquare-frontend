@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Matter from 'matter-js';
 import gsap from 'gsap';
 // import LoadingScene from './LoadingScene';
@@ -59,21 +59,23 @@ const Dropping2d = (props) => {
 
     useEffect(()=>{
         let app = undefined;
-        let objects = [];
-        let graphicsArray = [];
-        let detailsArray = [];
-        let eyesArray = [];
+        const objects = [];
+        const graphicsArray = [];
+        const detailsArray = [];
+        const eyesArray = [];
         const shapes = [];
         const colors = ['3e5bb7', 'fa8b43', '498e8b', 'ea7da4'];
+        const eyesTween = [];
+        const productDetailsTween = [];
         let started = false;
         let paused = false;
         let timeScaleTarget = 1;
-        let group = -1;
-        const eyesTween = [];
-        const productDetailsTween = [];
+        const group = -1;
         let page = 'loading';
         let end = new Date();
-        const images = [
+        const rankingDataLength = 2; // from data
+        const a = {b:0}
+        const images = [ // from data
             {pID:1, src:'https://as1.ftcdn.net/jpg/02/12/43/28/500_F_212432820_Zf6CaVMwOXFIylDOEDqNqzURaYa7CHHc.jpg'}
         ]
         // module aliases
@@ -119,7 +121,6 @@ const Dropping2d = (props) => {
             const wallLeft = Bodies.rectangle(-100, wh/2, 200, wh, { ...params });
             const wallRight = Bodies.rectangle(ww+100, wh/2, 200, wh, { ...params });
             const ground = Bodies.rectangle(ww/2, wh+100, ww, 200, { ...params });
-            // ground.label = 'ground';
 
             World.add(engine.world, [top, wallLeft, wallRight, ground]);
         }
@@ -513,20 +514,6 @@ const Dropping2d = (props) => {
                 productDetailsTween[i] = null;
                 productDetailsTween.splice(i,1);
             }
-
-            // while(eyesArray[i].children[0]){
-            //     eyesArray[i].removeChild(eyesArray[i].children[0])
-            // }
-            // while(graphicsArray[i].children[0]){
-            //     graphicsArray[i].removeChild(graphicsArray[i].children[0])
-            // }
-            // if(detailsArray[i])
-            //     while(detailsArray[i].children[0]){
-            //         detailsArray[i].removeChild(detailsArray[i].children[0])
-            //     }
-            // while(shapes[i].children[0]){
-            //     shapes[i].removeChild(shapes[i].children[0])
-            // }
             
             app.stage.removeChild(shapes[i]);
             
@@ -648,56 +635,8 @@ const Dropping2d = (props) => {
         Events.on(engine, 'afterUpdate', function() {
             engine.timing.timeScale += (timeScaleTarget - engine.timing.timeScale) * 0.05;
         });
-           
 
-        const initMatter = () => {
-            addWalls();
-            addMouseEvent();
-            // run the engine
-            Engine.run(engine);
-            // run the renderer
-            // Render.run(render);
-        }
 
-        const initPIXI = () => {
-            // setTimer(40);
-            const update = () => {
-                if(!paused){
-                    updateTimer();
-
-                    for(let i=0; i<objects.length; i++){
-                        const obj = objects[i];
-
-                        shapes[i].x = obj.position.x;
-                        shapes[i].y = obj.position.y;
-                        graphicsArray[i].rotation = obj.angle;
-                        
-                        if(obj.position.y > wh+graphicsArray[i].height){
-                            removeObject(i);
-                        }
-                    }
-                }
-            }
-            const ticker = PIXI.Ticker.shared;
-            ticker.add(() => {
-                update();
-            });
-            
-            app = new PIXI.Application({
-                width: window.innerWidth, 
-                height: window.innerHeight,
-                // resolution: 1,
-                antialias:true,
-                autoResize: true,
-                transparent: true
-            });
-            sceneElem.current.prepend(app.view);
-
-            preloadImage();
-        }
-
-        const rankingDataLength = 2;
-        const a = {b:0}
         const rankingAnimtion = () => {
             const spans = document.querySelectorAll('#ranking #productName span');
             const divs = document.querySelectorAll('#ranking #list li div');
@@ -785,6 +724,55 @@ const Dropping2d = (props) => {
             // list bottom line
             gsap.to('#ranking #list li span', 1, {x:'100%',stagger:.1, ease:'power3.inOut'});
         }
+           
+
+        const initMatter = () => {
+            addWalls();
+            addMouseEvent();
+            // run the engine
+            Engine.run(engine);
+            // run the renderer
+            // Render.run(render);
+        }
+
+        const initPIXI = () => {
+            // setTimer(40);
+            const update = () => {
+                if(!paused){
+                    updateTimer();
+
+                    for(let i=0; i<objects.length; i++){
+                        const obj = objects[i];
+
+                        shapes[i].x = obj.position.x;
+                        shapes[i].y = obj.position.y;
+                        graphicsArray[i].rotation = obj.angle;
+                        
+                        if(obj.position.y > wh+graphicsArray[i].height){
+                            removeObject(i);
+                        }
+                    }
+                }
+            }
+            const ticker = PIXI.Ticker.shared;
+            ticker.add(() => {
+                update();
+            });
+            
+            app = new PIXI.Application({
+                width: window.innerWidth, 
+                height: window.innerHeight,
+                // resolution: 1,
+                antialias:true,
+                autoResize: true,
+                transparent: true
+            });
+            sceneElem.current.prepend(app.view);
+
+            preloadImage();
+        }
+
+        
 
         const explosion = function() {
             timeScaleTarget = 0.01;

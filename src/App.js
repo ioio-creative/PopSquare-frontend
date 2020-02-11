@@ -4,7 +4,7 @@ import Dropping2d from './Dropping2d';
 import Dropping3d from './Dropping3d';
 import Particles from './Particles';
 import Summary from './Summary';
-import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
+import { Router, Route, Switch } from 'react-router-dom';
 import {createBrowserHistory} from 'history/';
 
 import './index.css';

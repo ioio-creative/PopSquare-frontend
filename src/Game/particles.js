@@ -54,7 +54,7 @@ const ParticlesAnim = function(elem){
             let particle = this.particles[i];
             particle.draw();
 
-            if(particle.x < -100 && particle.x > window.innerWidth/2+100|| particle.y > window.innerHeight/2 + 100){
+            if((particle.x < -100 && particle.x > window.innerWidth/2+100) || (particle.y > window.innerHeight/2 + 100)){
                 particle.elem.remove();
                 particle = null;
                 this.particles.splice(i,1);

@@ -144,9 +144,9 @@ const Dropping2d = (props) => {
 
 
 
-        const createObject = (isloadingObject = false) => {
+        const createObject = (id, isloadingObject = false) => {
             const num = Math.round(Math.random() * 2);
-            const id = Math.round(Math.random()*2);
+            const pid = id;
             let _obj = null;
 
             if(num === 0){
@@ -159,10 +159,10 @@ const Dropping2d = (props) => {
                 _obj = createShape('halfCircle', isloadingObject);
             }
 
-            _obj.productID = id;
+            _obj.productID = pid;
 
             objects.push(_obj);
-            if(objects.length>4) removeObject(0);
+            if(objects.length > 4) removeObject(0);
 
             World.add(engine.world, _obj);
         };
@@ -535,10 +535,10 @@ const Dropping2d = (props) => {
 
         const reset = () => {
             started = false;
-            createObject(true);
-            createObject(true);
-            createObject(true);
-            createObject(true);
+            createObject(-1, true);
+            createObject(-1, true);
+            createObject(-1, true);
+            createObject(-1, true);
             timeScaleTarget = 1;
             pick.current.className = 'text';
             up.current.className = 'text';
@@ -808,7 +808,7 @@ const Dropping2d = (props) => {
                             started = true;
                             removeAllObjects();
                         }
-                        createObject();
+                        createObject(Math.round(Math.random()*2));
                         pick.current.className = 'text active';
                         up.current.className = 'text active';
                         bg.current.className = 'active';

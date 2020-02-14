@@ -2,13 +2,19 @@ import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import Matter from 'matter-js';
 import gsap from 'gsap';
+import axios from 'axios';
 // import LoadingScene from './LoadingScene';
 // import webSocket from 'socket.io-client';
 // import { Redirect } from 'react-router-dom';
 import * as PIXI from 'pixi.js';
 import './style.scss';
+import './pathseg';
 import Game from '../Game';
 import '../Game/style.scss';
+import svg1 from './images/pop.svg';
+import svg2 from './images/mark.svg';
+import svg1_2 from './images/pop2.svg';
+import svg2_2 from './images/mark2.svg';
 import decomp from 'poly-decomp';
 window.decomp = decomp;
 
@@ -67,6 +73,10 @@ const Dropping2d = (props) => {
         const colors = ['3e5bb7', 'fa8b43', '498e8b', 'ea7da4'];
         const eyesTween = [];
         const productDetailsTween = [];
+        const popSvgObjects = [];
+        const popSvgGraphics = [];
+        const popVertexSets = [];
+        const markVertexSets = [];
         let started = false;
         let paused = false;
         let timeScaleTarget = 1;
@@ -89,6 +99,7 @@ const Dropping2d = (props) => {
             Common = Matter.Common,
             Mouse = Matter.Mouse,
             MouseConstraint = Matter.MouseConstraint,
+            Svg = Matter.Svg,
             Vertices = Matter.Vertices;
         
         const ww = window.innerWidth,
@@ -111,7 +122,7 @@ const Dropping2d = (props) => {
                 wireframes: true,
                 background: 'transparent',
                 wireframeBackground: 'transparent',
-                showAngleIndicator: true
+                // showAngleIndicator: true
             }
         });
 
@@ -163,13 +174,14 @@ const Dropping2d = (props) => {
 
             objects.push(_obj);
             if(objects.length > 4) removeObject(0);
+            if(popSvgObjects.length > 2*2){ removePopObjects(0); }
 
             World.add(engine.world, _obj);
         };
         createObjectFunc.current = {createObject};
 
         const createShape = (shape, isloadingObject) => {
-            const x = Math.max(ww*.3, Math.min(ww*.7, Math.random() * ww));
+            const x = ww*.5;//Math.max(ww*.3, Math.min(ww*.7, Math.random() * ww));
             const y = 200;
             const radius = Math.round(Math.random() * 40 + (ww > wh ? wh*.1 : ww*.1));
             const params = { restitution: .5, collisionFilter: { group: 0 } };
@@ -210,8 +222,10 @@ const Dropping2d = (props) => {
 
             if(isloadingObject)
                 createGraphicWithShadow(graphics);
-            else
+            else{
                 createGraphicWithInfo(graphics);
+                addPop();
+            }
 
             return body;
         }
@@ -458,6 +472,53 @@ const Dropping2d = (props) => {
             }
         }
 
+        
+        const preloadSvg = () => {
+            axios.get(svg1).then(function (response) {
+                const tempDiv = document.createElement('temp');
+                tempDiv.innerHTML = response.data;
+                const paths = tempDiv.querySelectorAll('path');
+
+                for(let i=0; i<paths.length; i++){
+                    popVertexSets.push(Svg.pathToVertices(paths[i], 30));
+                }
+            });
+            axios.get(svg2).then(function (response) {
+                const tempDiv = document.createElement('temp');
+                tempDiv.innerHTML = response.data;
+                const paths = tempDiv.querySelectorAll('path');
+
+                for(let i=0; i<paths.length; i++){
+                    markVertexSets.push(Svg.pathToVertices(paths[i], 30));
+                }
+            });
+        }
+        
+        const addPop = () => {
+            const params = { restitution: .5, collisionFilter: { group: 0 } }
+            const popObj = Bodies.fromVertices(ww*.45, 200, popVertexSets, params, true)
+            const markObj = Bodies.fromVertices(ww*.85, 200, markVertexSets, params, true)
+
+            popSvgObjects.push(popObj);
+            popSvgObjects.push(markObj);
+            World.add(engine.world, popObj);
+            World.add(engine.world, markObj);
+
+            createPopGraphics(svg1_2, 0.485, .45);
+            createPopGraphics(svg2_2, 0.5, .47);
+        }
+
+        const createPopGraphics = (svg, anchorX, anchorY) => {
+            const texture = new PIXI.Texture.from(svg);
+            const pop = new PIXI.Sprite(texture);
+            pop.anchor.set(anchorX, anchorY);
+            popSvgGraphics.push(pop);
+            app.stage.addChild(pop);
+            
+            gsap.set(pop.scale, {x:0, y:0});
+            gsap.to(pop.scale, .6, {x:1, y:1, ease:'elastic.out(1, 0.6)'});
+        }
+
         const removeSpecificObject = (pID) => {
             let needToBeRemoved = [];
             for(let i=0; i<objects.length; i++){
@@ -531,6 +592,30 @@ const Dropping2d = (props) => {
             graphicsArray.splice(i,1);
             detailsArray.splice(i,1);
             shapes.splice(i,1);
+        }
+
+        const removePopObjects = (i) => {
+            const idx = i*2;
+
+            if(popSvgObjects[idx]){
+                Composite.remove(engine.world, popSvgObjects[idx]);
+                Composite.remove(engine.world, popSvgObjects[idx+1]);
+            }
+
+            if(popSvgGraphics[idx]){
+                app.stage.removeChild(popSvgGraphics[idx]);
+                app.stage.removeChild(popSvgGraphics[idx+1]);
+            }
+
+            popSvgObjects[idx] = null;
+            popSvgObjects[idx+1] = null;
+            popSvgGraphics[idx] = null;
+            popSvgGraphics[idx+1] = null;
+
+            popSvgObjects.splice(idx+1,1);
+            popSvgObjects.splice(idx,1);
+            popSvgGraphics.splice(idx+1,1);
+            popSvgGraphics.splice(idx,1);
         }
 
         const reset = () => {
@@ -725,11 +810,30 @@ const Dropping2d = (props) => {
             // list bottom line
             gsap.to('#ranking #list li span', 1, {x:'100%',stagger:.1, ease:'power3.inOut'});
         }
-           
+
+        
+        const explosion = function() {
+            timeScaleTarget = 0.01;
+            var bodies = Composite.allBodies(engine.world);
+    
+            for (var i = 0; i < bodies.length; i++) {
+                var body = bodies[i];
+    
+                if (!body.isStatic) {
+                    var forceMagnitude = .1 * body.mass;
+    
+                    Body.applyForce(body, body.position, {
+                        x: (forceMagnitude + Common.random() * forceMagnitude) * Common.choose([1, -1]), 
+                        y: -forceMagnitude + Common.random() * -forceMagnitude
+                    });
+                }
+            }
+        };
+
 
         const initMatter = () => {
             addWalls();
-            addMouseEvent();
+            // addMouseEvent();
             // run the engine
             Engine.run(engine);
             // run the renderer
@@ -753,6 +857,13 @@ const Dropping2d = (props) => {
                             removeObject(i);
                         }
                     }
+
+                    for(let i=0; i<popSvgObjects.length; i++){
+                        const obj = popSvgObjects[i];
+                        popSvgGraphics[i].x = obj.position.x;
+                        popSvgGraphics[i].y = obj.position.y;
+                        popSvgGraphics[i].rotation = obj.angle;
+                    }
                 }
             }
             const ticker = PIXI.Ticker.shared;
@@ -771,27 +882,11 @@ const Dropping2d = (props) => {
             sceneElem.current.prepend(app.view);
 
             preloadImage();
+            preloadSvg();
         }
 
         
 
-        const explosion = function() {
-            timeScaleTarget = 0.01;
-            var bodies = Composite.allBodies(engine.world);
-    
-            for (var i = 0; i < bodies.length; i++) {
-                var body = bodies[i];
-    
-                if (!body.isStatic) {
-                    var forceMagnitude = .1 * body.mass;
-    
-                    Body.applyForce(body, body.position, {
-                        x: (forceMagnitude + Common.random() * forceMagnitude) * Common.choose([1, -1]), 
-                        y: -forceMagnitude + Common.random() * -forceMagnitude
-                    });
-                }
-            }
-        };
         
         // handle key down
         const keyDown = (e) => {

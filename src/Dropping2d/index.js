@@ -97,8 +97,8 @@ const Dropping2d = (props) => {
             Bodies = Matter.Bodies,
             Composite = Matter.Composite,
             Common = Matter.Common,
-            Mouse = Matter.Mouse,
-            MouseConstraint = Matter.MouseConstraint,
+            // Mouse = Matter.Mouse,
+            // MouseConstraint = Matter.MouseConstraint,
             Svg = Matter.Svg,
             Vertices = Matter.Vertices;
         
@@ -113,7 +113,7 @@ const Dropping2d = (props) => {
         engine.world.gravity.y = 5;
 
         // create a renderer
-        const render = Render.create({
+        Render.create({
             // element: tempSceneElem.current,
             engine: engine,
             options:{
@@ -138,19 +138,19 @@ const Dropping2d = (props) => {
         
 
         // add mouse control
-        const addMouseEvent = () => {
-            const mouse = Mouse.create(render.canvas),
-            mouseConstraint = MouseConstraint.create(engine, {
-                mouse: mouse,
-                constraint: {
-                    stiffness: 0.2,
-                    render: {
-                        visible: false
-                    }
-                }
-            });
-            World.add(engine.world, mouseConstraint);
-        }
+        // const addMouseEvent = () => {
+        //     const mouse = Mouse.create(render.canvas),
+        //     mouseConstraint = MouseConstraint.create(engine, {
+        //         mouse: mouse,
+        //         constraint: {
+        //             stiffness: 0.2,
+        //             render: {
+        //                 visible: false
+        //             }
+        //         }
+        //     });
+        //     World.add(engine.world, mouseConstraint);
+        // }
 
 
 
@@ -182,7 +182,7 @@ const Dropping2d = (props) => {
 
         const createShape = (shape, isloadingObject) => {
             const x = ww*.5;//Math.max(ww*.3, Math.min(ww*.7, Math.random() * ww));
-            const y = 200;
+            const y = 300;
             const radius = Math.round(Math.random() * 40 + (ww > wh ? wh*.1 : ww*.1));
             const params = { restitution: .5, collisionFilter: { group: 0 } };
             const r = radius * 2;
@@ -496,8 +496,8 @@ const Dropping2d = (props) => {
         
         const addPop = () => {
             const params = { restitution: .5, collisionFilter: { group: 0 } }
-            const popObj = Bodies.fromVertices(ww*.45, 200, popVertexSets, params, true)
-            const markObj = Bodies.fromVertices(ww*.85, 200, markVertexSets, params, true)
+            const popObj = Bodies.fromVertices(ww*.45, 300, popVertexSets, params, true)
+            const markObj = Bodies.fromVertices(ww*.85, 300, markVertexSets, params, true)
 
             popSvgObjects.push(popObj);
             popSvgObjects.push(markObj);
@@ -516,7 +516,7 @@ const Dropping2d = (props) => {
             app.stage.addChild(pop);
             
             gsap.set(pop.scale, {x:0, y:0});
-            gsap.to(pop.scale, .6, {x:1, y:1, ease:'elastic.out(1, 0.6)'});
+            gsap.to(pop.scale, 1, {x:1, y:1, ease:'elastic.out(1, 0.3)'});
         }
 
         const removeSpecificObject = (pID) => {

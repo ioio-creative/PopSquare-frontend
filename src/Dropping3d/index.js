@@ -16,7 +16,7 @@ const Dropping3d = (props) => {
             let scene, camera, renderer;
             const bgColor = '#0547bd';
             const colors = [0x50feff, 0x41fe93, 0xb1fe39, 0xfef74a, 0xfe4ea5];
-            const numOfBoxes = 1;
+            // const numOfBoxes = 1;
             const bodies = [];
             // let groundCM;
             const startTime = new Date();

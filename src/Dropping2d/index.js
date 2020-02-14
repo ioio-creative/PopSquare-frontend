@@ -543,6 +543,7 @@ const Dropping2d = (props) => {
             pick.current.className = 'text';
             up.current.className = 'text';
             bg.current.className = '';
+            counter = 0;
         }
 
         const setTimer = (seconds) => {

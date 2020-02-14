@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import gsap from "gsap";
 import QRCode from "qrcode.react";
-// import { startGame } from './function';
 import Counter from './counter';
 import ParticlesAnim from './particles';
 
@@ -72,7 +71,7 @@ const Game = props => {
             
             setTimeout(()=>{
                 openingOut();
-            },1000 * 1); // 50s
+            },1000 * 5); // 50s
         
             initSlider();
             initQuestion();

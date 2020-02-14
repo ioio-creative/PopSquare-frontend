@@ -174,7 +174,7 @@ const Dropping2d = (props) => {
 
             objects.push(_obj);
             if(objects.length > 4) removeObject(0);
-            if(popSvgObjects.length > 2*2){ removePopObjects(0); }
+            if(popSvgObjects.length > 2*2){ removePopObject(0); }
 
             World.add(engine.world, _obj);
         };
@@ -540,6 +540,9 @@ const Dropping2d = (props) => {
             for(let i=objects.length-1; i>=0; i--){
                 removeObject(i);
             }
+            for(let i=popSvgObjects.length/2-1; i>=0; i--){
+                removePopObject(i);
+            }
         }
         removeAllObjectsFunc.current = {removeAllObjects}
 
@@ -594,7 +597,7 @@ const Dropping2d = (props) => {
             shapes.splice(i,1);
         }
 
-        const removePopObjects = (i) => {
+        const removePopObject = (i) => {
             const idx = i*2;
 
             if(popSvgObjects[idx]){

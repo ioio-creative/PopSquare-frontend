@@ -26,29 +26,29 @@ const Game = props => {
     const stopCounterFunc = useRef(null);
     const closeGameFunc = useRef(null);
     const isCountingFunc = useRef(null);
+    const resetEnabledFunc = useRef(null);
     
     const [socket,setSocket] = useState(null);
 
     useEffect(()=>{
         let tempGameData = null;
         let win = false;
-        let started = false;
-        const gameStatus = (isEnd) => {
-            if(isEnd === false){
+        let enabled = false;
+        
+        const gameStart = (data) => {
+            if(!enabled){
                 win = false;
-                started = true;
+                enabled = true;
+                dispatch({type:'START_GAME'});
+                tempGameData = data;
+                dispatch({type:'UPDATE_GAMEDATA', gameData: tempGameData});
                 dispatch({type:'START_GAME'});
             }
-        }
-
-        const gameData = (data) => {
-            tempGameData = data;
-            dispatch({type:'UPDATE_GAMEDATA', gameData: tempGameData});
         }
         
         const whenPickUp = (data) => {
             // win
-            if(!win && started && isCountingFunc.current.isCounting()){
+            if(!win && enabled && isCountingFunc.current.isCounting()){
                 if(tempGameData.answer === data.productId){
                     stopCounterFunc.current.stopCounter();
                     win = true;
@@ -56,9 +56,13 @@ const Game = props => {
             }
         }
 
+        const resetEnabled = () => {
+            enabled = false;
+        }
+        resetEnabledFunc.current = {resetEnabled}
+
         if(socket){
-            socket.on('GAMEEND', gameStatus);
-            socket.on('GAME', gameData);
+            socket.on('GAME', gameStart);
             socket.on('PICKUP', whenPickUp);
         }else{
             setSocket(webSocket('http://popsquare-server.herokuapp.com:80/'));
@@ -66,7 +70,6 @@ const Game = props => {
 
         return ()=>{
             if(socket){
-                socket.off('GAMEEND', gameStatus);
                 socket.off('GAME', gameData);
                 socket.off('PICKUP', whenPickUp);
             }
@@ -159,7 +162,9 @@ const Game = props => {
                 gameElem.current.className = 'active out';
                 setTimeout(()=>{
                     gameElem.current.className = '';
-                },1000)
+                },1000);
+
+                resetEnabledFunc.current.resetEnabled();
             }
         }
         closeGameFunc.current = {closeGame};

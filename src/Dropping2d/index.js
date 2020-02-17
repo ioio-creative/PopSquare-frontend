@@ -6,7 +6,6 @@ import axios from 'axios';
 import webSocket from 'socket.io-client';
 import * as PIXI from 'pixi.js';
 import Game from '../Game';
-import { isInDevMode } from '../globalFunc';
 import './style.scss';
 import './pathseg';
 import '../Game/style.scss';
@@ -14,7 +13,6 @@ import svg1 from './images/pop.svg';
 import svg2 from './images/mark.svg';
 import svg1_2 from './images/pop2.svg';
 import svg2_2 from './images/mark2.svg';
-import placehold from './images/placehold.png';
 import decomp from 'poly-decomp';
 window.decomp = decomp;
 

@@ -1,4 +1,8 @@
-import {useRef , useEffect} from 'react';
+import React, {useRef , useEffect} from 'react';
+
+export const isInDevMode = () => { 
+  return '_self' in React.createElement('div');
+}
 
 //
 //	styling console.log

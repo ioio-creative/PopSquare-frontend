@@ -1,22 +1,23 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import Matter from 'matter-js';
 import gsap from 'gsap';
 import axios from 'axios';
-// import LoadingScene from './LoadingScene';
-// import webSocket from 'socket.io-client';
-// import { Redirect } from 'react-router-dom';
+import webSocket from 'socket.io-client';
 import * as PIXI from 'pixi.js';
+import Game from '../Game';
+import { isInDevMode } from '../globalFunc';
 import './style.scss';
 import './pathseg';
-import Game from '../Game';
 import '../Game/style.scss';
 import svg1 from './images/pop.svg';
 import svg2 from './images/mark.svg';
 import svg1_2 from './images/pop2.svg';
 import svg2_2 from './images/mark2.svg';
+import placehold from './images/placehold.png';
 import decomp from 'poly-decomp';
 window.decomp = decomp;
+
 
 const Dropping2d = (props) => {
     const gameStarted = useSelector(state => state.gameStarted);
@@ -27,40 +28,50 @@ const Dropping2d = (props) => {
     const bg = useRef(null);
     const ranking = useRef(null);
     const rankingBg = useRef(null);
+    const removeSpecificObjectFunc = useRef(null);
     const removeAllObjectsFunc = useRef(null);
-    const createObjectFunc = useRef(null);
+    const addObjectFunc = useRef(null);
     const startTimerFunc = useRef(null);
     const stopTimerFunc = useRef(null);
+    const preloadImageFunc = useRef(null);
     
-    // const [socket,setSocket] = useState(null);
+    const [socket,setSocket] = useState(null);
 
 
-    // useEffect(()=>{
-    //     const addObject = (message) => {
-    //         console.log(message);
-    //         createObject();
-    //     }
+    useEffect(()=>{
+        let loaded = false;
 
-    //     if(socket){
-    //         socket.emit('changePage', 'Redirect to summary page');
-    //         socket.on('changePage', (message)=>{ 
-    //             setTimeout(()=>{
-    //                 console.log(message); 
-    //                 // setIsRedirect(true);
-    //             },3000);
-    //         });
+        const initProductData = (data) => {
+            if(!loaded){
+                loaded = true;
+                preloadImageFunc.current.preloadImage(data.data);
+            }
+        }
 
-    //         socket.on('addObject', addObject);
-    //     }else{
-    //         setSocket(webSocket('http://localhost:3333'));
-    //     }
+        const whenPickUp = (data) => {
+            addObjectFunc.current.addObject(data.productId, data.productName, data.carId);
+        }
 
-    //     return ()=>{
-    //         if(socket){
-    //             socket.off('addObject', addObject);
-    //         }
-    //     }
-    // },[socket,createObject])
+        const whenPutDown = (data) => {
+            removeSpecificObjectFunc.current.removeSpecificObject(data.productId);
+        }
+
+        if(socket){
+            socket.on('productData', initProductData);
+            socket.on('PICKUP', whenPickUp);
+            socket.on('PUTDOWN', whenPutDown);
+        }else{
+            setSocket(webSocket('http://popsquare-server.herokuapp.com:80/'));
+        }
+
+        return ()=>{
+            if(socket){
+                socket.off('productData', whenPickUp);
+                socket.off('PICKUP', whenPickUp);
+                socket.off('PUTDOWN', whenPutDown);
+            }
+        }
+    },[socket])
 
 
     useEffect(()=>{
@@ -70,7 +81,7 @@ const Dropping2d = (props) => {
         const detailsArray = [];
         const eyesArray = [];
         const shapes = [];
-        const colors = ['3e5bb7', 'fa8b43', '498e8b', 'ea7da4'];
+        const colors = ['3e5bb7', 'fa8b43', '498e8b', 'ea7da4', '999999'];
         const eyesTween = [];
         const productDetailsTween = [];
         const popSvgObjects = [];
@@ -78,16 +89,16 @@ const Dropping2d = (props) => {
         const popVertexSets = [];
         const markVertexSets = [];
         let started = false;
-        let paused = false;
+        let paused = false; // when game started
+        let disablePick = false;
         let timeScaleTarget = 1;
         const group = -1;
         let page = 'loading';
         let end = new Date();
         const rankingDataLength = 2; // from data
         const a = {b:0}
-        const images = [ // from data
-            {pID:1, src:'https://as1.ftcdn.net/jpg/02/12/43/28/500_F_212432820_Zf6CaVMwOXFIylDOEDqNqzURaYa7CHHc.jpg'}
-        ]
+
+
         // module aliases
         const Engine = Matter.Engine,
             Render = Matter.Render,
@@ -153,24 +164,42 @@ const Dropping2d = (props) => {
         // }
 
 
+        const addObject = (_productID, _productName, _cartName) => {
+            if(!paused && !disablePick){
+                if(!started){
+                    started = true;
+                    removeAllObjects();
+                }
+                createObject(_productID, _productName, _cartName);
+                pick.current.className = 'text active';
+                up.current.className = 'text active';
+                bg.current.className = 'active';
+            }
+        }
+        addObjectFunc.current = {addObject};
 
 
-        const createObject = (id, isloadingObject = false) => {
+        const createObject = (_productID = -1, _productName, _cartName) => {
             const num = Math.round(Math.random() * 2);
-            const pid = id;
             let _obj = null;
 
-            if(num === 0){
-                _obj = createShape('circle', isloadingObject);
+            if(_cartName === 'car1' || (_productID === -1 && num === 0)){
+                _obj = createShape('circle', colors[0], _productID, _productName, _cartName);
             }
-            else if(num === 1){
-                _obj = createShape('triangle', isloadingObject);
+            else if(_cartName === 'car2' || (_productID === -1 && num === 1)){
+                _obj = createShape('triangle', colors[1], _productID, _productName, _cartName);
             }
-            else if(num === 2){
-                _obj = createShape('halfCircle', isloadingObject);
+            else if(_cartName === 'car3' || (_productID === -1 && num === 2)){
+                _obj = createShape('halfCircle', colors[2], _productID, _productName, _cartName);
+            }
+            else if(_cartName === 'car4' || (_productID === -1 && num === 2)){
+                _obj = createShape('smallCircle', colors[3], _productID, _productName, _cartName);
+            }
+            else if(_cartName === 'car5' || (_productID === -1 && num === 2)){
+                _obj = createShape('halfCircle', colors[4], _productID, _productName, _cartName);
             }
 
-            _obj.productID = pid;
+            _obj.productID = _productID || num;
 
             objects.push(_obj);
             if(objects.length > 4) removeObject(0);
@@ -178,9 +207,9 @@ const Dropping2d = (props) => {
 
             World.add(engine.world, _obj);
         };
-        createObjectFunc.current = {createObject};
 
-        const createShape = (shape, isloadingObject) => {
+
+        const createShape = (shape, color, _productID, _productName, _cartName) => {
             const x = ww*.5;//Math.max(ww*.3, Math.min(ww*.7, Math.random() * ww));
             const y = 300;
             const radius = Math.round(Math.random() * 40 + (ww > wh ? wh*.1 : ww*.1));
@@ -192,7 +221,12 @@ const Dropping2d = (props) => {
             switch(shape){
                 case 'circle':
                     body = Bodies.circle(x, y, r, {...params });
-                    graphics = createCircleGraphics(shape, r);
+                    graphics = createCircleGraphics(shape, r, color);
+                    break;
+                    
+                case 'smallCircle':
+                    body = Bodies.circle(x, y, r/2, {...params });
+                    graphics = createCircleGraphics(shape, r/1.5, color);
                     break;
                     
                 case 'triangle':
@@ -204,7 +238,7 @@ const Dropping2d = (props) => {
                     const path = [].concat(vtx[0],vtx[1],vtx[2]);
                     const triangle = Vertices.fromPath(path.join(' '));
                     body = Bodies.fromVertices(x, y, Common.choose([triangle]), {...params}, true);
-                    graphics = createTriangleGraphics(shape, path);
+                    graphics = createTriangleGraphics(shape, path, color);
                     break;
 
                 case 'halfCircle':
@@ -212,7 +246,7 @@ const Dropping2d = (props) => {
                         chamfer: { radius: [r*.99,r*.99,0] },
                         ...params
                     });
-                    graphics = createHalfCircleGraphics(shape, r);
+                    graphics = createHalfCircleGraphics(shape, r, color);
                     break;
 
                 default:
@@ -220,18 +254,17 @@ const Dropping2d = (props) => {
             }
             
 
-            if(isloadingObject)
+            if(_productID === -1)
                 createGraphicWithShadow(graphics);
             else{
-                createGraphicWithInfo(graphics);
+                createGraphicWithInfo(graphics, _productID, _productName, _cartName);
                 addPop();
             }
 
             return body;
         }
 
-        const createCircleGraphics = (shape, radius) => {
-            const color = colors[0];
+        const createCircleGraphics = (shape, radius, color) => {
             const graphics = new PIXI.Graphics();
             graphics.beginFill(`0x${color}`, 1);
             graphics.drawCircle(0, 0, radius);
@@ -241,8 +274,7 @@ const Dropping2d = (props) => {
             return graphics;
         }
 
-        const createHalfCircleGraphics = (shape, radius) => {
-            const color = colors[1];
+        const createHalfCircleGraphics = (shape, radius, color) => {
             const graphics = new PIXI.Graphics();
             graphics.beginFill(`0x${color}`, 1);
             graphics.arc(0, 0, radius, 1 * Math.PI, 2 * Math.PI);
@@ -254,8 +286,7 @@ const Dropping2d = (props) => {
             // createGraphic(graphics);
         }
 
-        const createTriangleGraphics = (shape, vtx) => {
-            const color = colors[2];
+        const createTriangleGraphics = (shape, vtx, color) => {
             const graphics = new PIXI.Graphics();
             graphics.beginFill(`0x${color}`, 1);
             for(let v=0; v<vtx.length; v+=2){
@@ -298,14 +329,14 @@ const Dropping2d = (props) => {
             shapes.push(container);
         }
         
-        const createGraphicWithInfo = (graphics) => {
+        const createGraphicWithInfo = (graphics, _productID, _productName, _cartName) => {
             const container = new PIXI.Container();
             const graphicsContainer = new PIXI.Container();
             const detailsContainer = new PIXI.Container();
             const size = graphics.width*.1;
-            const cartName = 'Cart1';
-            const productName = 'Product\nName';
-            const productID = 1;
+            const cartName = _cartName;
+            const productName = _productName;
+            const productID = _productID;
             let tempgraphics = graphics.clone();
             tempgraphics.name = graphics.name;
             detailsContainer.alpha = 0;
@@ -419,12 +450,15 @@ const Dropping2d = (props) => {
             container.addChild(text);
         }
 
-        const preloadImage = () => {
+        const preloadImage = (images) => {
             for(let i=0; i<images.length; i++){
-                app.loader.add(`img_${images[i].pID}`,images[i].src);
-                app.loader.load((loader, resources) => {});
+                app.loader.add(`img_${images[i].productId}`, images[i].productImage, { crossOrigin:true });
             }
+            app.loader.load((loader, resources) => {
+                console.log(resources)
+            });
         }
+        preloadImageFunc.current = {preloadImage}
 
         const createProductImage = (pID, container, graphics) => {
             addImage(app.loader.resources[`img_${pID}`].texture, container, graphics);
@@ -520,21 +554,24 @@ const Dropping2d = (props) => {
         }
 
         const removeSpecificObject = (pID) => {
-            let needToBeRemoved = [];
-            for(let i=0; i<objects.length; i++){
-                const obj = objects[i];
-                if(obj.productID === pID){
-                    needToBeRemoved.push(i);
+            if(!disablePick){
+                let needToBeRemoved = [];
+                for(let i=0; i<objects.length; i++){
+                    const obj = objects[i];
+                    if(obj.productID === pID){
+                        needToBeRemoved.push(i);
+                    }
                 }
-            }
 
-            for(let i=needToBeRemoved.length-1; i>=0; i--){
-                const p = needToBeRemoved[i];
-                removeObject(p);
-            }
+                for(let i=needToBeRemoved.length-1; i>=0; i--){
+                    const p = needToBeRemoved[i];
+                    removeObject(p);
+                }
 
-            needToBeRemoved = undefined;
+                needToBeRemoved = undefined;
+            }
         }
+        removeSpecificObjectFunc.current = {removeSpecificObject}
 
         const removeAllObjects = () => {
             for(let i=objects.length-1; i>=0; i--){
@@ -622,11 +659,12 @@ const Dropping2d = (props) => {
         }
 
         const reset = () => {
+            disablePick = false;
             started = false;
-            createObject(-1, true);
-            createObject(-1, true);
-            createObject(-1, true);
-            createObject(-1, true);
+            createObject();
+            createObject();
+            createObject();
+            createObject();
             timeScaleTarget = 1;
             pick.current.className = 'text';
             up.current.className = 'text';
@@ -648,6 +686,7 @@ const Dropping2d = (props) => {
             if(seconds === 10){
                 if(started){
                     if(page === 'loading'){ // end in loading page
+                        disablePick = true;
                         page = 'details';
                         explosion();
                         showProductDetails();
@@ -884,7 +923,6 @@ const Dropping2d = (props) => {
             });
             sceneElem.current.prepend(app.view);
 
-            preloadImage();
             preloadSvg();
         }
 
@@ -901,16 +939,7 @@ const Dropping2d = (props) => {
                     // removeSpecificObject(2);
                 }
                 else{
-                    if(!paused){
-                        if(!started){
-                            started = true;
-                            removeAllObjects();
-                        }
-                        createObject(Math.round(Math.random()*2));
-                        pick.current.className = 'text active';
-                        up.current.className = 'text active';
-                        bg.current.className = 'active';
-                    }
+                    addObject();
                 }
             }
         }

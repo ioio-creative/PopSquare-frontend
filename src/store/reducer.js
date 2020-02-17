@@ -4,7 +4,8 @@ import { print } from '../globalFunc';
 const initalState = {
     // language: 'en',
     gameStarted: false,
-    counterStarted: false
+    counterStarted: false,
+    gameData: {}
 }
 
 const Reducer = (state = initalState, action) => {
@@ -25,6 +26,10 @@ const Reducer = (state = initalState, action) => {
         case 'END_COUNTER':
             print(action.type, 'green', false)
             return { ...state, counterStarted: false }
+        case 'UPDATE_GAMEDATA':
+            const gameData = action.gameData;
+            print(action.type, 'green', gameData)
+            return { ...state, gameData: gameData }
         default:
             return state;
     }

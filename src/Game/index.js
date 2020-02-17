@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import webSocket from 'socket.io-client';
 import gsap from "gsap";
 import QRCode from "qrcode.react";
 import Counter from './counter';
@@ -11,6 +12,7 @@ const sec = 0;
 const Game = props => {
     const gameStarted = useSelector(state => state.gameStarted);
     const counterStarted = useSelector(state => state.counterStarted);
+    const gameData = useSelector(state => state.gameData);
     const dispatch = useDispatch();
     const [isPicked, setIsPicked] = useState(false);
     const [size, setSize] = useState(null);
@@ -21,22 +23,75 @@ const Game = props => {
     const startGameFunc = useRef(null);
     const startCounterFunc = useRef(null);
     const endCounterFunc = useRef(null);
+    const stopCounterFunc = useRef(null);
     const closeGameFunc = useRef(null);
+    const isCountingFunc = useRef(null);
+    
+    const [socket,setSocket] = useState(null);
 
+    useEffect(()=>{
+        let tempGameData = null;
+        let win = false;
+        let started = false;
+        const gameStatus = (isEnd) => {
+            if(isEnd === false){
+                win = false;
+                started = true;
+                dispatch({type:'START_GAME'});
+            }
+        }
 
+        const gameData = (data) => {
+            tempGameData = data;
+            dispatch({type:'UPDATE_GAMEDATA', gameData: tempGameData});
+        }
+        
+        const whenPickUp = (data) => {
+            // win
+            if(!win && started && isCountingFunc.current.isCounting()){
+                if(tempGameData.answer === data.productId){
+                    stopCounterFunc.current.stopCounter();
+                    win = true;
+                }
+            }
+        }
+
+        if(socket){
+            socket.on('GAMEEND', gameStatus);
+            socket.on('GAME', gameData);
+            socket.on('PICKUP', whenPickUp);
+        }else{
+            setSocket(webSocket('http://popsquare-server.herokuapp.com:80/'));
+        }
+
+        return ()=>{
+            if(socket){
+                socket.off('GAMEEND', gameStatus);
+                socket.off('GAME', gameData);
+                socket.off('PICKUP', whenPickUp);
+            }
+        }
+    },[socket])
 
     useEffect(()=>{
         let started = false;
         let timer = null;
         let oldSeconds = -1;
+        let winGame = false;
+        let counting = false;
         const particlesAnim = new ParticlesAnim(shapesWrapElem.current);
         let screenOrientation = null;
         
+        const isCounting = () => {
+            return counting;
+        }
+        isCountingFunc.current = {isCounting}
 
         const startCounter = () => {
             timer = new Counter(min, sec, updateCounter, endCounter);
             timer.start();
             updateCounter();
+            counting = true;
         }
         startCounterFunc.current = {startCounter}
 
@@ -58,13 +113,27 @@ const Game = props => {
                 setSecond(timer.seconds);
                 timer.stop();
             }
+            counting = false;
             animateToTimesup();
             dispatch({type:'END_COUNTER'});
         }
         endCounterFunc.current = {endCounter};
 
 
+        const stopCounter = () => {
+            winGame = true;
+            if(timer){
+                timer.stop();
+            }
+            counting = false;
+            animateToTimesup();
+            dispatch({type:'END_COUNTER'});
+        }
+        stopCounterFunc.current = {stopCounter}
+
+
         const startGame = () => {
+            winGame = false;
             started = true;
             gsap.set('#game *',{clearProps:true});
             gameElem.current.className = 'active';
@@ -248,10 +317,13 @@ const Game = props => {
             tl.to('#timesupBg', .8, {scale:25, ease: 'power3.out'},'s');
             tl.to('#question #smallTitle span', .3, {autoAlpha:0, y:'-100%', stagger:.1, overwrite:true, ease: 'power3.in'},'s');
             tl.to('#clock .text', .3, {autoAlpha:0, y:'50%', stagger:.1, overwrite:true, ease: 'power3.out'},'s+=.1');
-            tl.to('#clock #timesup', .6, {autoAlpha:1, y:'0%', ease: 'power3.out'},'e-=.6');
+            if(!winGame) {
+                tl.to('#clock #timesup', .6, {autoAlpha:1, y:'0%', ease: 'power3.out'},'e-=.6');
+            }
             tl.to('#character2 .wrap', .6, {left:'75vw', top:'40vh', scale: .4, ease:'power2.in'},'e-=.8');
             tl.call(clockOut, null);
         }
+        
 
         const clockOut = () => {
             const tl = gsap.timeline();
@@ -283,16 +355,19 @@ const Game = props => {
             tl.to('#character1 .eyes', 1, {y:'550%', repeat:-1, repeatDelay:3, yoyo:true, ease:'power3.inOut'},1.6);
 
             // win
-            tl.to('#complete #title span', .8, {scale:1, stagger:.08, ease: 'elastic.out(1, 0.3)'},'s');
-            tl.to('#complete #tips span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
-            tl.to('#character2 .eyes', .3, {autoAlpha:0, ease: 'power1.inOut'},1.8);
-            tl.to('#character2 .wrap', .6, {scale: .8, ease:'elastic.out(1, 0.75)'},1.8);
-            tl.to('#character2 #qrcode', .6, {scale:1, ease:'elastic.out(1, 0.75)'},2);
-
-            //lose
-            // tl.to('#character2 .wrap', .6, {scale: .8, ease:'elastic.out(1, 0.75)'},1);
-            // tl.to('#complete #lose span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
-            // tl.to('#character2 .eyes', .6, {y:'600%', overwrite:true, ease: 'power3.inOut'},1);
+            if(winGame){
+                tl.to('#complete #title span', .8, {scale:1, stagger:.08, ease: 'elastic.out(1, 0.3)'},'s');
+                tl.to('#complete #tips span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
+                tl.to('#character2 .eyes', .3, {autoAlpha:0, ease: 'power1.inOut'},1.8);
+                tl.to('#character2 .wrap', .6, {scale: .8, ease:'elastic.out(1, 0.75)'},1.8);
+                tl.to('#character2 #qrcode', .6, {scale:1, ease:'elastic.out(1, 0.75)'},2);
+            }
+            else{//lose
+            
+                tl.to('#character2 .wrap', .6, {scale: .8, ease:'elastic.out(1, 0.75)'},1);
+                tl.to('#complete #lose span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
+                tl.to('#character2 .eyes', .6, {y:'600%', overwrite:true, ease: 'power3.inOut'},1);
+            }
 
             tl.call(nextOfferIn, null, 30);
 
@@ -324,12 +399,14 @@ const Game = props => {
             nextOfferInAnim.to('#nextOffer span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
 
             //win
-            nextOfferInAnim.to(['#complete #title span','#complete #tips span'], .3, {autoAlpha:0, y:'-100%', stagger:.1, ease: 'power3.in'},'s');
-            nextOfferInAnim.to('#character2 .eyes', .3, {autoAlpha:1, ease: 'power1.inOut'},'s');
-            nextOfferInAnim.to('#character2 #qrcode', .6, {scale:0, ease:'power3.out'},'s');
-
-            // lose
-            // nextOfferInAnim.to('#complete #lose span', .3, {autoAlpha:0, y:'100%', stagger:.1, ease: 'power3.in'},'s');
+            if(winGame){
+                nextOfferInAnim.to(['#complete #title span','#complete #tips span'], .3, {autoAlpha:0, y:'-100%', stagger:.1, ease: 'power3.in'},'s');
+                nextOfferInAnim.to('#character2 .eyes', .3, {autoAlpha:1, ease: 'power1.inOut'},'s');
+                nextOfferInAnim.to('#character2 #qrcode', .6, {scale:0, ease:'power3.out'},'s');
+            }
+            else{// lose
+                nextOfferInAnim.to('#complete #lose span', .3, {autoAlpha:0, y:'100%', stagger:.1, ease: 'power3.in'},'s');
+            }
 
             nextOfferInAnim.call(nextOfferOut, null, 15);
         }
@@ -411,7 +488,7 @@ const Game = props => {
 
     useEffect(()=>{
         if(isPicked && counterStarted){
-            endCounterFunc.current.endCounter();
+            stopCounterFunc.current.stopCounter();
         }
     },[isPicked, counterStarted])
 
@@ -473,13 +550,15 @@ const Game = props => {
                 <div id="question" className="fix">
                     <div id="symbol">“</div>
                     <div id="title">
-                        <span>Find out the product</span>
+                        <span>{gameData.question}</span>
+                        {/* <span>Find out the product</span>
                         <span>which give you</span>
-                        <span>a better smile</span>
+                        <span>a better smile</span> */}
                     </div>
                     <div id="smallTitle">
-                        <span>Find out the product which</span>
-                        <span>give you a better smile !</span>
+                        <span>{gameData.question}</span>
+                        {/* <span>Find out the product which</span>
+                        <span>give you a better smile !</span> */}
                     </div>
                     <div id="tips">You will have 1 min to find it!</div>
                 </div>
@@ -528,7 +607,7 @@ const Game = props => {
                         <div className="wrap">
                             <div className="eyes"><span></span><span></span></div>
                             <div id="qrcode">
-                                <QRCode value={'https://google.com'} renderAs="svg" includeMargin={true}/>
+                                { gameData.qrlink && <QRCode value={gameData.qrlink} renderAs="svg" includeMargin={true}/> }
                             </div>
                         </div>
                     </div>

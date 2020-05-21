@@ -17,7 +17,7 @@ import decomp from 'poly-decomp';
 window.decomp = decomp;
 
 
-const Dropping2d = (props) => {
+const Centrepiece = (props) => {
     const gameStarted = useSelector(state => state.gameStarted);
     const sceneElem = useRef(null);
     const tempSceneElem = useRef(null);
@@ -938,6 +938,7 @@ const Dropping2d = (props) => {
                 }
                 else{
                     addObject();
+                    addPop();
                 }
             }
         }
@@ -1014,4 +1015,4 @@ const Dropping2d = (props) => {
     </>
 }
 
-export default Dropping2d;
+export default Centrepiece;

@@ -1,0 +1,272 @@
+@import '../functions.scss';
+$width: 1240;
+
+#intro{
+    width:100%;
+    height:100%;
+    video{
+        width:100%;
+        height:100%;
+    }
+    #whatisthetrend{
+        width:100%;
+        height:100%;
+        position: absolute;
+        top:0;
+        left:0;
+        z-index: 2;
+        color:#fff;
+        transform: translate3d(0,-100%,0);
+        overflow: hidden;
+        &.active{
+            transform: translate3d(0,0,0);
+            transition: transform 1s cubic-bezier(0.83, 0, 0.17, 1);
+            #container{
+                transform: translate3d(0,0,0);
+                transition: transform 1s cubic-bezier(0.83, 0, 0.17, 1);
+            }
+        }
+        &.out{
+            transform: translate3d(0,100%,0);
+            #container{
+                transform: translate3d(0,-100%,0);
+            }
+        }
+        #container{
+            width:100%;
+            height:100%;
+            background:#7b6eda url('./images/earth.svg') center no-repeat;
+            background-size:auto 96%;
+            transform: translate3d(0,100%,0);
+            .frame{
+                width:100%;
+                height:100%;
+                position: absolute;
+                top:0;
+                left:0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+                &#frame1{
+                    @include setFont(248, 234);
+                    p{
+                        display: flex;
+                        opacity: 0;
+                        visibility: hidden;
+                        &:first-child{
+                            transform: translate3d(-4%,0,0);
+                        }
+                        #search{
+                            width:vw-calc(150);
+                            height: vw-calc(140);
+                            display: inline-block;
+                            position: relative;
+                            &>span{
+                                position: absolute;
+                                top:0;
+                                &#bar{
+                                    width:calc(100% - #{vw-calc(60)});
+                                    min-width: vw-calc(160);
+                                    height:vw-calc(160);
+                                    border:vw-calc(25) solid #fff;
+                                    border-radius: vw-calc(100);
+                                    top:vw-calc(50);
+                                    left:vw-calc(30);
+                                    opacity: 0;
+                                    visibility: hidden;
+                                    background:url('./images/search.svg') 4% center no-repeat;
+                                    background-size:auto 65%;
+                                    @include setFont(80, 80);
+                                    display: flex;
+                                    overflow: hidden;
+                                    &>span{
+                                        width: vw-calc(87);
+                                        display: flex;
+                                        flex-direction: column;
+                                        opacity: 0;
+                                        visibility: hidden;
+                                        @for $i from 1 through 8 {
+                                            &:nth-child(#{$i}) {
+                                                @if $i%2 != 0{
+                                                    animation: up #{random(6)/2}s infinite linear;
+                                                }
+                                                @else{
+                                                    animation: down #{random(6)/2}s infinite linear;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                &#frame2{
+                    @include setFont(300, 300);
+                    #tag{
+                        // opacity: 0;
+                        // visibility: hidden;
+                        font-size:vw-calc(200);
+                        overflow: hidden;
+                        // transform: translate3d(3%,-29%,0) scale(.2);
+                        span{
+                            display: inline-block;
+                            transform: translate3d(0,-100%,0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    #trendofbrand{
+        width:100%;
+        height:100%;
+        position: absolute;
+        top:0;
+        left:0;
+        z-index: 2;
+        color:#fff;
+        transform: translate3d(0,-100%,0);
+        overflow: hidden;
+        &.active{
+            transform: translate3d(0,0,0);
+            transition: transform 1s cubic-bezier(0.83, 0, 0.17, 1);
+            #container{
+                transform: translate3d(0,0,0);
+                transition: transform 1s cubic-bezier(0.83, 0, 0.17, 1);
+            }
+        }
+        &.out{
+            transform: translate3d(0,100%,0);
+            #container{
+                transform: translate3d(0,-100%,0);
+            }
+        }
+        #container{
+            width:100%;
+            height:100%;
+            background:#EA7DA4;
+            transform: translate3d(0,100%,0);
+            #character{
+                width:0;
+                height:0;
+                position: absolute;
+                top:50%;
+                left:50%;
+                &:before{
+                    content:'';
+                    width:vw-calc(1300);
+                    height:vw-calc(1190);
+                    background:url('./images/character.svg') no-repeat;
+                    background-size:100%;
+                    position: absolute;
+                    top:0;
+                    left:0;
+                    transform: translate3d(-50%,-50%,0);
+                }
+            }
+            .frame{
+                width:100%;
+                height:100%;
+                position: absolute;
+                top:0;
+                left:0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+                &#frame1{
+                    @include setFont(248, 234);
+                    background: url('./images/earth.svg') center no-repeat;
+                    background-size:auto 96%;
+                    opacity: 0;
+                    visibility: hidden;
+                    p{
+                        display: flex;
+                        opacity: 0;
+                        visibility: hidden;
+                        &:first-child{
+                            transform: translate3d(-4%,0,0);
+                        }
+                        #search{
+                            width:vw-calc(150);
+                            height: vw-calc(140);
+                            display: inline-block;
+                            position: relative;
+                            &>span{
+                                position: absolute;
+                                top:0;
+                                &#bar{
+                                    width:calc(100% - #{vw-calc(60)});
+                                    min-width: vw-calc(160);
+                                    height:vw-calc(160);
+                                    border:vw-calc(25) solid #fff;
+                                    border-radius: vw-calc(100);
+                                    top:vw-calc(70);
+                                    left:vw-calc(30);
+                                    opacity: 0;
+                                    visibility: hidden;
+                                    background:url('./images/search.svg') 4% center no-repeat;
+                                    background-size:auto 65%;
+                                    @include setFont(80, 80);
+                                    display: flex;
+                                    overflow: hidden;
+                                    &>span{
+                                        width: vw-calc(87);
+                                        display: flex;
+                                        flex-direction: column;
+                                        opacity: 0;
+                                        visibility: hidden;
+                                        @for $i from 1 through 8 {
+                                            &:nth-child(#{$i}) {
+                                                @if $i%2 != 0{
+                                                    animation: up #{random(6)/2}s infinite linear;
+                                                }
+                                                @else{
+                                                    animation: down #{random(6)/2}s infinite linear;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                &#frame2{
+                    @include setFont(300, 300);
+                    #tag{
+                        // opacity: 0;
+                        // visibility: hidden;
+                        font-size:vw-calc(200);
+                        overflow: hidden;
+                        // transform: translate3d(3%,-29%,0) scale(.2);
+                        span{
+                            display: inline-block;
+                            transform: translate3d(0,-100%,0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@keyframes up{
+    from{
+        transform: translate3d(0,4%,0);
+    }
+    to{
+        transform: translate3d(0,-90%,0);
+    }
+}
+
+@keyframes down{
+    from{
+        transform: translate3d(0,-90%,0);
+    }
+    to{
+        transform: translate3d(0,4%,0);
+    }
+}

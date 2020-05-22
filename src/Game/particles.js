@@ -1,21 +1,21 @@
 import gsap from 'gsap';
 
 
-const CreateParticles = function(targetElem){
+const CreateParticles = function(targetElem, isBigShape){
     this.x = 0;
     this.y = 0;
     this.vx = Math.random() * 10 - 5;
-    this.vy = Math.random() * 30 - 50;
+    this.vy = Math.random() * 30 - (isBigShape ? 45 : 50);
     this.friction = Math.random() * .7 + .2;
     this.garvity = 1;
     this.deg = Math.random()*360;
 
     this.init = function(){
         this.elem = document.createElement('div');
-        this.elem.className = `shape _${Math.round(Math.random()*3+1)}`;
+        this.elem.className = `shape _${Math.round(Math.random()*(isBigShape ? 4 : 3)+1)}`;
         targetElem.appendChild(this.elem);
 
-        gsap.set(this.elem, {scale:Math.random()*1.5+1, rotation: this.deg});
+        gsap.set(this.elem, {scale:Math.random()*(isBigShape ? 3 : 1.5)+1, rotation: this.deg});
     }
 }
 
@@ -29,7 +29,7 @@ CreateParticles.prototype.draw = function(){
 
 
 
-const ParticlesAnim = function(elem){
+const ParticlesAnim = function(elem, isBigShape){
     this.play = null;
     this.shapesWrapElem = elem;
     this.particles = [];
@@ -39,7 +39,7 @@ const ParticlesAnim = function(elem){
 
         if(!this.stopCreateParticles){
             for(let i=this.particles.length; i<30; i++){
-                const p = new CreateParticles(this.shapesWrapElem);
+                const p = new CreateParticles(this.shapesWrapElem, isBigShape);
                 p.init();
                 this.particles.push(p);
             }

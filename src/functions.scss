@@ -62,14 +62,14 @@ $global-font-size: 100% !default;
   @return $rem-values;
 }
 
-@function vw-calc($props){
+@function vw-calc($props, $width: 1920){
   $finalvalue: 0;
   @each $value in $props{
     @if $finalvalue != 0{
-      $finalvalue: $finalvalue #{$value / 1920 * 100}vw;
+      $finalvalue: $finalvalue #{$value / $width * 100}vw;
     }
     @else{
-      $finalvalue: #{$value / 1920 * 100}vw;
+      $finalvalue: #{$value / $width * 100}vw;
     }
   }
   @return $finalvalue;
@@ -106,9 +106,9 @@ $global-font-size: 100% !default;
     }
   }
 }
-@mixin setFont($fontsize: 50, $lineHeight: 50) {
-  font-size: vw-calc($fontsize);
-  line-height: vw-calc($lineHeight);
+@mixin setFont($fontsize: 50, $lineHeight: 50, $width: 1920) {
+  font-size: vw-calc($fontsize, $width);
+  line-height: vw-calc($lineHeight, $width);
 }
 
 // @import "./global/nav";

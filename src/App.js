@@ -19,7 +19,7 @@ function App(props) {
       <Switch>
         <Route exact path="/countdown" component={CountDown} />
         <Route exact path="/" component={Centrepiece} />
-        {/* <Route path="/dropping3d" component={Dropping3d} /> */}
+        <Route path="/particles" component={Particles} />
         {/* <Route path="/summary" component={Summary} /> */}
         <Route path="/intro" component={Introarea} />
         {/* <Redirect to="/dropping2d" /> */}

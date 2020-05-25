@@ -47,6 +47,7 @@ const ParticlesAnim = function(elem, isBigShape){
         else{
             if(!this.particles.length){
                 cancelAnimationFrame(this.play);
+                this.play = null;
             }
         }
 
@@ -65,7 +66,8 @@ const ParticlesAnim = function(elem, isBigShape){
 
 ParticlesAnim.prototype.start = function(){
     this.stopCreateParticles = false;
-    this.updateParticles();
+    if(!this.play)
+        this.updateParticles();
 }
 
 ParticlesAnim.prototype.stop = function(){ 

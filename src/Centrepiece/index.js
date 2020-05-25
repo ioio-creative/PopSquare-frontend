@@ -971,48 +971,50 @@ const Centrepiece = (props) => {
         }
     },[gameStarted]);
 
-    return <>
-        <div id="wrap">
-            <div ref={sceneElem} id="scene"></div>
-            <div ref={tempSceneElem} id="tempScene"></div>
-            <span ref={pick} id="pick" className="text">Pick</span>
-            <span ref={up} id="up" className="text">up</span>
-            <div ref={ranking} id="ranking">
-                <div id="logo">
-                    <div className="img active" style={{backgroundImage:'url()'}}></div>
+    return(
+        <div id="centerpiece">
+            <div id="wrap">
+                <div ref={sceneElem} id="scene"></div>
+                <div ref={tempSceneElem} id="tempScene"></div>
+                <span ref={pick} id="pick" className="text">Pick</span>
+                <span ref={up} id="up" className="text">up</span>
+                <div ref={ranking} id="ranking">
+                    <div id="logo">
+                        <div className="img active" style={{backgroundImage:'url()'}}></div>
+                    </div>
+                    <div id="productName"><span>Foldabel</span> <br/><span>Changing</span><br/> <span>Mat</span></div>
+                    <div id="image">
+                        <div style={{backgroundImage:'url()'}}></div>
+                    </div>
+                    <ul id="list">
+                        <li>
+                            <div className="title">Hottest <br/> item ranking</div>
+                            <div className="value">Top 1</div>
+                            <span></span>
+                        </li>
+                        <li>
+                            <div className="title">Daily <br/>Pick up<br/>/times</div>
+                            <div className="value">50</div>
+                            <span></span>
+                        </li>
+                        <li>
+                            <div className="title">Weekly <br/> Purchased <br/>/times</div>
+                            <div className="value">21</div>
+                            <span></span>
+                        </li>
+                    </ul>
+                    <div ref={rankingBg} id="rankingBg"><div id="wrap"><div id="shape"></div></div></div>
                 </div>
-                <div id="productName"><span>Foldabel</span> <br/><span>Changing</span><br/> <span>Mat</span></div>
-                <div id="image">
-                    <div style={{backgroundImage:'url()'}}></div>
+                <div ref={bg} id="bg">
+                    <div id="outerWrap">
+                        <div id="innerWrap"></div>
+                    </div>
                 </div>
-                <ul id="list">
-                    <li>
-                        <div className="title">Hottest <br/> item ranking</div>
-                        <div className="value">Top 1</div>
-                        <span></span>
-                    </li>
-                    <li>
-                        <div className="title">Daily <br/>Pick up<br/>/times</div>
-                        <div className="value">50</div>
-                        <span></span>
-                    </li>
-                    <li>
-                        <div className="title">Weekly <br/> Purchased <br/>/times</div>
-                        <div className="value">21</div>
-                        <span></span>
-                    </li>
-                </ul>
-                <div ref={rankingBg} id="rankingBg"><div id="wrap"><div id="shape"></div></div></div>
-            </div>
-            <div ref={bg} id="bg">
-                <div id="outerWrap">
-                    <div id="innerWrap"></div>
-                </div>
-            </div>
 
-            <Game />
+                <Game />
+            </div>
         </div>
-    </>
+    )
 }
 
 export default Centrepiece;

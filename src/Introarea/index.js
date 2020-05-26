@@ -31,7 +31,7 @@ const Introarea = () => {
         //     },1000);
         // }
         video.current.onended = () => {
-            trendAnim();
+            // trendAnim();
         };
 
         const trendAnim = () => {
@@ -204,7 +204,7 @@ const Introarea = () => {
         }
 
         const killAnim = () => {
-            tl.kill();
+            if(tl) tl.kill();
         }
         killAnimFunc.current = {killAnim}
 
@@ -333,28 +333,28 @@ const Introarea = () => {
                             <ul id="list">
                                 <li>
                                     <div className="wrap">
-                                        <div>No. of<br/>followers</div>
+                                        <div>Facebook <br/>followers</div>
                                         <div className="value">10k</div>
                                     </div>
                                     <span></span>
                                 </li>
                                 <li>
                                     <div className="wrap">
-                                        <div>No. of<br/>likes</div>
+                                        <div>Facebook followers<br/>growth rate</div>
                                         <div className="value">110k</div>
                                     </div>
                                     <span></span>
                                 </li>
                                 <li>
                                     <div className="wrap">
-                                        <div>No. of<br/>post</div>
+                                        <div>Facebook<br/>like</div>
                                         <div className="value up">31%</div>
                                     </div>
                                     <span></span>
                                 </li>
                                 <li>
                                     <div className="wrap">
-                                        <div>No. of<br/>comments</div>
+                                        <div>Facebook like<br/>growth rate</div>
                                         <div className="value up">31%</div>
                                     </div>
                                     <span></span>

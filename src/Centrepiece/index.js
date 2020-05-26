@@ -788,7 +788,7 @@ const Centrepiece = (props) => {
         const rankingIn = (spans, divs) => {
             
             // logo
-            gsap.fromTo('#ranking #logo', .6, {scale:0}, {delay:.7, scale: 1, overwrite:true, ease:'elastic.out(1, 0.75)'});
+            // gsap.fromTo('#ranking #logo', .6, {scale:0}, {delay:.7, scale: 1, overwrite:true, ease:'elastic.out(1, 0.75)'});
 
             // image
             gsap.fromTo('#ranking #image', .6, {scale:0}, {delay:1, scale: 1, overwrite:true, ease:'elastic.out(1, 0.75)'});
@@ -818,12 +818,17 @@ const Centrepiece = (props) => {
             gsap.set('#ranking #list li span', {force3D:true, x:'-100%', overwrite:true});
             gsap.to('#ranking #list li span', 1, {delay:.3, x:'0%',stagger:.1, ease:'power3.inOut'});
 
+            const tl3 = gsap.timeline({delay:.6});
+            tl3.set('#ranking #rateline > span', { x:'-100%'},'_1');
+            tl3.set('#ranking #rateline > span span', { x:'100%'},'_1');
+            tl3.to('#ranking #rateline span', .8, {force3D:true, x:'0', ease:'none'},'_1');
+            tl3.to('#ranking #rateline .point', .8, {force3D:true, scale:1, stagger:.3, ease:'elastic.out(1, 0.3)'},'_1');
         }
         
         const rankingOut = (spans, divs) => {
 
             // logo
-            gsap.to('#ranking #logo', .6, {scale:0, ease:'back.in(1.75)'});
+            // gsap.to('#ranking #logo', .6, {scale:0, ease:'back.in(1.75)'});
             
             // image
             gsap.to('#ranking #image', .6, {scale:0, ease:'back.in(1.75)'});
@@ -848,7 +853,16 @@ const Centrepiece = (props) => {
             }
 
             // list bottom line
-            gsap.to('#ranking #list li span', 1, {x:'100%',stagger:.1, ease:'power3.inOut'});
+            gsap.to('#ranking #list li span', 1, {x:'100%',stagger:.1, ease:'power3.inOut',
+                'onComplete':function(){
+                    // update data
+                }
+            });
+            
+            const tl3 = gsap.timeline();
+            tl3.to('#ranking #rateline > span', .6, { x:'100%', ease:'none'},'_1');
+            tl3.to('#ranking #rateline > span span', .6, { x:'-100%', ease:'none'},'_1');
+            tl3.to('#ranking #rateline .point', .3, {scale:0, stagger:.3, ease:'back.in(2)'},'_1');
         }
 
         
@@ -930,11 +944,15 @@ const Centrepiece = (props) => {
         // handle key down
         const keyDown = (e) => {
             if(!paused){
+                // console.log(e.keyCode)
                 if(e.keyCode === 8){
                     explosion();
                     showProductDetails();
                     // removeAllObjects();
                     // removeSpecificObject(2);
+                }
+                else if(e.keyCode === 27){
+                    rankingAnimtion();
                 }
                 else{
                     addObject();
@@ -979,12 +997,19 @@ const Centrepiece = (props) => {
                 <span ref={pick} id="pick" className="text">Pick</span>
                 <span ref={up} id="up" className="text">up</span>
                 <div ref={ranking} id="ranking">
-                    <div id="logo">
+                    {/* <div id="logo">
                         <div className="img active" style={{backgroundImage:'url()'}}></div>
-                    </div>
+                    </div> */}
                     <div id="productName"><span>Foldabel</span> <br/><span>Changing</span><br/> <span>Mat</span></div>
                     <div id="image">
                         <div style={{backgroundImage:'url()'}}></div>
+                    </div>
+                    <div id="rateline">
+                        <div className="point"></div>
+                        <div className="point"></div>
+                        <div className="point"></div>
+                        <div className="point"></div>
+                        <span><span></span></span>
                     </div>
                     <ul id="list">
                         <li>
@@ -997,13 +1022,10 @@ const Centrepiece = (props) => {
                             <div className="value">50</div>
                             <span></span>
                         </li>
-                        <li>
-                            <div className="title">Weekly <br/> Purchased <br/>/times</div>
-                            <div className="value">21</div>
-                            <span></span>
-                        </li>
                     </ul>
-                    <div ref={rankingBg} id="rankingBg"><div id="wrap"><div id="shape"></div></div></div>
+                    <div ref={rankingBg} id="rankingBg">
+                        <div id="wrap"><div id="shape"></div></div>
+                    </div>
                 </div>
                 <div ref={bg} id="bg">
                     <div id="outerWrap">

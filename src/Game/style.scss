@@ -21,6 +21,10 @@
             }
         }
     }
+    .tc{
+        font-family: 'Microsoft JhengHei';
+        font-weight: 900;
+    }
     #container{
         width:100%;
         height: 100%;
@@ -44,6 +48,12 @@
             #cart{
                 width: 55.5vh;
                 top: 15vh;
+            }
+            #texts{
+                font-size: 3.9vh;
+                .tc{
+                    font-size: 3.1vh;
+                }
             }
             #product{
                 width:3.8vh;
@@ -74,8 +84,9 @@
                 margin-top: -15vh;
             }
             #smallTitle {
+                width: 50%;
                 font-size: 3.55vh;
-                line-height: 5vh;
+                line-height: 4vh;
                 left: -60%;
                 top: 6vh;
             }
@@ -113,7 +124,7 @@
                 top: 87vh;
             }
             #lose{
-                top: 87vh;
+                top: 86vh;
                 font-size: 5vh;
             }
         }
@@ -124,10 +135,18 @@
             #big {
                 font-size: 16vh;
             }
+            .tc{
+                font-size: 5.1vh;
+                line-height: 7.5vh;
+            }
         }
         #seeyou {
             font-size: 10vh;
             padding: 5vh 10vh 0;
+            .tc{
+                font-size: 7vh;
+                line-height: 13vh;
+            }
         }
         .character{
             &#character1{
@@ -168,20 +187,16 @@
             }
             &#left{
                 .wrap{
+                    padding-left:5.75vw;
                     padding-right:2.25vw;
-                    animation: left 2s linear infinite;
-                    div{
-                        text-align: right;
-                    }
+                    animation: left 3.6s linear infinite;
                 }
             }
             &#right{
                 .wrap{
                     padding-left:2.25vw;
-                    animation: right 2s linear infinite;
-                    div{
-                        text-align: left;
-                    }
+                    padding-right:5.75vw;
+                    animation: right 3.6s linear infinite;
                 }
             }
             div{
@@ -202,7 +217,7 @@
     }
     #slider{
         #buttons{
-            width:18.5vh;
+            width:19vh;
             position: absolute;
             top:9.6vh;
             left:50%;
@@ -223,12 +238,18 @@
         #texts{
             width:100vw;
             position: absolute;
-            top:19vh;
+            top:16vh;
             left:50%;
             transform: translate3d(-50%,0,0);
-            font-size: 3.9vh;
+            font-size: 2.5vh;
             color:#fff;
             text-align: center;
+            .tc{
+                font-size: 2.1vh;
+                &:nth-child(3){
+                    padding-top:1.5vh;
+                }
+            }
             div{
                 width: 100%;
                 position: absolute;
@@ -238,7 +259,7 @@
             }
             span{
                 width: 100%;
-                display: inline-block;
+                display: block;
             }
         }
         #cart{
@@ -295,16 +316,16 @@
         #title{
             color:#fff;
             font-size: 3.9vh;
-            line-height: 6vh;
+            line-height: 5vh;
             margin-top: -8vh;
             span{
                 display: block;
             }
         }
         #smallTitle{
-            width: 100%;
+            width: 70%;
             font-size: 2.55vh;
-            line-height: 4vh;
+            line-height: 3vh;
             color: #fff;
             position: absolute;
             top: 5vh;
@@ -319,6 +340,28 @@
             color:#42d3d3;
             font-size: 2.7vh;
             margin-top:4vh;
+        }
+    }
+    #ready{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        span{
+            position: absolute;
+            top:50%;
+            left:50%;
+            font-size:365px;
+            color:#fff;
+            transform: translate3d(-50%,-50%,0) scale(0);
+        }
+        #bg{
+            width:100%;
+            height:100%;
+            background:#f9c05d;
+            position: relative;
+            z-index: -1;
+            opacity: 0;
+            visibility: hidden;
         }
     }
     #clock{
@@ -377,7 +420,13 @@
         #title{
             font-size: 4vh;
             line-height: 5.5vh;
-            margin-top:6vh;
+            margin-top:3vh;
+            .tc{
+                font-size: 3vh;
+                line-height: 3vh;
+                padding-top: 1vh;
+                display: block;
+            }
         }
         #tips{
             width: 100%;
@@ -392,6 +441,11 @@
             line-height: 5vh;
             position: absolute;
             top:75vh;
+            .tc{
+                font-size: 3vh;
+                line-height: 3vh;
+                padding-top: 1vh;
+            }
         }
     }
     #nextOffer{
@@ -406,6 +460,10 @@
         span{
             display: block;
         }
+        .tc{
+            font-size: 2.1vh;
+            line-height: 3.5vh;
+        }
     }
     #seeyou{
         color:#fff;
@@ -413,6 +471,10 @@
         padding:5vh 5vh 0;
         span{
             display: block;
+        }
+        .tc{
+            font-size: 5vh;
+            line-height: 8vh;
         }
         #seeyouBg{
             width: 100px;
@@ -588,7 +650,7 @@
 
 @keyframes left {
     from{
-        transform: translate3d(0,-96vw,0);
+        transform: translate3d(0,-191.4vw,0);
     }
     to{
         transform: translate3d(0,0vw,0);
@@ -600,7 +662,7 @@
         transform: translate3d(0,0vw,0);
     }
     to{
-        transform: translate3d(0,-96vw,0);
+        transform: translate3d(0,-191.4vw,0);
     }
 }
 

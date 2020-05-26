@@ -1,3 +1,6 @@
+@import '../functions.scss';
+$width: 1240;
+
 #wrap{
     width:100%;
     height:100%;
@@ -108,10 +111,56 @@
                 left:0;
             }
         }
+        .point{
+            width: vw-calc(27, $width);
+            height: vw-calc(27, $width);
+            border-radius: 50%;
+            background:#fff;
+            position: absolute;
+            transform: translate3d(-50%,-50%,0) scale(0);
+            &:nth-child(1){
+                top:75%;
+            }
+            &:nth-child(2){
+                top:98.5%;
+                left:28.5%;
+            }
+            &:nth-child(3){
+                top:31%;
+                left:67%;
+            }
+            &:nth-child(4){
+                top:0%;
+                left:100%;
+            }
+        }
+        #rateline{
+            width: vw-calc(913, $width);
+            height: vw-calc(449, $width);
+            position: absolute;
+            top:25%;
+            left:45%;
+            transform: translate3d(-50%,-50%,0);
+            span{
+                width:100%;
+                height:100%;
+                display: block;
+                transform: translate3d(-100%,0,0);
+                overflow: hidden;
+                span{
+                    width:100%;
+                    height:100%;
+                    display: block;
+                    background:url('./images/rateline.svg') no-repeat;
+                    background-size:100%;
+                    transform: translate3d(100%,0,0);
+                }
+            }
+        }
         #productName{
             position: absolute;
-            top:10vw;
-            left:50vw;
+            top:vw-calc(100, $width);
+            left:vw-calc(100, $width);
             color:#fff;
             font-weight: bold;
             font-size:7vw;
@@ -177,12 +226,12 @@
                 transform: translate3d(0, 100%, 0);
                 #shape{
                     width:55vw;
-                    height:55vw;
+                    height:57vw;
                     background:url('./images/shapebg.svg') center no-repeat;
                     background-size:100%;
                     position: absolute;
                     top:62vw;
-                    left:12vw;
+                    left:13vw;
                 }
             }
         }

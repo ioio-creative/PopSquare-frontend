@@ -1,5 +1,6 @@
 @import '../functions.scss';
 $width: 1240;
+@import '../Promotion/style.scss';
 
 #wrap{
     width:100%;
@@ -33,7 +34,7 @@ $width: 1240;
         font-weight: bold;
         color:#333;
         z-index: 10;
-        transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.3s cubic-bezier(0.215, 0.61, 0.355, 1), visibility 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+        // transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.3s cubic-bezier(0.215, 0.61, 0.355, 1), visibility 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
         // transform: translate3d(0,0,0);
         opacity: 1;
         visibility: visible;
@@ -254,52 +255,117 @@ $width: 1240;
             }
         }
     }
-    #bg{
-        width:100%;
-        height:100%;
-        background: #fac05d;
-        position: absolute;
-        top:0;
-        left:0;
-        overflow: hidden;
-        &.active{
-            #outerWrap{
-                transform: translate3d(0, 100%, 0);
-                transition: transform 1s cubic-bezier(0.86, 0, 0.07, 1);
+    // #bg{
+    //     width:100%;
+    //     height:100%;
+    //     background: #fac05d;
+    //     position: absolute;
+    //     top:0;
+    //     left:0;
+    //     overflow: hidden;
+    //     &.active{
+    //         #outerWrap{
+    //             transform: translate3d(0, 100%, 0);
+    //             transition: transform 1s cubic-bezier(0.86, 0, 0.07, 1);
                 
-                #innerWrap{
-                    transform: translate3d(0, -100%, 0);
-                    transition: transform 1s cubic-bezier(0.86, 0, 0.07, 1);
+    //             #innerWrap{
+    //                 transform: translate3d(0, -100%, 0);
+    //                 transition: transform 1s cubic-bezier(0.86, 0, 0.07, 1);
+    //             }
+    //         }
+    //     }
+    //     #outerWrap{
+    //         width:100%;
+    //         height:100%;
+    //         overflow: hidden;
+    //         #innerWrap{
+    //             width:100%;
+    //             height:100%;
+    //             background: #d8caad;
+    //             &:before{
+    //                 content:'';
+    //                 width:100%;
+    //                 height:100vw;
+    //                 position: absolute;
+    //                 top:-25vw;
+    //                 left:0;
+    //                 display: block;
+    //                 background:#ddc0a0;
+    //                 transform: skew(0deg, -35deg);
+    //             }
+    //             &:after{
+    //                 content:'';
+    //                 width:100%;
+    //                 height:100%;
+    //                 background:url('./images/cut.svg') no-repeat;
+    //                 background-size: 100%;
+    //                 position: absolute;
+    //                 top:40vw;
+    //             }
+    //         }
+    //     }
+    // }
+    
+    &.important{
+        #promotion{
+            #bg{
+                #outerWrap{
+                    #innerWrap{
+                        #cutline{
+                            span{
+                                // transform: translate3d(0, 0%, 0) !important;
+                            }
+                        }
+                        #leftbg{
+                            span{
+                                transform: translate3d(0,0,0) !important;
+                            }
+                        }
+                        #rightbg{
+                            span{
+                                transform: translate3d(0,0,0) !important;
+                            }
+                        }
+                    }
                 }
             }
         }
-        #outerWrap{
-            width:100%;
-            height:100%;
-            overflow: hidden;
-            #innerWrap{
-                width:100%;
-                height:100%;
-                background: #d8caad;
-                &:before{
-                    content:'';
-                    width:100%;
-                    height:100vw;
-                    position: absolute;
-                    top:-25vw;
-                    left:0;
-                    display: block;
-                    background:#ddc0a0;
-                    transform: skew(0deg, -35deg);
-                }
-                &:after{
-                    content:'';
-                    width:100%;
-                    height:100%;
-                    background:url('./images/cut.svg') no-repeat;
-                    background-size: 100%;
-                    position: absolute;
-                    top:40vw;
+    }
+    #promotion{
+        z-index: 0;
+        &>div:not(#bg){
+
+        }
+        #bg{
+            background: #fac05d;
+            #outerWrap{
+                #innerWrap{
+                    #cutline{
+                        left:30%;
+                        transform: translate3d(-50%, -50%, 0) rotate(54deg);
+                        span{
+                            transform: translate3d(0, 0%, 0);
+                        }
+                        #cutter{
+                            transform: translate3d(-50%, -80vw, 0) rotate(-34deg);
+                        }
+                    }
+                    #leftbg{
+                        width:200%;
+                        left:-70%;
+                        transform: translate3d(-49.9%, -50%, 0) skew(-54deg, 0deg);
+                        span{
+                            transform: translate3d(0,0,0);
+                        }
+                    }
+                    #rightbg{
+                        width:200%;
+                        left:-70%;
+                        transform: translate3d(49.9%, -50%, 0) skew(-54deg, 0deg);
+                        span{
+                            transform: translate3d(0,0,0);
+                        }
+                    }
                 }
             }
         }

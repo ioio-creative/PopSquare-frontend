@@ -1,10 +1,9 @@
 import React, {useEffect, useState, useRef} from 'react';
 import { useSelector } from 'react-redux';
 import gsap from 'gsap';
-import MotionPathPlugin from 'gsap/MotionPathPlugin';
 import './style.scss';
 
-import Promotion, {promotionAnimStart} from '../Promotion';
+import Promotion, { promoAnim } from '../Promotion';
 import Game from '../Game';
 import ParticlesAnim from '../Game/particles';
 import introvideo from './images/intro.mp4';
@@ -22,14 +21,6 @@ const Introarea = () => {
 
     useEffect(()=>{
         let tl;
-        gsap.registerPlugin(MotionPathPlugin);
-        // promotionAnimStart();
-        // video.current.onplay = (e) => {
-        //     setTimeout(()=>{
-        //         video.current.muted = false;
-        //         video.current.play();
-        //     },1000);
-        // }
         video.current.onended = () => {
             trendAnim();
         };
@@ -204,111 +195,110 @@ const Introarea = () => {
     
             tl.set({}, {}, '+=3');
             tl.set('#promotion', {className:'active'});
-            tl.call(()=>promoOpeningIn(), null);
+            tl.call(()=>promoAnim(), null);
             tl.call(()=>particlesAnim2.stop(), null);
             tl.set('#trendofbrandpart2', {className:''},'+=1');
         }
 
-        const promoOpeningIn = () => {
-            tl = gsap.timeline();
+        // const promoOpeningIn = () => {
+        //     tl = gsap.timeline();
         
-            tl.to(['#promotion #leftbg span', '#promotion #rightbg span'], 1, {force3D:true, y:'0%', ease:'power4.inOut'},'_1');
-            tl.set({}, {}, '+=.1');
-            tl.to('#promotion #text1', 1.3, {motionPath: {
-                path:[
-                    {x:-500, y:1000}, {x:-500, y:-100}, 
-                    {x:0, y:0}, {x:0, y:0}
-                ],
-                type: "cubic"}, ease:'power4.out'
-            },'_2');
-            tl.to('#promotion #text2', 1.3, {force3D:true, motionPath: {
-                path:[
-                    {x:500, y:1000}, {x:500, y:-100}, 
-                    {x:0, y:0}, {x:0, y:0}
-                ],
-                type: "cubic"}, ease:'power4.out'
-            },'_2+=.3');
-            tl.to('#promotion #character1', 1, {force3D:true, motionPath: {
-                path:[
-                    {x:-500, y:-500}, {x:100, y:-500}, 
-                    {x:0, y:0}, {x:0, y:0}
-                ],
-                type: "cubic"}, ease:'power4.out'
-            },'_2+=.5');
-            tl.to('#promotion #character2', 1, {force3D:true, motionPath: {
-                path:[
-                    {x:500, y:-300}, {x:-100, y:-100}, 
-                    {x:0, y:0}, {x:0, y:0}
-                ],
-                type: "cubic"}, ease:'power4.out'
-            },'_2+=.6');
-            tl.to('#promotion #shape', 1, {force3D:true, motionPath: {
-                path:[
-                    {x:-200, y:500}, {x:-100, y:0}, 
-                    {x:0, y:0}, {x:0, y:0}
-                ],
-                type: "cubic"}, ease:'power4.out'
-            },'_2+=.8');
-            tl.to('#promotion #cutline span', 3, {force3D:true, y:0, ease:'power4.inOut'},'_2');
-            tl.to('#promotion #cutline #cutter', .8, {force3D:true, y:'-=130%', ease:'power2.inOut'},1.3);
-            tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},2.1);
-            tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},2.9);
-            tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},3.7);
-            tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},4.5);
-            tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},5.3);
-            tl.call(()=>promoOpeningOut(), null);
-        }
+        //     tl.to(['#promotion #leftbg span', '#promotion #rightbg span'], 1, {force3D:true, y:'0%', ease:'power4.inOut'},'_1');
+        //     tl.set({}, {}, '+=.1');
+        //     tl.to('#promotion #text1', 1.3, {motionPath: {
+        //         path:[
+        //             {x:-500, y:1000}, {x:-500, y:-100}, 
+        //             {x:0, y:0}, {x:0, y:0}
+        //         ],
+        //         type: "cubic"}, ease:'power4.out'
+        //     },'_2');
+        //     tl.to('#promotion #text2', 1.3, {force3D:true, motionPath: {
+        //         path:[
+        //             {x:500, y:1000}, {x:500, y:-100}, 
+        //             {x:0, y:0}, {x:0, y:0}
+        //         ],
+        //         type: "cubic"}, ease:'power4.out'
+        //     },'_2+=.3');
+        //     tl.to('#promotion #character1', 1, {force3D:true, motionPath: {
+        //         path:[
+        //             {x:-500, y:-500}, {x:100, y:-500}, 
+        //             {x:0, y:0}, {x:0, y:0}
+        //         ],
+        //         type: "cubic"}, ease:'power4.out'
+        //     },'_2+=.5');
+        //     tl.to('#promotion #character2', 1, {force3D:true, motionPath: {
+        //         path:[
+        //             {x:500, y:-300}, {x:-100, y:-100}, 
+        //             {x:0, y:0}, {x:0, y:0}
+        //         ],
+        //         type: "cubic"}, ease:'power4.out'
+        //     },'_2+=.6');
+        //     tl.to('#promotion #shape', 1, {force3D:true, motionPath: {
+        //         path:[
+        //             {x:-200, y:500}, {x:-100, y:0}, 
+        //             {x:0, y:0}, {x:0, y:0}
+        //         ],
+        //         type: "cubic"}, ease:'power4.out'
+        //     },'_2+=.8');
+        //     tl.to('#promotion #cutline span', 3, {force3D:true, y:0, ease:'power4.inOut'},'_2');
+        //     tl.to('#promotion #cutline #cutter', .8, {force3D:true, y:'-=130%', ease:'power2.inOut'},1.3);
+        //     tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},2.1);
+        //     tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},2.9);
+        //     tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},3.7);
+        //     tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},4.5);
+        //     tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},5.3);
+        //     tl.call(()=>promoOpeningOut(), null);
+        // }
         
-        const promoOpeningOut = () => {
-            tl = gsap.timeline();
-            tl.to('#promotion #cutline > span', 1, {y:'-100%', ease:'power4.inOut'},'_1');
-            tl.to('#promotion #cutline span span', 1, {y:'100%', ease:'power4.inOut'},'_1');
-            tl.to('#promotion #character1', 1, {x:-500, y:-500, ease:'power4.inOut'},'_1+=.1');
-            tl.to('#promotion #character2', 1.3, {x:800, y:-200, ease:'power4.inOut'},'_1+=.4');
-            tl.to('#promotion #shape', 1.3, {x:-200, y:600, ease:'power4.inOut'},'_1+=.5');
-            tl.to('#promotion #text2', 1, {motionPath: {
-                path:[
-                    {x:0, y:0}, {x:100, y:100}, 
-                    {x:300, y:200}, {x:800, y:200}
-                ],
-                type: "cubic"}, ease:'power4.inOut'
-            },'_1+=.2');
-            tl.to('#promotion #text1', 1.3, {motionPath: {
-                path:[
-                    {x:0, y:0}, {x:-100, y:-100}, 
-                    {x:-300, y:-200}, {x:-800, y:-200}
-                ],
-                type: "cubic"}, ease:'power4.inOut'
-            },'_1+=.3');
-            tl.call(()=>promoFrameIn(), null);
-        }
+        // const promoOpeningOut = () => {
+        //     tl = gsap.timeline();
+        //     tl.to('#promotion #cutline > span', 1, {y:'-100%', ease:'power4.inOut'},'_1');
+        //     tl.to('#promotion #cutline span span', 1, {y:'100%', ease:'power4.inOut'},'_1');
+        //     tl.to('#promotion #character1', 1, {x:-500, y:-500, ease:'power4.inOut'},'_1+=.1');
+        //     tl.to('#promotion #character2', 1.3, {x:800, y:-200, ease:'power4.inOut'},'_1+=.4');
+        //     tl.to('#promotion #shape', 1.3, {x:-200, y:600, ease:'power4.inOut'},'_1+=.5');
+        //     tl.to('#promotion #text2', 1, {motionPath: {
+        //         path:[
+        //             {x:0, y:0}, {x:100, y:100}, 
+        //             {x:300, y:200}, {x:800, y:200}
+        //         ],
+        //         type: "cubic"}, ease:'power4.inOut'
+        //     },'_1+=.2');
+        //     tl.to('#promotion #text1', 1.3, {motionPath: {
+        //         path:[
+        //             {x:0, y:0}, {x:-100, y:-100}, 
+        //             {x:-300, y:-200}, {x:-800, y:-200}
+        //         ],
+        //         type: "cubic"}, ease:'power4.inOut'
+        //     },'_1+=.3');
+        //     tl.call(()=>promoFrameIn(), null);
+        // }
         
-        const promoFrameIn = () => {
-            tl = gsap.timeline();
-            tl.to('#promotion #name #icon', 1, {force3D:true, scale:1, ease:'elastic.out(1, 0.5)'},'_1');
-            tl.to('#promotion #name span span', .6, {force3D:true, y:0, stagger:.03, ease:'power3.out'},'_1');
-            tl.to('#promotion #frame1', .3, {autoAlpha:1, ease:'power1.inOut'},'_1');
-            tl.to('#promotion #discount #center', 2, {force3D:true, y:'-95.55%', ease:'power4.inOut'},'_1+=.3');
-            tl.set({}, {}, '+=2');
-            tl.to('#promotion #frame1', .3, {autoAlpha:0, ease:'power1.inOut'},'_2');
-            tl.to('#promotion #frame2', .3, {autoAlpha:1, ease:'power1.inOut'},'_3');
-            tl.set({}, {}, '+=3');
-            tl.to('#promotion #frame2', .3, {autoAlpha:0, ease:'power1.inOut'},'_4');
-            tl.to('#promotion #frame3', .3, {autoAlpha:1, ease:'power1.inOut'},'_5');
-            tl.set({}, {}, '+=3');
-            tl.to('#promotion #frame3', .3, {autoAlpha:0, ease:'power1.inOut'},'_6');
-            tl.to('#promotion #frame4', .3, {autoAlpha:1, ease:'power1.inOut'},'_7');
-            tl.call(()=>promoFrameOut(), null, '+=3');
-        }
+        // const promoFrameIn = () => {
+        //     tl = gsap.timeline();
+        //     tl.to('#promotion #name #icon', 1, {force3D:true, scale:1, ease:'elastic.out(1, 0.5)'},'_1');
+        //     tl.to('#promotion #name span span', .6, {force3D:true, y:0, stagger:.03, ease:'power3.out'},'_1');
+        //     tl.to('#promotion #frame1', .3, {autoAlpha:1, ease:'power1.inOut'},'_1');
+        //     tl.to('#promotion #discount #center', 2, {force3D:true, y:'-95.55%', ease:'power4.inOut'},'_1+=.3');
+        //     tl.set({}, {}, '+=2');
+        //     tl.to('#promotion #frame1', .3, {autoAlpha:0, ease:'power1.inOut'},'_2');
+        //     tl.to('#promotion #frame2', .3, {autoAlpha:1, ease:'power1.inOut'},'_3');
+        //     tl.set({}, {}, '+=3');
+        //     tl.to('#promotion #frame2', .3, {autoAlpha:0, ease:'power1.inOut'},'_4');
+        //     tl.to('#promotion #frame3', .3, {autoAlpha:1, ease:'power1.inOut'},'_5');
+        //     tl.set({}, {}, '+=3');
+        //     tl.to('#promotion #frame3', .3, {autoAlpha:0, ease:'power1.inOut'},'_6');
+        //     tl.to('#promotion #frame4', .3, {autoAlpha:1, ease:'power1.inOut'},'_7');
+        //     tl.call(()=>promoFrameOut(), null, '+=3');
+        // }
         
-        const promoFrameOut = () => {
-            tl = gsap.timeline();
-            tl.to('#promotion #frame4', .3, {autoAlpha:0, ease:'power1.inOut'},'_1');
-            tl.to('#promotion #leftbg span', 1, {y:'100%', ease:'power4.inOut'},'_1');
-            tl.to('#promotion #rightbg span', 1, {y:'-100%', ease:'power4.inOut'},'_1');
-            tl.call(()=>video.current.play(), null,'_1');
-            tl.set('#promotion', {className:''});
-        }
+        // const promoFrameOut = () => {
+        //     tl = gsap.timeline();
+        //     tl.to('#promotion #frame4', .3, {autoAlpha:0, ease:'power1.inOut'},'_1');
+        //     tl.to('#promotion #leftbg span', 1, {y:'100%', ease:'power4.inOut'},'_1');
+        //     tl.to('#promotion #rightbg span', 1, {y:'-100%', ease:'power4.inOut'},'_1');
+        //     tl.set('#promotion', {className:''});
+        // }
 
         const killAnim = () => {
             if(tl) tl.kill();

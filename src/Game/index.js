@@ -35,7 +35,7 @@ const Game = props => {
         let win = false;
         let enabled = false;
         
-        const gameStart = (data) => {console.log(123)
+        const gameStart = (data) => {
             if(!enabled){
                 win = false;
                 enabled = true;

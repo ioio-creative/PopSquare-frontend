@@ -1,94 +1,15 @@
-import React from 'react';
-import gsap from 'gsap';
+import React, { useEffect } from 'react';
+// import gsap from 'gsap';
+// import { useSelector } from 'react-redux';
 
-export const promotionAnimStart = () => {
-    openingIn();
-}
-
-const openingIn = () => {
-    const tl = gsap.timeline();
-
-    tl.to(['#promotion #leftbg span', '#promotion #rightbg span'], 1, {force3D:true, y:'0%', ease:'power4.inOut'},'_1');
-    tl.set({}, {}, '+=.1');
-    tl.to('#promotion #text1', 1.3, {motionPath: {
-        path:[
-            {x:-500, y:1000}, {x:-500, y:-100}, 
-            {x:0, y:0}, {x:0, y:0}
-        ],
-        type: "cubic"}, ease:'power4.out'
-    },'_2');
-    tl.to('#promotion #text2', 1.3, {force3D:true, motionPath: {
-        path:[
-            {x:500, y:1000}, {x:500, y:-100}, 
-            {x:0, y:0}, {x:0, y:0}
-        ],
-        type: "cubic"}, ease:'power4.out'
-    },'_2+=.3');
-    tl.to('#promotion #character1', 1, {force3D:true, motionPath: {
-        path:[
-            {x:-500, y:-500}, {x:100, y:-500}, 
-            {x:0, y:0}, {x:0, y:0}
-        ],
-        type: "cubic"}, ease:'power4.out'
-    },'_2+=.5');
-    tl.to('#promotion #character2', 1, {force3D:true, motionPath: {
-        path:[
-            {x:500, y:-300}, {x:-100, y:-100}, 
-            {x:0, y:0}, {x:0, y:0}
-        ],
-        type: "cubic"}, ease:'power4.out'
-    },'_2+=.6');
-    tl.to('#promotion #shape', 1, {force3D:true, motionPath: {
-        path:[
-            {x:-200, y:500}, {x:-100, y:0}, 
-            {x:0, y:0}, {x:0, y:0}
-        ],
-        type: "cubic"}, ease:'power4.out'
-    },'_2+=.8');
-    tl.to('#promotion #cutline span', 3, {force3D:true, y:0, ease:'power4.inOut'},'_2');
-    tl.to('#promotion #cutline #cutter', .8, {force3D:true, y:'-=130%', ease:'power2.inOut'},1.3);
-    tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},2.1);
-    tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},2.9);
-    tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},3.7);
-    tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},4.5);
-    tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},5.3);
-    tl.call(()=>openingOut(), null);
-}
-
-const openingOut = () => {
-    const tl = gsap.timeline();
-    tl.to('#promotion #cutline > span', 1, {y:'-100%', ease:'power4.inOut'},'_1');
-    tl.to('#promotion #cutline span span', 1, {y:'100%', ease:'power4.inOut'},'_1');
-    tl.to('#promotion #character1', 1, {x:-500, y:-500, ease:'power4.inOut'},'_1+=.1');
-    tl.to('#promotion #character2', 1.3, {x:800, y:-200, ease:'power4.inOut'},'_1+=.4');
-    tl.to('#promotion #shape', 1.3, {x:-200, y:600, ease:'power4.inOut'},'_1+=.5');
-    tl.to('#promotion #text2', 1, {motionPath: {
-        path:[
-            {x:0, y:0}, {x:100, y:100}, 
-            {x:300, y:200}, {x:800, y:200}
-        ],
-        type: "cubic"}, ease:'power4.inOut'
-    },'_1+=.2');
-    tl.to('#promotion #text1', 1.3, {motionPath: {
-        path:[
-            {x:0, y:0}, {x:-100, y:-100}, 
-            {x:-300, y:-200}, {x:-800, y:-200}
-        ],
-        type: "cubic"}, ease:'power4.inOut'
-    },'_1+=.3');
-    tl.call(()=>frame1In(), null);
-}
-
-const frame1In = () => {
-    const tl = gsap.timeline();
-    tl.to('#promotion #name #icon', 1, {force3D:true, scale:1, ease:'elastic.out(1, 0.5)'},'_1');
-    tl.to('#promotion #name span span', .6, {force3D:true, y:0, stagger:.03, ease:'power3.out'},'_1');
-    tl.to('#promotion #discount #center', 1.6, {force3D:true, y:'-95.25%', ease:'power4.inOut'},'_1');
-}
+// export const promotionAnimStart = () => {
+//     openingIn();
+// }
+// let tl = null;
 
 const Promotion = () => {
     return (
-        <div id="promotion" className="active">
+        <div id="promotion" className="">
             <div id="name">
                 <div id="icon"><div id="eyes"><span></span><span></span></div></div>
                 <span>
@@ -110,7 +31,7 @@ const Promotion = () => {
                                     [...Array(10)].map((v,i)=>{
                                         return <span key={i}>
                                             <span>0</span>
-                                            <span className="c">0</span>
+                                            <span className="c">0<div id="eyes"><span></span><span></span></div></span>
                                         </span>
                                     })
                                 }
@@ -120,9 +41,18 @@ const Promotion = () => {
                     </div>
                     <div>%</div>
                 </div>
+                <p>The Ordinary is a brand that is specialised in materials chemistry and biochemistry with integrity. The Ordinary is a brand that is specialised in materials chemistry and biochemistry with integrity.(Word Limit: 30)</p>
             </div>
-            <div id="frame2" className="frame"></div>
-            <div id="frame3" className="frame"></div>
+            <div id="frame2" className="frame">
+                <div id="image"></div>
+                <p className="tc">這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。 (最多字數：80)</p>
+            </div>
+            <div id="frame3" className="frame">
+                <p>The Ordinary is a brand that is specialised in materials chemistry and biochemistry with integrity. The Ordinary is a brand that is specialised in materials chemistry and biochemistry with integrity. <br/><br/> The Ordinary is a brand that is specialised in materials chemistry and biochemistry with integrity. (Word Limit: 60)</p>
+            </div>
+            <div id="frame4" className="frame">
+                <p className="tc">這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。<br/><br/>這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。(最多字數：150)</p>
+            </div>
             <div id="bg">
                 <div id="outerWrap">
                     <div id="innerWrap">

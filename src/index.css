@@ -21,6 +21,12 @@
   font-style: normal;
 }
 
+.tc{
+  font-family: 'Microsoft JhengHei';
+  font-weight: 900;
+  -webkit-text-stroke: .05vw;
+}
+
 html, body{
   width:100%;
   height:100%;

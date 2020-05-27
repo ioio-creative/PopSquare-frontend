@@ -683,15 +683,24 @@ $width: 1240;
                     }
                 }
                 &#frame3{
-                    @include setFont(29, 34, $width);
-                    display: flex;
-                    justify-content:center;
-                    align-items: center;
+                    @include setFont(25, 34, $width);
+                    // display: flex;
+                    // justify-content:center;
+                    // align-items: center;
                     text-align: center;
                     opacity: 0;
                     visibility: hidden;
                     p{
-                        width: vw-calc(559, $width);
+                        width: vw-calc(630, $width);
+                        position: absolute;
+                        top:50%;
+                        left:50%;
+                        transform: translate3d(-50%,-50%,0);
+                    }
+                    .tc{
+                        @include setFont(29, 37, $width);
+                        opacity: 0;
+                        visibility: hidden;
                     }
                 }
             }
@@ -833,13 +842,22 @@ $width: 1240;
                 }
             }
             #des{
-                width:vw-calc(558, $width);
+                width:vw-calc(630, $width);
                 text-align: center;
-                @include setFont(29, 34, $width);
+                @include setFont(20, 29, $width);
                 position: absolute;
-                bottom:vw-calc(95, $width);
+                top:78%;
                 left:50%;
                 transform: translate3d(-50%,0,0);
+                p{
+                    position: absolute;
+                    top:0;
+                }
+                .tc{
+                    @include setFont(22, 31, $width);
+                    opacity: 0;
+                    visibility: hidden;
+                }
             }
             #shapesWrap{
                 width:0;

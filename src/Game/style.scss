@@ -21,10 +21,6 @@
             }
         }
     }
-    .tc{
-        font-family: 'Microsoft JhengHei';
-        font-weight: 900;
-    }
     #container{
         width:100%;
         height: 100%;
@@ -76,17 +72,17 @@
             right: 0;
             overflow: visible;
             #symbol {
-                font-size: 30vh;
+                font-size: 25vh;
             }
             #title {
-                font-size: 8.9vh;
-                line-height: 10vh;
-                margin-top: -15vh;
+                font-size: 6.6vh;
+                line-height: 8vh;
+                margin-top: -12vh;
             }
             #smallTitle {
-                width: 50%;
-                font-size: 3.55vh;
-                line-height: 4vh;
+                width: 60%;
+                font-size: 2.55vh;
+                line-height: 3.5vh;
                 left: -60%;
                 top: 6vh;
             }
@@ -129,23 +125,23 @@
             }
         }
         #nextOffer{
-            font-size: 6vh;
-            line-height: 7.5vh;
+            font-size: 4vh;
+            line-height: 5.5vh;
             padding: 10vh 10vh 0;
             #big {
-                font-size: 16vh;
+                font-size: 11vh;
             }
             .tc{
-                font-size: 5.1vh;
-                line-height: 7.5vh;
+                font-size: 4.1vh;
+                line-height: 5.5vh;
             }
         }
         #seeyou {
-            font-size: 10vh;
+            font-size: 7vh;
             padding: 5vh 10vh 0;
             .tc{
-                font-size: 7vh;
-                line-height: 13vh;
+                font-size: 5vh;
+                line-height: 8vh;
             }
         }
         .character{
@@ -430,8 +426,8 @@
         }
         #tips{
             width: 100%;
-            font-size: 2.5vh;
-            line-height: 3.5vh;
+            font-size: 2vh;
+            line-height: 3vh;
             position: absolute;
             top:75vh;
         }

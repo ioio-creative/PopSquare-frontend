@@ -6,7 +6,7 @@ import axios from 'axios';
 import webSocket from 'socket.io-client';
 import * as PIXI from 'pixi.js';
 import Game from '../Game';
-import Promotion, {promoAnim} from '../Promotion';
+import Promotion, {promoAnim, stopPromoAnim} from '../Promotion';
 import './style.scss';
 import './pathseg';
 import '../Game/style.scss';
@@ -676,6 +676,10 @@ const Centrepiece = (props) => {
             pick.current.className = 'text';
             up.current.className = 'text';
             counter = 0;
+            gsap.to(['#pick','#up'], 1, {delay:1, force3D:true, scale:1, stagger:.3, ease:'elastic.out(1, 0.5)'});
+            gsap.to('#promotion #cutline span', .3, {y:0, ease:'power4.inOut'});
+            gsap.to('#promotion #cutline #cutter', .3, {autoAlpha:1, ease:'power1.inOut'});
+            gsap.set('#promotion *:not(.important)',{clearProps:true});
         }
 
         const setTimer = (seconds) => {
@@ -703,7 +707,10 @@ const Centrepiece = (props) => {
                 if(page === 'loading' || page === 'details'){ // end in loading page
                     page = 'ranking';
                     started = false;
+                    // if have propmotion
                     setTimer((rankingDataLength*5)-1 + 27);
+                    //else
+                    //setTimer((rankingDataLength*5)-1);
                     removeAllObjects();
                     rankingAnimtion();
                 }
@@ -715,10 +722,6 @@ const Centrepiece = (props) => {
                     //     ranking.current.className = '';
                     // },600);
                     
-                    gsap.to(['#pick','#up'], 1, {delay:1, force3D:true, scale:1, stagger:.3, ease:'elastic.out(1, 0.5)'});
-                    gsap.to('#promotion #cutline span', .3, {y:0, ease:'power4.inOut'});
-                    gsap.to('#promotion #cutline #cutter', .3, {autoAlpha:1, ease:'power1.inOut'});
-                    gsap.set('#promotion *:not(.important)',{clearProps:true});
 
                     setTimer(40-1);
                     reset();
@@ -793,6 +796,7 @@ const Centrepiece = (props) => {
             tl.set(['#pick','#up'], {scale:0});
             tl.set(ranking.current, {className:'active out'},'+=1');
             tl.to('#promotion #cutline #cutter', .3, {autoAlpha:0, ease:'power1.inOut'},'s');
+            // if have propmotion
             tl.call(()=>promoAnim(), null, 's');
             tl.set(centerpieceElem.current, {className:'important'},'+=1');
             tl.set(ranking.current, {className:''},'+=1');
@@ -1013,10 +1017,10 @@ const Centrepiece = (props) => {
         if(gameStarted){
             removeAllObjectsFunc.current.removeAllObjects();
             stopTimerFunc.current.stopTimer();
+            stopPromoAnim();
         }
         else{
             startTimerFunc.current.startTimer();
-            gsap.set('#promotion *:not(.important)',{clearProps:true});
         }
     },[gameStarted]);
 

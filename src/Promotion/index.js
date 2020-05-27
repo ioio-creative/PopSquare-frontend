@@ -113,6 +113,10 @@ const promoFrameOut = () => {
     tl.set('#promotion', {className:''});
 }
 
+export const stopPromoAnim = () => {
+    if(tl) tl.kill();
+}
+
 const Promotion = () => {
     return (
         <div id="promotion" className="">

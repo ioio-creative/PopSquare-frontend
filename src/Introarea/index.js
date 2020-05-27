@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import gsap from 'gsap';
 import './style.scss';
 
-import Promotion, { promoAnim } from '../Promotion';
+import Promotion, { promoAnim, stopPromoAnim } from '../Promotion';
 import Game from '../Game';
 import ParticlesAnim from '../Game/particles';
 import introvideo from './images/intro.mp4';
@@ -195,8 +195,12 @@ const Introarea = () => {
     
             tl.set({}, {}, '+=3');
             tl.set('#promotion', {className:'active'});
-            tl.call(()=>promoAnim(), null);
             tl.call(()=>particlesAnim2.stop(), null);
+            // if have promotion
+            tl.call(()=>promoAnim(), null);
+            // else
+            // tl.call(()=>video.current.play());
+            // tl.set('#trendofbrandpart2', {className:'active out'});
             tl.set('#trendofbrandpart2', {className:''},'+=1');
         }
 
@@ -318,6 +322,7 @@ const Introarea = () => {
         if(gameStarted){
             setTimeout(()=>{
                 killAnimFunc.current.killAnim();
+                stopPromoAnim();
             },1000);
         }
         else{

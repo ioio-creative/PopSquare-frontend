@@ -80,7 +80,7 @@
                 margin-top: -12vh;
             }
             #smallTitle {
-                width: 60%;
+                width: 50%;
                 font-size: 2.55vh;
                 line-height: 3.5vh;
                 left: -60%;
@@ -336,6 +336,9 @@
             color:#42d3d3;
             font-size: 2.7vh;
             margin-top:4vh;
+            &.tc{
+                margin-top:0;
+            }
         }
     }
     #ready{

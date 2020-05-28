@@ -1,6 +1,7 @@
 import React, {useEffect, useState, useRef} from 'react';
 import { useSelector } from 'react-redux';
 import gsap from 'gsap';
+import webSocket from 'socket.io-client';
 import './style.scss';
 
 import Promotion, { promoAnim, stopPromoAnim } from '../Promotion';
@@ -11,6 +12,10 @@ import introvideo from './images/intro.mp4';
 const Introarea = () => {
     const gameStarted = useSelector(state => state.gameStarted);
 
+    const [socket,setSocket] = useState(null);
+    const [trandData, setTrandData] = useState(null);
+    const [promoData, setPromoData] = useState(null);
+
     const video = useRef(null);
     const whatisthetrend = useRef(null);
     const tag = useRef(null);
@@ -18,6 +23,38 @@ const Introarea = () => {
     const shapesWrapElem = useRef(null);
     const shapesWrap2Elem = useRef(null);
     const killAnimFunc = useRef(null);
+    const getPromoDataFunc = useRef(null);
+
+    useEffect(()=>{
+        let loaded = false;
+
+        const initTrendData = (data) => {
+            setTrandData(data); console.log('trend data',data)
+        }
+        
+        const getPromoData = () => {
+            if(socket) socket.emit('getPromotionData', initPromoData);
+        }
+        getPromoDataFunc.current = {getPromoData};
+
+        const initPromoData = (data) => {
+            setPromoData(data); console.log('promotion data',data);
+        }
+
+        if(socket){
+            socket.emit('getTrendData', initTrendData);
+            getPromoData();
+        }else{
+            setSocket(webSocket('http://10.0.1.40:8080/'));
+        }
+
+        return ()=>{
+            if(socket){
+                socket.off('getTrendData', initTrendData);
+                socket.off('getPromotionData', getPromoData);
+            }
+        }
+    },[socket])
 
     useEffect(()=>{
         let tl;
@@ -26,11 +63,12 @@ const Introarea = () => {
         };
 
         const trendAnim = () => {
+            getPromoDataFunc.current.getPromoData();
             whatisthetrend.current.className = 'active';
             gsap.set('#intro *:not(.important)', {clearProps:true});
             
             tl = gsap.timeline();
-            tl.set('#whatisthetrend #tag span', {force3D:true, y:'-87%'});
+            tl.set('#whatisthetrend #tag span', {force3D:true, y:'-200%'});
             tl.set('#whatisthetrend #character', {force3D:true, rotation:35});
             tl.set({}, {}, '+=1.3');
             tl.to('#whatisthetrend #character', 1, {scale:.3, ease:'elastic.out(1.5, 0.3)'},'s');
@@ -88,18 +126,18 @@ const Introarea = () => {
             tl.to('#trendofbrand #character', 1, {force3D:true, motionPath: {
                 path:[
                     {x:window.innerWidth*.7, y:window.innerHeight*.22}, {x:window.innerWidth*.5, y:window.innerHeight*.22},
-                    {x:window.innerWidth/2, y:window.innerHeight*1.1}, {x:window.innerWidth/2, y:window.innerHeight*1.1}
+                    {x:window.innerWidth/2, y:window.innerHeight*1.2}, {x:window.innerWidth/2, y:window.innerHeight*1.2}
                 ], 
                 type: "cubic"}, ease:'power4.inOut'
             },'_1.4+=.6');
             tl.to('#trendofbrand #character', 1, {scale:1.3, rotation:12, ease:'power4.inOut'},'_1.4+=.6');
             tl.to('#trendofbrand #character #main', 1, {skewY:5, ease:'power4.inOut'},'_1.4+=.6');
-            tl.to('#trendofbrand #character #handle1', .6, {scaleY:1.3, ease:'back.out(3)'},'_1.5');
-            tl.to('#trendofbrand #character #handle2', .6, {scaleY:1.3, ease:'back.out(3)'},'_1.5-=.1');
+            tl.to('#trendofbrand #character #handle1', .6, {scaleY:1.2, ease:'back.out(3)'},'_1.5');
+            tl.to('#trendofbrand #character #handle2', .6, {scaleY:1.2, ease:'back.out(3)'},'_1.5-=.1');
     
             tl.set('#trendofbrand #character #eyes', {autoAlpha:0},'_6');
-            tl.to('#trendofbrand #character', 1, {scaleX:1.5, scaleY:1.1, y:window.innerHeight*1.2, ease:'power3.out'},'_1.6');
-            tl.to('#trendofbrand #character', 1, {scaleX:1.3, scaleY:1.3, y:window.innerHeight*1.1, ease:'elastic.out(1.5, 0.3)'},'_1.6+=.6');
+            tl.to('#trendofbrand #character', 1, {scaleX:1.5, scaleY:1.1, y:window.innerHeight*1.3, ease:'power3.out'},'_1.6');
+            tl.to('#trendofbrand #character', 1, {scaleX:1.3, scaleY:1.3, y:window.innerHeight*1.2, ease:'elastic.out(1.5, 0.3)'},'_1.6+=.6');
     
             // pop shape
             tl.call(()=>particlesAnim.start(), null, '_1.6+=.45');
@@ -107,7 +145,7 @@ const Introarea = () => {
             tl.to('#trendofbrand #shape1', 1, {rotation:-360, motionPath: {
                 path:[
                     {x:window.innerWidth*.4, y:window.innerHeight*.8}, {x:window.innerWidth*.4, y:window.innerHeight*.5}, 
-                    {x:window.innerWidth*.2, y:window.innerHeight*.41}, {x:window.innerWidth*.2, y:window.innerHeight*.41}
+                    {x:window.innerWidth*.2, y:window.innerHeight*.46}, {x:window.innerWidth*.2, y:window.innerHeight*.46}
                 ], 
                 type: "cubic"}, ease:'power3.out'
             },'_1.7');
@@ -123,7 +161,7 @@ const Introarea = () => {
             tl.to('#trendofbrand #shape3', 1, {rotation:360, motionPath: {
                 path:[
                     {x:window.innerWidth*.6, y:window.innerHeight*.8}, {x:window.innerWidth*.6, y:window.innerHeight*.5}, 
-                    {x:window.innerWidth*.81, y:-window.innerHeight*.35}, {x:window.innerWidth*.81, y:-window.innerHeight*.35}
+                    {x:window.innerWidth*.81, y:-window.innerHeight*.4}, {x:window.innerWidth*.81, y:-window.innerHeight*.4}
                 ], 
                 type: "cubic"}, ease:'power3.out'
             },'_1.7+=.6');
@@ -131,7 +169,7 @@ const Introarea = () => {
             tl.to('#trendofbrand #shape4', 1, {rotation:-360, motionPath: {
                 path:[
                     {x:window.innerWidth*.5, y:window.innerHeight*.8}, {x:window.innerWidth*.5, y:window.innerHeight*.5}, 
-                    {x:window.innerWidth*.25, y:-window.innerHeight*.5}, {x:window.innerWidth*.25, y:-window.innerHeight*.5}
+                    {x:window.innerWidth*.25, y:-window.innerHeight*.6}, {x:window.innerWidth*.25, y:-window.innerHeight*.6}
                 ], 
                 type: "cubic"}, ease:'power3.out'
             },'_1.7+=.9');
@@ -150,8 +188,9 @@ const Introarea = () => {
             const particlesAnim2 = new ParticlesAnim(shapesWrap2Elem.current, true);
         
             tl.call(()=>particlesAnim2.start(), null);
-            tl.to('#trendofbrandpart2 #name #icon', 1, {force3D:true, scale:1, ease:'elastic.out(1, 0.5)'},'_2.1');
+            tl.to('#trendofbrandpart2 #name #icon', 1, {force3D:true, scale:.5, ease:'elastic.out(1, 0.5)'},'_2.1');
             tl.to('#trendofbrandpart2 #name span span', .6, {force3D:true, y:0, stagger:.03, ease:'power3.out'},'_2.1');
+            tl.set('#trendofbrandpart2 #name #eyes', {autoAlpha:1},'_2.1+=.6');
             tl.set('#trendofbrandpart2 #character1', {force3D:true, scale:1},'_2.1');
             tl.to('#trendofbrandpart2 #frame1', .2, {autoAlpha:1, ease:'power1.inOut'},'_2.1');
             tl.to('#trendofbrandpart2 #image', 1, {force3D:true, rotation:4, scale:1, ease:'elastic.out(1, 0.5)'},'_2.1');
@@ -165,7 +204,7 @@ const Introarea = () => {
             tl.call(()=>particlesAnim2.stop(), null, '_2.2');
             tl.to('#trendofbrandpart2 #frame1', .3, {autoAlpha:0, ease:'power1.inOut'},'_2.2');
             tl.set('#trendofbrandpart2 #frame2', {autoAlpha:1},'_2.2');
-            tl.to('#trendofbrandpart2 #character1', .6, {x:'35%', y:'43%', scale:1.72, ease:'power4.out'},'_2.2');
+            tl.to('#trendofbrandpart2 #character1', .6, {x:'80%', y:'10%', scale:1.72, ease:'power4.out'},'_2.2');
             tl.to('#trendofbrandpart2 #character1 #eyes', 1, {x:'30%', y:'50%', ease:'power3.inOut'},'_2.2+=.3');
             tl.to('#trendofbrandpart2 #character2', .6, {force3D:true, scale:0, ease:'back.in(2)'},'_2.2');
     
@@ -185,15 +224,19 @@ const Introarea = () => {
             tl.to('#trendofbrandpart2 #frame2 #rateline > span span', 1, { x:'-100%', ease:'none'},'_2.5');
             tl.to('#trendofbrandpart2 #frame2 #rateline .point', .3, {scale:0, stagger:.3, ease:'back.in(2)'},'_2.5');
             
-            tl.set('#trendofbrandpart2 #shapesWrap', {y:'100vh'},'_2.5');
-            tl.call(()=>particlesAnim2.start(), null, '_2.5+=1');
-            tl.to('#trendofbrandpart2 #frame3', .3, {autoAlpha:1, ease:'power1.inOut'},'_2.6');
-            tl.to('#trendofbrandpart2 #character2', .6, {scale:1, ease:'elastic.out(1, 0.3)'},'_2.6');
-            tl.set({}, {}, '+=3');
-            tl.to('#trendofbrandpart2 #frame3 p', .3, {autoAlpha:0, ease:'power1.inOut'},'_2.7');
-            tl.to('#trendofbrandpart2 #frame3 .tc', .3, {autoAlpha:1, ease:'power1.inOut'},'_2.7+=.3');
+            if(trandData){
+                if(trandData.description){
+                    tl.set('#trendofbrandpart2 #shapesWrap', {y:'100vh'},'_2.5');
+                    tl.call(()=>particlesAnim2.start(), null, '_2.5+=1');
+                    tl.to('#trendofbrandpart2 #frame3', .3, {autoAlpha:1, ease:'power1.inOut'},'_2.6');
+                    tl.to('#trendofbrandpart2 #character2', .6, {scale:1, ease:'elastic.out(1, 0.3)'},'_2.6');
+                    tl.set({}, {}, '+=3');
+                    tl.to('#trendofbrandpart2 #frame3 p', .3, {autoAlpha:0, ease:'power1.inOut'},'_2.7');
+                    tl.to('#trendofbrandpart2 #frame3 .tc', .3, {autoAlpha:1, ease:'power1.inOut'},'_2.7+=.3');
+                    tl.set({}, {}, '+=3');
+                }
+            }
     
-            tl.set({}, {}, '+=3');
             tl.set('#promotion', {className:'active'});
             tl.call(()=>particlesAnim2.stop(), null);
             // if have promotion
@@ -203,117 +246,24 @@ const Introarea = () => {
             // tl.set('#trendofbrandpart2', {className:'active out'});
             tl.set('#trendofbrandpart2', {className:''},'+=1');
         }
-
-        // const promoOpeningIn = () => {
-        //     tl = gsap.timeline();
-        
-        //     tl.to(['#promotion #leftbg span', '#promotion #rightbg span'], 1, {force3D:true, y:'0%', ease:'power4.inOut'},'_1');
-        //     tl.set({}, {}, '+=.1');
-        //     tl.to('#promotion #text1', 1.3, {motionPath: {
-        //         path:[
-        //             {x:-500, y:1000}, {x:-500, y:-100}, 
-        //             {x:0, y:0}, {x:0, y:0}
-        //         ],
-        //         type: "cubic"}, ease:'power4.out'
-        //     },'_2');
-        //     tl.to('#promotion #text2', 1.3, {force3D:true, motionPath: {
-        //         path:[
-        //             {x:500, y:1000}, {x:500, y:-100}, 
-        //             {x:0, y:0}, {x:0, y:0}
-        //         ],
-        //         type: "cubic"}, ease:'power4.out'
-        //     },'_2+=.3');
-        //     tl.to('#promotion #character1', 1, {force3D:true, motionPath: {
-        //         path:[
-        //             {x:-500, y:-500}, {x:100, y:-500}, 
-        //             {x:0, y:0}, {x:0, y:0}
-        //         ],
-        //         type: "cubic"}, ease:'power4.out'
-        //     },'_2+=.5');
-        //     tl.to('#promotion #character2', 1, {force3D:true, motionPath: {
-        //         path:[
-        //             {x:500, y:-300}, {x:-100, y:-100}, 
-        //             {x:0, y:0}, {x:0, y:0}
-        //         ],
-        //         type: "cubic"}, ease:'power4.out'
-        //     },'_2+=.6');
-        //     tl.to('#promotion #shape', 1, {force3D:true, motionPath: {
-        //         path:[
-        //             {x:-200, y:500}, {x:-100, y:0}, 
-        //             {x:0, y:0}, {x:0, y:0}
-        //         ],
-        //         type: "cubic"}, ease:'power4.out'
-        //     },'_2+=.8');
-        //     tl.to('#promotion #cutline span', 3, {force3D:true, y:0, ease:'power4.inOut'},'_2');
-        //     tl.to('#promotion #cutline #cutter', .8, {force3D:true, y:'-=130%', ease:'power2.inOut'},1.3);
-        //     tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},2.1);
-        //     tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},2.9);
-        //     tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},3.7);
-        //     tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},4.5);
-        //     tl.to('#promotion #cutline #cutter', .8, {y:'-=130%', ease:'power2.inOut'},5.3);
-        //     tl.call(()=>promoOpeningOut(), null);
-        // }
-        
-        // const promoOpeningOut = () => {
-        //     tl = gsap.timeline();
-        //     tl.to('#promotion #cutline > span', 1, {y:'-100%', ease:'power4.inOut'},'_1');
-        //     tl.to('#promotion #cutline span span', 1, {y:'100%', ease:'power4.inOut'},'_1');
-        //     tl.to('#promotion #character1', 1, {x:-500, y:-500, ease:'power4.inOut'},'_1+=.1');
-        //     tl.to('#promotion #character2', 1.3, {x:800, y:-200, ease:'power4.inOut'},'_1+=.4');
-        //     tl.to('#promotion #shape', 1.3, {x:-200, y:600, ease:'power4.inOut'},'_1+=.5');
-        //     tl.to('#promotion #text2', 1, {motionPath: {
-        //         path:[
-        //             {x:0, y:0}, {x:100, y:100}, 
-        //             {x:300, y:200}, {x:800, y:200}
-        //         ],
-        //         type: "cubic"}, ease:'power4.inOut'
-        //     },'_1+=.2');
-        //     tl.to('#promotion #text1', 1.3, {motionPath: {
-        //         path:[
-        //             {x:0, y:0}, {x:-100, y:-100}, 
-        //             {x:-300, y:-200}, {x:-800, y:-200}
-        //         ],
-        //         type: "cubic"}, ease:'power4.inOut'
-        //     },'_1+=.3');
-        //     tl.call(()=>promoFrameIn(), null);
-        // }
-        
-        // const promoFrameIn = () => {
-        //     tl = gsap.timeline();
-        //     tl.to('#promotion #name #icon', 1, {force3D:true, scale:1, ease:'elastic.out(1, 0.5)'},'_1');
-        //     tl.to('#promotion #name span span', .6, {force3D:true, y:0, stagger:.03, ease:'power3.out'},'_1');
-        //     tl.to('#promotion #frame1', .3, {autoAlpha:1, ease:'power1.inOut'},'_1');
-        //     tl.to('#promotion #discount #center', 2, {force3D:true, y:'-95.55%', ease:'power4.inOut'},'_1+=.3');
-        //     tl.set({}, {}, '+=2');
-        //     tl.to('#promotion #frame1', .3, {autoAlpha:0, ease:'power1.inOut'},'_2');
-        //     tl.to('#promotion #frame2', .3, {autoAlpha:1, ease:'power1.inOut'},'_3');
-        //     tl.set({}, {}, '+=3');
-        //     tl.to('#promotion #frame2', .3, {autoAlpha:0, ease:'power1.inOut'},'_4');
-        //     tl.to('#promotion #frame3', .3, {autoAlpha:1, ease:'power1.inOut'},'_5');
-        //     tl.set({}, {}, '+=3');
-        //     tl.to('#promotion #frame3', .3, {autoAlpha:0, ease:'power1.inOut'},'_6');
-        //     tl.to('#promotion #frame4', .3, {autoAlpha:1, ease:'power1.inOut'},'_7');
-        //     tl.call(()=>promoFrameOut(), null, '+=3');
-        // }
-        
-        // const promoFrameOut = () => {
-        //     tl = gsap.timeline();
-        //     tl.to('#promotion #frame4', .3, {autoAlpha:0, ease:'power1.inOut'},'_1');
-        //     tl.to('#promotion #leftbg span', 1, {y:'100%', ease:'power4.inOut'},'_1');
-        //     tl.to('#promotion #rightbg span', 1, {y:'-100%', ease:'power4.inOut'},'_1');
-        //     tl.set('#promotion', {className:''});
-        // }
-
+        // promoAnim()
         const killAnim = () => {
             if(tl) tl.kill();
         }
         killAnimFunc.current = {killAnim}
 
-        // tl.play();
-        // brandAnim();
+        // setTimeout(()=>{
+        //         gsap.set('#whatisthetrend', {className:'active'});
+        //     trendAnim();
         
-        // tl = gsap.timeline();
-        // brandAnimPart2();
+        //     gsap.set('#trendofbrandpart2', {className:'active'});
+        //     setTimeout(()=>{
+        //         tl = gsap.timeline();
+        //         // brandAnim();
+        //         brandAnimPart2();
+        //     },1000);
+        // },1000);
+        
     },[]);
     
     
@@ -336,7 +286,7 @@ const Introarea = () => {
     return(
         <>
             <div id="intro">
-                <video ref={video} autoPlay muted>
+                <video ref={video} autoPlay>
                     <source src={introvideo} type="video/mp4" />
                 </video>
                 <div ref={whatisthetrend} id="whatisthetrend" className="">
@@ -359,9 +309,12 @@ const Introarea = () => {
                         <div id="frame2" className="frame">
                             <p ref={tag} id="tag">
                                 {
-                                    '#Skincare'.split('').map((v,i)=>{
-                                        const lth = '#Skincare'.split('').length;
-                                        return <span key={i} className="important" style={{fontSize:1920*.85/lth/window.innerWidth*100+'vw'}}>{v}</span>
+                                    trandData &&
+                                    `#${trandData.category}`.split('').map((v,i)=>{
+                                        const lth = `#${trandData.category}`.split('').length;
+                                        const h = 1920*1.15/Math.max(5, lth)/window.innerWidth*100+'vw';
+                                        const s = `calc((100vw + 16.5rem) / ${lth})`;
+                                        return <span key={i} className="important" style={{fontSize:s, lineHeight:h}}>{v}</span>
                                     })
                                 }
                             </p>
@@ -382,7 +335,7 @@ const Introarea = () => {
                         </div>
                         <div id="fixedShapes">
                             <div id="shape1"><div id="eyes"><span></span><span></span></div></div>
-                            <div id="shape2"><span>The Ordinary.</span></div>
+                            <div id="shape2"><span>{trandData && trandData.companyname}</span></div>
                             <div id="shape3"><div id="eyes"><span></span><span></span></div></div>
                             <div id="shape4"></div>
                             <div id="line1"><span><span></span></span></div>
@@ -410,8 +363,9 @@ const Introarea = () => {
                             <div id="icon"><div id="eyes"><span></span><span></span></div></div>
                             <span>
                                 {
-                                    'The Ordinary.'.split('').map((v,i)=>{
-                                        return <span key={i}>{v}</span>
+                                    trandData &&
+                                    trandData.companyname.split('').map((v,i)=>{
+                                        return <span key={i} dangerouslySetInnerHTML={{__html: v.replace(' ','&nbsp;')}}></span>
                                     })
                                 }
                             </span>
@@ -423,10 +377,10 @@ const Introarea = () => {
                             <div id="eyes"><span></span><span></span></div>
                         </div>
                         <div id="frame1" className="frame">
-                            <div id="image"><div></div></div>
+                            <div id="image"><div style={{backgroundImage:`url(${trandData && trandData.brief.image})`}}></div></div>
                             <div id="des">
-                                <p>The Ordinary is a brand that is specialised in materials chemistry and biochemistry with integrity. The Ordinary is a brand that is specialised in materials chemistry and biochemistry with integrity.(Word Limit: 30)</p>
-                                <p className="tc">這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。 (最多字數：80)</p>
+                                <p dangerouslySetInnerHTML={{__html: trandData && trandData.brief.content.en}}></p>
+                                <p className="tc" dangerouslySetInnerHTML={{__html: trandData && trandData.brief.content.zh}}></p>
                             </div>
                         </div>
                         <div id="frame2" className="frame">
@@ -440,41 +394,47 @@ const Introarea = () => {
                             <ul id="list">
                                 <li>
                                     <div className="wrap">
-                                        <div>Facebook <br/>followers</div>
-                                        <div className="value">10k</div>
+                                        <div>Facebook <br/>Followers</div>
+                                        <div className="value">{trandData && trandData.followerscount}k</div>
                                     </div>
                                     <span></span>
                                 </li>
                                 <li>
                                     <div className="wrap">
-                                        <div>Facebook followers<br/>growth rate</div>
-                                        <div className="value">110k</div>
+                                        <div>Facebook Followers<br/>Growth Rate</div>
+                                        <div className="value">{trandData && trandData.followersgrowth*100}%</div>
                                     </div>
                                     <span></span>
                                 </li>
                                 <li>
                                     <div className="wrap">
-                                        <div>Facebook<br/>like</div>
-                                        <div className="value up">31%</div>
+                                        <div>Facebook<br/>Like</div>
+                                        <div className="value up">{trandData && trandData.likescount}k</div>
                                     </div>
                                     <span></span>
                                 </li>
                                 <li>
                                     <div className="wrap">
-                                        <div>Facebook like<br/>growth rate</div>
-                                        <div className="value up">31%</div>
+                                        <div>Facebook Like<br/>Growth Rate</div>
+                                        <div className="value up">{trandData && trandData.likesgrowth*100}%</div>
                                     </div>
                                     <span></span>
                                 </li>
                             </ul>
                         </div>
-                        <div id="frame3" className="frame">
-                            <p>The Ordinary is a brand that is specialised in materials chemistry and biochemistry with integrity. The Ordinary is a brand that is specialised in materials chemistry and biochemistry with integrity. <br/><br/>The Ordinary is a brand that is specialised in materials chemistry and biochemistry with integrity. (Word Limit: 60)</p>
-                            <p className="tc">這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。 (最多字數：80)</p>
-                        </div>
+                        {
+                            trandData &&
+                            trandData.description &&
+                            <div id="frame3" className="frame">
+                                <p dangerouslySetInnerHTML={{__html: trandData.description.en}}></p>
+                                <p className="tc" dangerouslySetInnerHTML={{__html: trandData.description.zh}}></p>
+                            </div>
+                        }
                     </div>
                 </div>
-                <Promotion/>
+                {
+                    promoData && <Promotion trandData={trandData} promoData={promoData} />
+                }
             </div>
             <Game />
         </>

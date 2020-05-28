@@ -20,6 +20,12 @@ window.decomp = decomp;
 
 const Centrepiece = (props) => {
     const gameStarted = useSelector(state => state.gameStarted);
+
+    const [topProductData, setTopProductData] = useState(null);
+    const [topProductIdx, setTopProductIdx] = useState(0);
+    const [trandData, setTrandData] = useState(null);
+    const [promoData, setPromoData] = useState(null);
+
     const sceneElem = useRef(null);
     const tempSceneElem = useRef(null);
     const pick = useRef(null);
@@ -33,6 +39,9 @@ const Centrepiece = (props) => {
     const startTimerFunc = useRef(null);
     const stopTimerFunc = useRef(null);
     const preloadImageFunc = useRef(null);
+    const getPromoDataFunc = useRef(null);
+    const getRankingDataLthFunc = useRef(null);
+    const updateTopProductIdxFunc = useRef(null);
     
     const [socket,setSocket] = useState(null);
 
@@ -43,8 +52,14 @@ const Centrepiece = (props) => {
         const initProductData = (data) => {
             if(!loaded){
                 loaded = true;
-                preloadImageFunc.current.preloadImage(data.data);
+                if(data.data) preloadImageFunc.current.preloadImage(data.data);
             }
+        }
+
+        const initTopProductData = (data) => {
+            console.log('top',data);
+            setTopProductData(data);
+            getRankingDataLthFunc.current.getRankingDataLth(data.length);
         }
 
         const whenPickUp = (data) => {
@@ -55,17 +70,34 @@ const Centrepiece = (props) => {
             removeSpecificObjectFunc.current.removeSpecificObject(data.productId);
         }
 
+        const initTrendData = (data) => {
+            setTrandData(data); console.log('trend data',data)
+        }
+        
+        const getPromoData = () => {
+            if(socket) socket.emit('getPromotionData', initPromoData);
+        }
+        getPromoDataFunc.current = {getPromoData};
+        
+        const initPromoData = (data) => {
+            setPromoData(data); console.log('promotion data',data);
+        }
+
         if(socket){
+            socket.emit('getTopProduct', initTopProductData);
             socket.on('productData', initProductData);
             socket.on('PICKUP', whenPickUp);
             socket.on('PUTDOWN', whenPutDown);
+            socket.emit('getTrendData', initTrendData);
+            getPromoData();
         }else{
-            setSocket(webSocket('http://popsquare-server.herokuapp.com:80/'));
+            setSocket(webSocket('http://10.0.1.40:8080/'));
         }
 
         return ()=>{
             if(socket){
-                socket.off('productData', whenPickUp);
+                socket.off('topProductData', initTopProductData);
+                socket.off('productData', initProductData);
                 socket.off('PICKUP', whenPickUp);
                 socket.off('PUTDOWN', whenPutDown);
             }
@@ -94,7 +126,7 @@ const Centrepiece = (props) => {
         const group = -1;
         let page = 'loading';
         let end = new Date();
-        const rankingDataLength = 2; // from data
+        let rankingDataLength = 0; // from data
         const a = {b:0}
 
 
@@ -190,19 +222,19 @@ const Centrepiece = (props) => {
             const num = Math.round(Math.random() * 2);
             let _obj = null;
 
-            if(_cartName === 'car1' || (_productID === -1 && num === 0)){
+            if(_cartName === '3' || (_productID === -1 && num === 0)){
                 _obj = createShape('circle', colors[0], _productID, _productName, _cartName);
             }
-            else if(_cartName === 'car2' || (_productID === -1 && num === 1)){
+            else if(_cartName === '12' || (_productID === -1 && num === 1)){
                 _obj = createShape('triangle', colors[1], _productID, _productName, _cartName);
             }
-            else if(_cartName === 'car3' || (_productID === -1 && num === 2)){
+            else if(_cartName === '14' || (_productID === -1 && num === 2)){
                 _obj = createShape('halfCircle', colors[2], _productID, _productName, _cartName);
             }
-            else if(_cartName === 'car4' || (_productID === -1 && num === 2)){
+            else if(_cartName === '13' || (_productID === -1 && num === 2)){
                 _obj = createShape('smallCircle', colors[3], _productID, _productName, _cartName);
             }
-            else if(_cartName === 'car5' || (_productID === -1 && num === 2)){
+            else if(_cartName === '10' || (_productID === -1 && num === 2)){
                 _obj = createShape('halfCircle', colors[4], _productID, _productName, _cartName);
             }
 
@@ -340,8 +372,8 @@ const Centrepiece = (props) => {
             const container = new PIXI.Container();
             const graphicsContainer = new PIXI.Container();
             const detailsContainer = new PIXI.Container();
-            const size = graphics.width*.1;
-            const cartName = _cartName;
+            const size = graphics.width*.08;
+            // const cartName = _cartName;
             const productName = _productName;
             const productID = _productID;
             let tempgraphics = graphics.clone();
@@ -352,7 +384,7 @@ const Centrepiece = (props) => {
             createEyes(graphicsContainer);
             createProductName(productName, size, detailsContainer);
             createProductImage(productID, detailsContainer, tempgraphics);
-            createCartName(cartName, detailsContainer, graphicsContainer);
+            // createCartName(cartName, detailsContainer, graphicsContainer);
             
             container.addChild(graphicsContainer);
             container.addChild(detailsContainer);
@@ -445,16 +477,20 @@ const Centrepiece = (props) => {
             const style = new PIXI.TextStyle({
                 align: "center",
                 fill: "white",
-                fontFamily: "Comic Sans MS",
+                fontFamily: "Comic Sans MS, Noto Sans TC",
                 fontSize: size,
                 fontWeight: "bold",
                 letterSpacing: 1
             });
-            const text = new PIXI.Text(productName, style);
-            text.pivot.x = text.width/2;
-            text.pivot.y = text.height/2;
+            const texten = new PIXI.Text(productName.en, style);
+            const textzh = new PIXI.Text(productName.zh, style);
+            texten.pivot.x = texten.width/2;
+            texten.pivot.y = texten.height+10;
+            textzh.pivot.x = textzh.width/2;
+            textzh.pivot.y = -10;
             // text.alpha = 0;
-            container.addChild(text);
+            container.addChild(texten);
+            container.addChild(textzh);
         }
 
         const preloadImage = (images) => {
@@ -498,14 +534,16 @@ const Centrepiece = (props) => {
             for(let i=0; i<detailsArray.length; i++){
                 const detail = detailsArray[i];
                 if(detail !== null){
-                    const text = detail.children[0];
-                    const image = detail.children[1];
+                    const texten = detail.children[0];
+                    const textzh = detail.children[1];
+                    const image = detail.children[2];
                     
                     gsap.to(eyesArray, .3, {alpha:0, overwrite:true, ease:'power3.inOut'});
                     gsap.to(detailsArray, .3, {alpha:1, overwrite:true, ease:'power3.inOut'});
 
                     const tl = gsap.timeline({delay:Math.random()*3+1, repeat:-1, repeatDelay:2, yoyo:true});
-                    tl.to(text, .6, {alpha:1, ease:'power3.inOut'});
+                    tl.to(texten, .6, {alpha:1, ease:'power3.inOut'},'s');
+                    tl.to(textzh, .6, {alpha:1, ease:'power3.inOut'},'s');
                     tl.to(image, .6, {alpha:1, ease:'power3.inOut'},3);
 
                     productDetailsTween.push(tl);
@@ -680,6 +718,7 @@ const Centrepiece = (props) => {
             gsap.to('#promotion #cutline span', .3, {y:0, ease:'power4.inOut'});
             gsap.to('#promotion #cutline #cutter', .3, {autoAlpha:1, ease:'power1.inOut'});
             gsap.set('#promotion *:not(.important)',{clearProps:true});
+            getPromoDataFunc.current.getPromoData();
         }
 
         const setTimer = (seconds) => {
@@ -707,22 +746,20 @@ const Centrepiece = (props) => {
                 if(page === 'loading' || page === 'details'){ // end in loading page
                     page = 'ranking';
                     started = false;
+                    disablePick = true;
                     // if have propmotion
-                    setTimer((rankingDataLength*5)-1 + 27);
-                    //else
-                    //setTimer((rankingDataLength*5)-1);
+                    const lth = document.querySelectorAll('#promotion .frame').length;
+                    let t = 0;
+                    if(lth===1) t = 21;
+                    if(lth===2) t = 29;
+                    if(lth===3) t = 39;
+
+                    setTimer((rankingDataLength*5)-1 + t);
                     removeAllObjects();
                     rankingAnimtion();
                 }
                 else if(page === 'ranking'){ // end in ranking page
                     page = 'loading';
-                    // ranking.current.className = 'active out';
-                    
-                    // setTimeout(()=>{
-                    //     ranking.current.className = '';
-                    // },600);
-                    
-
                     setTimer(40-1);
                     reset();
                 }
@@ -732,7 +769,7 @@ const Centrepiece = (props) => {
         const startTimer = () => {
             reset();
             ranking.current.className = '';
-            setTimer(40-1);
+            setTimer(2-1);
             paused = false;
         }
         startTimerFunc.current = {startTimer};
@@ -790,6 +827,7 @@ const Centrepiece = (props) => {
             const tl = gsap.timeline();
             tl.to(a, 5, {b:1, repeat:rankingDataLength-1, 
                 onRepeat:function(){
+                    updateTopProductIdxFunc.current.updateTopProductIdx();
                     runRankingAnimation(spans, divs);
                 }
             });
@@ -797,11 +835,13 @@ const Centrepiece = (props) => {
             tl.set(ranking.current, {className:'active out'},'+=1');
             tl.to('#promotion #cutline #cutter', .3, {autoAlpha:0, ease:'power1.inOut'},'s');
             // if have propmotion
-            tl.call(()=>promoAnim(), null, 's');
+            if(document.querySelectorAll('#promotion .frame').length)
+                tl.call(()=>promoAnim(), null, 's');
             tl.set(centerpieceElem.current, {className:'important'},'+=1');
             tl.set(ranking.current, {className:''},'+=1');
+            tl.call(()=>setTopProductIdx(0), null);
         }
-
+        // promoAnim()
         const runRankingAnimation = (spans, divs) => {
             rankingIn(spans, divs);
             setTimeout(()=>{
@@ -889,6 +929,10 @@ const Centrepiece = (props) => {
             tl3.to('#ranking #rateline .point', .3, {scale:0, stagger:.3, ease:'back.in(2)'},'_1');
         }
 
+        const getRankingDataLth = (i) => {
+            rankingDataLength = i;
+        }
+        getRankingDataLthFunc.current = {getRankingDataLth};
         
         const explosion = function() {
             timeScaleTarget = 0.01;
@@ -1017,12 +1061,19 @@ const Centrepiece = (props) => {
         if(gameStarted){
             removeAllObjectsFunc.current.removeAllObjects();
             stopTimerFunc.current.stopTimer();
-            stopPromoAnim();
+            setTimeout(()=>{
+                stopPromoAnim();
+            },1000);
         }
         else{
             startTimerFunc.current.startTimer();
         }
     },[gameStarted]);
+
+    const updateTopProductIdx = () => {
+        setTopProductIdx(topProductIdx+1);
+    }
+    updateTopProductIdxFunc.current = {updateTopProductIdx}
 
     return(
         <div ref={centerpieceElem} id="centerpiece" className="important">
@@ -1035,7 +1086,13 @@ const Centrepiece = (props) => {
                     {/* <div id="logo">
                         <div className="img active" style={{backgroundImage:'url()'}}></div>
                     </div> */}
-                    <div id="productName"><span>Foldabel</span> <br/><span>Changing</span><br/> <span>Mat</span></div>
+                    <div id="productName">
+                        {
+                            topProductData && topProductData[topProductIdx].productName.en.split(' ').map((v,i)=>{
+                                return <span key={i} dangerouslySetInnerHTML={{__html: v}}></span>
+                            })
+                        }
+                    </div>
                     <div id="image">
                         <div style={{backgroundImage:'url()'}}></div>
                     </div>
@@ -1048,13 +1105,19 @@ const Centrepiece = (props) => {
                     </div>
                     <ul id="list">
                         <li>
-                            <div className="title">Hottest <br/> item ranking</div>
-                            <div className="value">Top 1</div>
+                            <div className="title">
+                                <p>Hottest Item <br/>Ranking</p>
+                                <p className="tc">熱門商品排名</p>
+                            </div>
+                                <div className="value">{ topProductData && topProductData[topProductIdx].rank }</div>
                             <span></span>
                         </li>
                         <li>
-                            <div className="title">Daily <br/>Pick up<br/>/times</div>
-                            <div className="value">50</div>
+                            <div className="title">
+                                <p>Total Pick<br/>Up Time</p>
+                                <p className="tc">累積Pick Up 次數</p>
+                            </div>
+                            <div className="value">{ topProductData && topProductData[topProductIdx].pickupCount }</div>
                             <span></span>
                         </li>
                     </ul>
@@ -1062,7 +1125,7 @@ const Centrepiece = (props) => {
                         <div id="wrap"><div id="shape"></div></div>
                     </div>
                 </div>
-                <Promotion/>
+                { <Promotion trandData={trandData} promoData={promoData} /> }
                 <Game />
             </div>
         </div>

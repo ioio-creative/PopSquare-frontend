@@ -1,6 +1,7 @@
 import React from 'react';
 import gsap from 'gsap';
 import MotionPathPlugin from 'gsap/MotionPathPlugin';
+// import webSocket from 'socket.io-client';
 // import { useSelector } from 'react-redux';
 
 export const promoAnim = () => {
@@ -70,14 +71,14 @@ const promoOpeningOut = () => {
     tl.to('#promotion #text2', 1, {motionPath: {
         path:[
             {x:0, y:0}, {x:100, y:100}, 
-            {x:300, y:200}, {x:800, y:200}
+            {x:500, y:200}, {x:1000, y:200}
         ],
         type: "cubic"}, ease:'power4.inOut'
     },'_1+=.2');
     tl.to('#promotion #text1', 1.3, {motionPath: {
         path:[
             {x:0, y:0}, {x:-100, y:-100}, 
-            {x:-300, y:-200}, {x:-800, y:-200}
+            {x:-1000, y:-200}, {x:-1300, y:-200}
         ],
         type: "cubic"}, ease:'power4.inOut'
     },'_1+=.3');
@@ -86,27 +87,39 @@ const promoOpeningOut = () => {
 
 const promoFrameIn = () => {
     tl = gsap.timeline();
-    tl.to('#promotion #name #icon', 1, {force3D:true, scale:1, ease:'elastic.out(1, 0.5)'},'_1');
+    tl.to('#promotion #name #icon', 1, {force3D:true, scale:.5, ease:'elastic.out(1, 0.5)'},'_1');
     tl.to('#promotion #name span span', .6, {force3D:true, y:0, stagger:.03, ease:'power3.out'},'_1');
-    tl.to('#promotion #frame1', .3, {autoAlpha:1, ease:'power1.inOut'},'_1');
-    tl.to('#promotion #discount #center', 2, {force3D:true, y:'-95.55%', ease:'power4.inOut'},'_1+=.3');
-    tl.set({}, {}, '+=2');
-    tl.to('#promotion #frame1', .3, {autoAlpha:0, ease:'power1.inOut'},'_2');
-    tl.to('#promotion #frame2', .3, {autoAlpha:1, ease:'power1.inOut'},'_3');
-    tl.set({}, {}, '+=3');
-    tl.to('#promotion #frame2', .3, {autoAlpha:0, ease:'power1.inOut'},'_4');
-    tl.to('#promotion #frame3', .3, {autoAlpha:1, ease:'power1.inOut'},'_5');
-    tl.set({}, {}, '+=3');
-    tl.to('#promotion #frame3', .3, {autoAlpha:0, ease:'power1.inOut'},'_6');
-    tl.to('#promotion #frame4', .3, {autoAlpha:1, ease:'power1.inOut'},'_7');
-    tl.call(()=>promoFrameOut(), null, '+=3');
+    tl.set('#promotion #name #eyes', {autoAlpha:1},'_1+=.6');
+
+    if(document.querySelector('#promotion #frame1')){
+        tl.to('#promotion .frame', .3, {autoAlpha:0, ease:'power1.inOut'},'_2-=1');
+        tl.to('#promotion #frame1', .3, {autoAlpha:1, ease:'power1.inOut'},'_2-=.7');
+        tl.to('#promotion #discount #center', 2, {force3D:true, y:'-95.55%', ease:'power4.inOut'},'_2-=.4');
+        tl.to('#promotion #frame1 p', .3, {autoAlpha:0, ease:'power1.inOut'},'_2+=3.3');
+        tl.to('#promotion #frame1 .tc', .3, {autoAlpha:1, ease:'power1.inOut'},'_2+=3.6');
+    }
+    if(document.querySelector('#promotion #frame2')){
+        if(document.querySelector('#promotion #frame1')) tl.set({}, {}, '+=5');
+        tl.to('#promotion .frame', .3, {autoAlpha:0, ease:'power1.inOut'},'_3-=1');
+        tl.to('#promotion #frame2', .3, {autoAlpha:1, ease:'power1.inOut'},'_3-=.7');
+        tl.to('#promotion #frame2 p', .3, {autoAlpha:0, ease:'power1.inOut'},'_3+=3.3');
+        tl.to('#promotion #frame2 .tc', .3, {autoAlpha:1, ease:'power1.inOut'},'_3+=3.6');
+    }
+    if(document.querySelector('#promotion #frame3')){
+        if(document.querySelector('#promotion #frame1') || document.querySelector('#promotion #frame2')) tl.set({}, {}, '+=5');
+        tl.to('#promotion .frame', .3, {autoAlpha:0, ease:'power1.inOut'},'_4-=1');
+        tl.to('#promotion #frame3', .3, {autoAlpha:1, ease:'power1.inOut'},'_4-=.7');
+        tl.to('#promotion #frame3 p', .3, {autoAlpha:0, ease:'power1.inOut'},'_4+=3.3');
+        tl.to('#promotion #frame3 .tc', .3, {autoAlpha:1, ease:'power1.inOut'},'_4+=3.6');
+    }
+    tl.call(()=>promoFrameOut(), null, '+=5');
 }
 
 const promoFrameOut = () => {
     tl = gsap.timeline();
     tl.to('#promotion #name #icon', 1, {scale:0, ease:'back.out(2)'},'_1');
     tl.to('#promotion #name span span', .6, {y:'100%', stagger:.03, ease:'power3.in'},'_1');
-    tl.to('#promotion #frame4', .3, {autoAlpha:0, ease:'power1.inOut'},'_1');
+    tl.to('#promotion .frame', .3, {autoAlpha:0, ease:'power1.inOut'},'_1');
     tl.to('#promotion #leftbg span', 1, {y:'100%', ease:'power4.inOut'},'_1');
     tl.to('#promotion #rightbg span', 1, {y:'-100%', ease:'power4.inOut'},'_1');
     document.querySelector('video') && tl.call(()=>document.querySelector('video').play(), null,'_1');
@@ -117,52 +130,88 @@ export const stopPromoAnim = () => {
     if(tl) tl.kill();
 }
 
-const Promotion = () => {
+const Promotion = props => {
+    // const [socket,setSocket] = useState(null);
+    // const [trandData, setTrandData] = useState(null);
+
+    // useEffect(()=>{
+        // let loaded = false;
+
+        // const initTrendData = (data) => {
+        //     setTrandData(data);
+        // }
+
+        // if(socket){
+            // socket.emit('getTrendData', initTrendData);
+        // }else{
+        //     setSocket(webSocket('http://10.0.1.40:8080/'));
+        // }
+
+        // return ()=>{
+        //     if(socket){
+                // socket.off('getTrendData', initTrendData);
+        //     }
+        // }
+    // },[socket])
+
     return (
         <div id="promotion" className="">
             <div id="name">
                 <div id="icon"><div id="eyes"><span></span><span></span></div></div>
                 <span>
                     {
-                        'The Ordinary.'.split('').map((v,i)=>{
-                            return <span key={i}>{v}</span>
+                        props.trandData &&
+                        props.trandData.companyname.split('').map((v,i)=>{
+                            return <span key={i} dangerouslySetInnerHTML={{__html: v.replace(' ','&nbsp;')}}></span>
                         })
                     }
                 </span>
             </div>
-            <div id="frame1" className="frame">
+            {
+                props.promoData &&
+                props.promoData.type === 1 &&
+                <div id="frame1" className="frame">
                 <div id="discount">
-                    <div>3</div>
+                    <div>{props.promoData.discount.split('')[0]}</div>
                     <div>
-                        0
+                        {props.promoData.discount.split('')[1]}
                         <div id="centerWrap">
                             <div id="center">
                                 {
                                     [...Array(10)].map((v,i)=>{
                                         return <span key={i}>
-                                            <span>0</span>
-                                            <span className="c">0<div id="eyes"><span></span><span></span></div></span>
+                                            <span>{props.promoData.discount.split('')[1]}</span>
+                                            <span className="c">{props.promoData.discount.split('')[1]}<div id="eyes"><span></span><span></span></div></span>
                                         </span>
                                     })
                                 }
-                                <span>0</span>
+                                <span>{props.promoData.discount.split('')[1]}</span>
                             </div>
                         </div>
                     </div>
                     <div>%</div>
                 </div>
-                <p>The Ordinary is a brand that is specialised in materials chemistry and biochemistry with integrity. The Ordinary is a brand that is specialised in materials chemistry and biochemistry with integrity.(Word Limit: 30)</p>
+                <p dangerouslySetInnerHTML={{__html:props.promoData.description.en}}></p>
+                <p className="tc" dangerouslySetInnerHTML={{__html:props.promoData.description.zh}}></p>
             </div>
-            <div id="frame2" className="frame">
-                <div id="image"></div>
-                <p className="tc">這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。 (最多字數：80)</p>
-            </div>
-            <div id="frame3" className="frame">
-                <p>The Ordinary is a brand that is specialised in materials chemistry and biochemistry with integrity. The Ordinary is a brand that is specialised in materials chemistry and biochemistry with integrity. <br/><br/> The Ordinary is a brand that is specialised in materials chemistry and biochemistry with integrity. (Word Limit: 60)</p>
-            </div>
-            <div id="frame4" className="frame">
-                <p className="tc">這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。<br/><br/>這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。這是假字。(最多字數：150)</p>
-            </div>
+            }
+            {
+                props.promoData &&
+                props.promoData.type === 2 &&
+                <div id="frame2" className="frame">
+                    <div id="image" style={{backgroundImage:`url(${props.promoData.media})`}}></div>
+                    <p dangerouslySetInnerHTML={{__html:props.promoData.description.en}}></p>
+                    <p className="tc" dangerouslySetInnerHTML={{__html:props.promoData.description.zh}}></p>
+                </div>
+            }
+            {
+                props.promoData &&
+                props.promoData.type === 3 &&
+                <div id="frame3" className="frame">
+                    <p dangerouslySetInnerHTML={{__html:props.promoData.description.en}}></p>
+                    <p className="tc" dangerouslySetInnerHTML={{__html:props.promoData.description.zh}}></p>
+                </div>
+            }
             <div id="bg">
                 <div id="outerWrap">
                     <div id="innerWrap">

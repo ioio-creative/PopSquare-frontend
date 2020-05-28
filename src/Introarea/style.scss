@@ -1,5 +1,5 @@
 @import '../functions.scss';
-$width: 1240;
+$width: 1920;
 @import '../Promotion/style.scss';
 
 #intro{
@@ -45,10 +45,10 @@ $width: 1240;
                 position: absolute;
                 top:0;
                 left:0;
-                transform: translate3d(72vw,72vh,0) rotate(35deg) scale(0);
+                transform: translate3d(72vw,78vh,0) rotate(35deg) scale(0);
                 #main{
-                    width:vw-calc(827, $width);
-                    height:vw-calc(748, $width);
+                    width:vw-calc(1100);
+                    height:vw-calc(1100*0.904);
                     background:url('./images/character1.svg') no-repeat;
                     background-size:100%;
                     position: absolute;
@@ -146,20 +146,28 @@ $width: 1240;
                     #tag{
                         // opacity: 0;
                         // visibility: hidden;
-                        font-size:vw-calc(200);
+                        // font-size:vw-calc(200);
+                        // width: 100%;
+                        // text-align: center;
+                        position: absolute;
+                        left:50%;
+                        bottom:37%;
                         overflow: hidden;
+                        transform: translate3d(-50%,0,0);
+                        white-space: nowrap;
                         // transform: translate3d(3%,-29%,0) scale(.2);
                         span{
+                            line-height: inherit;
                             display: inline-block;
-                            transform: translate3d(0,-100%,0);
+                            transform: translate3d(0,-130%,0);
                         }
                     }
                     #line{
                         width:77%;
-                        height:vw-calc(40, $width);
+                        height:vw-calc(40);
                         background:#f98d44;
                         position: absolute;
-                        top:58%;
+                        top:61%;
                         z-index: 1;
                         transform-origin: left;
                         transform: translate3d(0,0,0) scaleX(0);
@@ -167,12 +175,12 @@ $width: 1240;
                     }
                     #linebg{
                         width:77%;
-                        height:vw-calc(40, $width);
+                        height:vw-calc(40);
                         background:#28004B;
                         position: absolute;
-                        top:58%;
+                        top:61%;
                         transform-origin: left;
-                        transform: translate3d(vw-calc(10, $width), vw-calc(10, $width),0) scaleX(0);
+                        transform: translate3d(vw-calc(10), vw-calc(10),0) scaleX(0);
                         overflow: hidden;
                     }
                 }
@@ -215,8 +223,8 @@ $width: 1240;
                 transform: translate3d(0,150vh,0);
                 z-index: 2;
                 #main{
-                    width:vw-calc(827, $width);
-                    height:vw-calc(748, $width);
+                    width:vw-calc(1100);
+                    height:vw-calc(1100*0.904);
                     background:url('./images/character2.svg') no-repeat;
                     background-size:100%;
                     position: absolute;
@@ -229,19 +237,19 @@ $width: 1240;
                     position: absolute;
                     &#handle1{
                         width: vw-calc(174);
-                        height: vw-calc(225);
+                        height: vw-calc(174*1.29);
                         background:url('./images/handle1.svg') no-repeat;
                         background-size:100%;
                         z-index: 3;
-                        transform: translate3d(-150%,-240%,0) rotate(-15deg) scale(1.3, 0);
+                        transform: translate3d(-130%,-220%,0) rotate(-15deg) scale(1.2, 0);
                     }
                     &#handle2{
                         width: vw-calc(174);
-                        height: vw-calc(192);
+                        height: vw-calc(174*0.906);
                         background:url('./images/handle2.svg') no-repeat;
                         background-size:100%;
                         z-index: 1;
-                        transform: translate3d(-110%,-270%,0) rotate(-15deg) scale(1.3, 0);
+                        transform: translate3d(-90%,-300%,0) rotate(-15deg) scale(1.2, 0);
                     }
                 }
                 #eyes{
@@ -314,8 +322,8 @@ $width: 1240;
                     transform: translate3d(50vw, 90vh, 0);
                 }
                 #shape1{
-                    width: vw-calc(144, $width);
-                    height: vw-calc(140, $width);
+                    width: vw-calc(200);
+                    height: vw-calc(200);
                     background:url('./images/shape1.svg') no-repeat;
                     background-size:100%;
                     #eyes{
@@ -339,8 +347,8 @@ $width: 1240;
                     }
                 }
                 #shape2{
-                    width: vw-calc(342, $width);
-                    height: vw-calc(325, $width);
+                    width: vw-calc(450);
+                    height: vw-calc(450*0.95);
                     background:url('./images/shape2.svg') no-repeat;
                     background-size:100%;
                     span{
@@ -348,13 +356,13 @@ $width: 1240;
                         top: 50%;
                         left: 50%;
                         transform: translate3d(-50%,-50%,0) rotate(8deg);
-                        font-size: vw-calc(67, $width);
+                        font-size: vw-calc(78);
                         white-space: nowrap;
                     }
                 }
                 #shape3{
-                    width: vw-calc(71, $width);
-                    height: vw-calc(91, $width);
+                    width: vw-calc(140*0.78);
+                    height: vw-calc(140);
                     background:url('./images/character4.svg') no-repeat;
                     background-size:100%;
                     #eyes{
@@ -378,16 +386,16 @@ $width: 1240;
                     }
                 }
                 #shape4{
-                    width: vw-calc(110, $width);
-                    height: vw-calc(120, $width);
+                    width: vw-calc(110);
+                    height: vw-calc(120);
                     background:url('./images/shape8.svg') no-repeat;
                     background-size:100%;
                 }
                 #line1{
-                    width: vw-calc(53, $width);
-                    height: vw-calc(78, $width);
+                    width: vw-calc(53);
+                    height: vw-calc(78);
                     position: absolute;
-                    transform: translate3d(33vw,-21vh,0);
+                    transform: translate3d(31vw,-23vh,0);
                     span{
                         width:100%;
                         height:100%;
@@ -404,10 +412,10 @@ $width: 1240;
                     }
                 }
                 #line2{
-                    width: vw-calc(43, $width);
-                    height: vw-calc(99, $width);
+                    width: vw-calc(43);
+                    height: vw-calc(99);
                     position: absolute;
-                    transform: translate3d(74vw,-24vh,0);
+                    transform: translate3d(72vw,-24vh,0);
                     span{
                         width:100%;
                         height:100%;
@@ -424,10 +432,10 @@ $width: 1240;
                     }
                 }
                 #line3{
-                    width: vw-calc(63, $width);
-                    height: vw-calc(149, $width);
+                    width: vw-calc(63);
+                    height: vw-calc(149);
                     position: absolute;
-                    transform: translate3d(33vw, -49vh, 0);
+                    transform: translate3d(32vw, -64vh, 0) rotate(-45deg);
                     span{
                         width:100%;
                         height:100%;
@@ -568,8 +576,8 @@ $width: 1240;
                 }
                 &#frame2{
                     .point{
-                        width: vw-calc(27, $width);
-                        height: vw-calc(27, $width);
+                        width: vw-calc(27);
+                        height: vw-calc(27);
                         border-radius: 50%;
                         background:#000;
                         position: absolute;
@@ -591,24 +599,24 @@ $width: 1240;
                         }
                     }
                     #list{
-                        width:vw-calc(633, $width);
+                        width:vw-calc(733);
                         height:100vh;
                         position: absolute;
-                        top:vw-calc(-10, $width);
-                        right:vw-calc(80, $width);
+                        top:vw-calc(-10);
+                        right:vw-calc(80);
                         list-style: none;
                         display: flex;
                         flex-direction: column;
-                        padding:vw-calc(0 0 70 0, $width);
+                        padding:vw-calc(0 0 70 0);
                         li{
                             width:100%;
                             position: relative;
-                            padding-top: vw-calc(80, $width);
+                            padding-top: vw-calc(80);
                             flex: 1;
-                            @include setFont(27, 32, $width);
+                            @include setFont(27, 32);
                             span{
                                 width:100%;
-                                height:vw-calc(8, $width);
+                                height:vw-calc(8);
                                 display: block;
                                 background:#fff;
                                 position: absolute;
@@ -627,13 +635,13 @@ $width: 1240;
                                     visibility: hidden;
                                 }
                                 .value{
-                                    @include setFont(112, 112, $width);
-                                    padding-left:vw-calc(100, $width);
+                                    @include setFont(112, 112);
+                                    padding-left:vw-calc(100);
                                     position: relative;
                                     &:before{
                                         content:'';
-                                        width:vw-calc(61, $width);
-                                        height:vw-calc(53, $width);
+                                        width:vw-calc(61);
+                                        height:vw-calc(53);
                                         display: block;
                                         background:url('./images/up.svg') center no-repeat;
                                         background-size:100%;
@@ -659,8 +667,8 @@ $width: 1240;
                         }
                     }
                     #rateline{
-                        width: vw-calc(913, $width);
-                        height: vw-calc(449, $width);
+                        width: vw-calc(913);
+                        height: vw-calc(449);
                         position: absolute;
                         top:50%;
                         left:50%;
@@ -683,7 +691,7 @@ $width: 1240;
                     }
                 }
                 &#frame3{
-                    @include setFont(25, 34, $width);
+                    @include setFont(25, 34);
                     // display: flex;
                     // justify-content:center;
                     // align-items: center;
@@ -691,14 +699,14 @@ $width: 1240;
                     opacity: 0;
                     visibility: hidden;
                     p{
-                        width: vw-calc(630, $width);
+                        width: vw-calc(630);
                         position: absolute;
                         top:50%;
                         left:50%;
                         transform: translate3d(-50%,-50%,0);
                     }
                     .tc{
-                        @include setFont(29, 37, $width);
+                        @include setFont(29, 37);
                         opacity: 0;
                         visibility: hidden;
                     }
@@ -706,18 +714,21 @@ $width: 1240;
             }
             #name{
                 position: absolute;
-                top:vw-calc(65, $width);
-                left:vw-calc(81, $width);
+                top:10%;
+                left:6%;
                 color:#2E393D;
                 #icon{
-                    width:vw-calc(42, $width);
-                    height:vw-calc(42, $width);
+                    width:vw-calc(100);
+                    height:vw-calc(100);
                     border-radius: 50%;
                     background:#2E393D;
-                    transform: translate3d(0,0,0) scale(0);
+                    position: absolute;
+                    top:50%;
+                    left:50%;
+                    transform: translate3d(-50%,-50%,0) scale(0);
                     #eyes{
-                        width:vw-calc(11, $width);
-                        height:vw-calc(11/2.6, $width);
+                        width:vw-calc(15*2);
+                        height:vw-calc(15*2/2.6);
                         position: absolute;
                         top:45%;
                         left:50%;
@@ -725,6 +736,8 @@ $width: 1240;
                         display: flex;
                         justify-content: space-between;
                         transform: translate3d(-50%, -50%, 0);
+                        opacity: 0;
+                        visibility: hidden;
                         span{
                             width:25%;
                             height:100%;
@@ -738,26 +751,27 @@ $width: 1240;
                 &>span{
                     position: absolute;
                     top:50%;
-                    left:vw-calc(85);
+                    left:vw-calc(45);
                     transform: translate3d(0,-50%,0);
-                    @include setFont(36, 42, $width);
+                    @include setFont(46, 56);
+                    letter-spacing: vw-calc(-1);
                     white-space: nowrap;
                     overflow: hidden;
                     span{
                         display: inline-block;
-                        transform: translate3d(0,-100%,0);
+                        transform: translate3d(0,-110%,0);
                     }
                 }
             }
             #character1{
-                width:vw-calc(182, $width);
-                height:vw-calc(177, $width);
+                width:vw-calc(230);
+                height:vw-calc(230*0.972);
                 background:url('./images/character3.svg') no-repeat;
                 position: absolute;
-                bottom:vw-calc(198, $width);
-                left:vw-calc(87, $width);
+                bottom:vw-calc(170);
+                left:vw-calc(250);
                 z-index: 10;
-                transform: translate3d(-190%, 50%, 0) scale(1.7);
+                transform: translate3d(-250%, 50%, 0) scale(1.7);
                 #eyes{
                     width:20%;
                     height:8%;
@@ -778,13 +792,13 @@ $width: 1240;
                 }
             }
             #character2{
-                width:vw-calc(109, $width);
-                height:vw-calc(140, $width);
+                width:vw-calc(170*0.778);
+                height:vw-calc(170);
                 background:url('./images/character4.svg') no-repeat;
                 position: absolute;
-                bottom:vw-calc(172, $width);
-                right:vw-calc(78, $width);
-                transform: translate3d(180%, 50%, 0);
+                bottom:vw-calc(172);
+                right:vw-calc(200);
+                transform: translate3d(260%, 50%, 0);
                 #eyes{
                     width:vw-calc(30);
                     height:vw-calc(30/2.6);
@@ -794,7 +808,7 @@ $width: 1240;
                     z-index: 3;
                     display: flex;
                     justify-content: space-between;
-                    transform: translate3d(60%, 800%, 0);
+                    transform: translate3d(60%, 600%, 0);
                     span{
                         width:25%;
                         height:100%;
@@ -806,11 +820,11 @@ $width: 1240;
                 }
             }
             #image{
-                width:vw-calc(495, $width);
-                height:vw-calc(354, $width);
+                width:vw-calc(650);
+                height:vw-calc(650*0.715);
                 position: absolute;
-                top:50%;
-                left:52%;
+                top:48%;
+                left:50%;
                 transform: translate3d(-50%,-50%,0) rotate(4deg) scale(0);
                 &:before{
                     content:'';
@@ -836,17 +850,19 @@ $width: 1240;
                     width:100%;
                     height:100%;
                     background: #fff;
+                    background-repeat: no-repeat;
+                    background-size:cover;
                     position: absolute;
                     z-index: 3;
-                    box-shadow: 0 0 vw-calc(15, $width) rgba(0,0,0,.3);
+                    box-shadow: 0 0 vw-calc(15) rgba(0,0,0,.3);
                 }
             }
             #des{
-                width:vw-calc(630, $width);
+                width:vw-calc(730);
                 text-align: center;
-                @include setFont(20, 29, $width);
+                @include setFont(20, 29);
                 position: absolute;
-                top:78%;
+                top:75%;
                 left:50%;
                 transform: translate3d(-50%,0,0);
                 p{
@@ -854,7 +870,7 @@ $width: 1240;
                     top:0;
                 }
                 .tc{
-                    @include setFont(22, 31, $width);
+                    @include setFont(22, 31);
                     opacity: 0;
                     visibility: hidden;
                 }

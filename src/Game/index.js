@@ -6,6 +6,10 @@ import QRCode from "qrcode.react";
 import Counter from './counter';
 import ParticlesAnim from './particles';
 
+import sound_redball from './sounds/popsq_Game-rules-red-ball.mp3';
+import sound_countdown from './sounds/popsq_countdown.mp3';
+import sound_start from './sounds/popsq_Start.mp3';
+
 const min = 1;
 const sec = 0;
 
@@ -65,7 +69,7 @@ const Game = props => {
             socket.on('GAME', gameStart);
             socket.on('PICKUP', whenPickUp);
         }else{
-            setSocket(webSocket('http://popsquare-server.herokuapp.com:80/'));
+            setSocket(webSocket('http://10.0.1.40:8080/'));
         }
 
         return ()=>{
@@ -84,6 +88,10 @@ const Game = props => {
         let counting = false;
         const particlesAnim = new ParticlesAnim(shapesWrapElem.current);
         let screenOrientation = null;
+
+        const redballSound = new Audio(sound_redball);
+        const countdownSound = new Audio(sound_countdown);
+        const startSound = new Audio(sound_start);
         
         const isCounting = () => {
             return counting;
@@ -187,7 +195,7 @@ const Game = props => {
         
         const initSlider = () => {
             gsap.set('#buttons',{force3D:true, y:'-12vh'});
-            gsap.set('#texts',{force3D:true, y:'-35vh'});
+            gsap.set('#texts',{force3D:true, y:'-40vh'});
             gsap.set('#cart',{force3D:true, y:'-300%'});
             gsap.set('#product',{force3D:true, autoAlpha:1, y:'-60vh'});
             gsap.set('#product #rader',{autoAlpha:0});
@@ -222,7 +230,10 @@ const Game = props => {
             sliderInAnim.to('#character1 .eyes', 1, {y:'-100%', repeat:-1, repeatDelay:.3, yoyo:true, ease:'power3.inOut'},1);
             sliderInAnim.to('#character2 .eyes', .6, {x:'-100%'},1);
             sliderInAnim.to('#character2 .eyes', 1, {x:'-50%', y:'-100%', repeat:-1, repeatDelay:1, yoyo:true, ease:'power3.inOut'},1.6);
-            sliderInAnim.to('#character2 .wrap', .3, {y:'-20%', repeat:-1, yoyo:true, ease:'power3.out'},1);
+            sliderInAnim.to('#character2 .wrap', .3, {y:'-20%', repeat:-1, yoyo:true, ease:'power3.out'},'s');
+            sliderInAnim.call(()=>{redballSound.currentTime=0;redballSound.play()}, null, 's');
+            // sliderInAnim.call(()=>{redballSound.currentTime=0;redballSound.play()}, null, 's+=3');
+            // sliderInAnim.call(()=>{redballSound.currentTime=0;redballSound.play()}, null, 's+=6');
 
             // slide 2
             sliderInAnim.set({}, {}, '+=5');
@@ -246,7 +257,7 @@ const Game = props => {
             const tl = gsap.timeline();
             tl.to('#character2 .wrap', .6, {y:'0%', overwrite:true, ease:'power3.out'},'s');
             tl.to('#buttons', .6, {y:'-12vh', ease: 'power4.inOut'},'s');
-            tl.to('#texts', .6, {y:'-35vh', ease: 'power4.inOut'},'s+=.2');
+            tl.to('#texts', .6, {y:'-40vh', ease: 'power4.inOut'},'s+=.2');
             tl.to('#cart', .6, {y:'-300%', ease: 'power4.inOut'},'s+=.4');
             tl.to('#product', 1, {autoAlpha:0, ease: 'power1.inOut'},'s');
             tl.call(questionIn, null);
@@ -290,12 +301,22 @@ const Game = props => {
 
         const ready = () => {
             const tl = gsap.timeline();
-            tl.to('#ready span', 1, {scale:1, stagger:1, ease: 'elastic.out(1, 0.3)'});
-            tl.set('#ready span:nth-child(1)',{scale:0},1);
+            // tl.to('#ready span', 1, {scale:1, stagger:1, ease: 'elastic.out(1, 0.3)'},0);
+            tl.call(()=>{countdownSound.currentTime=0;countdownSound.play()}, null, 0);
+            tl.call(()=>{countdownSound.currentTime=0;countdownSound.play()}, null, 1);
+            tl.call(()=>{countdownSound.currentTime=0;countdownSound.play()}, null, 2);
+            tl.call(()=>{startSound.currentTime=0;startSound.play()}, null, 3);
+            tl.to('#ready span:nth-child(1)', 1, {scale:1, ease: 'elastic.out(1, 0.3)'},0);
+            tl.to('#ready span:nth-child(2)', 1, {scale:1, ease: 'elastic.out(1, 0.3)'},1);
+            tl.to('#ready span:nth-child(3)', 1, {scale:1, ease: 'elastic.out(1, 0.3)'},2);
+
+            tl.set('#ready span:nth-child(1)',{scale:0},1.1);
+            tl.set('#ready #bg',{autoAlpha:1},1.1);
+
             tl.set('#ready span:nth-child(2)',{scale:0},2);
-            tl.set('#ready #bg',{autoAlpha:1},1);
-            tl.set('#ready span:nth-child(3)',{scale:0},3);
             tl.set('#ready #bg',{autoAlpha:0},2);
+
+            tl.set('#ready span:nth-child(3)',{scale:0},3);
             tl.call(clockIn, null, 3);
         }
         
@@ -562,7 +583,7 @@ const Game = props => {
                     </div>
                     <div id="texts">
                         <div>
-                            <span>Welcome to Pop Gallery game session.</span> <span>Everyone let’s join the game!! </span>
+                            <span>Welcome to POP Gallery game session.</span> <span>Everyone let’s join the game!! </span>
                             <span className="tc">歡迎大家參與Pop Gallery定時遊戲時間</span> <span className="tc">埋嚟睇埋嚟玩啦喂！</span>
                         </div>
                         <div>
@@ -593,7 +614,8 @@ const Game = props => {
                     <div id="smallTitle">
                         <span>{gameData.question ? gameData.question : 'Find out the product which give you a better smile'}</span>
                     </div>
-                    <div id="tips">You will have 1 min to find it!</div>
+                    <div id="tips">You'll have 60 seconds!</div>
+                    <div id="tips" className="tc">你將有60秒時間 !</div>
                 </div>
                 <div id="ready" className="fix">
                     <span>3</span>

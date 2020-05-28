@@ -17,14 +17,21 @@
       url('./fonts/Inter-Black.woff') format('woff'),
       url('./fonts/Inter-Black.ttf') format('truetype'),
       url('./fonts/Inter-Black.svg#Inter-Black') format('svg');
-  font-weight: 900;
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: '';
+  src: url('./fonts/NotoSansTC-Bold-Alphabetic.woff2') format('woff2'),
+      url('./fonts/NotoSansTC-Bold-Alphabetic.woff') format('woff');
+  font-weight: bold;
   font-style: normal;
 }
 
 .tc{
-  font-family: 'Microsoft JhengHei';
-  font-weight: 900;
-  -webkit-text-stroke: .05vw;
+  font-family: 'Noto Sans TC';
+  font-weight: bold;
+  /* -webkit-text-stroke: .05vw; */
 }
 
 html, body{

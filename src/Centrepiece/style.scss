@@ -1,5 +1,4 @@
 @import '../functions.scss';
-$width: 1240;
 @import '../Promotion/style.scss';
 
 #wrap{
@@ -168,6 +167,7 @@ $width: 1240;
             line-height: 7vw;
             margin-top:-1.5vw;
             span{
+                width: 100%;
                 display: inline-block;
             }
         }
@@ -199,6 +199,10 @@ $width: 1240;
                     font-size: 4vw;
                     line-height: 4.2vw;
                     font-weight: bold;
+                    .tc{
+                        font-size: 3.5vw;
+                        padding-top:.5vw;
+                    }
                     // margin-top: 5vw;
                 }
                 .value{
@@ -333,13 +337,84 @@ $width: 1240;
     }
     #promotion{
         z-index: 0;
-        &>div:not(#bg){
-
+        #name{
+            top:10vw;
+            left:10vw;
+            #icon{
+                width:vw-calc(90*2);
+                height:vw-calc(90*2);
+                #eyes{
+                    width:vw-calc(30*2);
+                    height:vw-calc(30*2/2.6);
+                }
+            }
+            &>span{
+                @include setFont(80, 90);
+                left:vw-calc(75);
+            }
+        }
+        .frame{
+            p{
+                width:70%;
+                bottom:30%;
+                @include setFont(60, 76);
+                transform: translate3d(-50%,-80%,0);
+            }
+            &#frame1{
+                #discount{
+                    transform: translate3d(0,-80%,0);
+                    @include setFont(455, 455);
+                }
+                p{
+                    top:58%;
+                }
+            }
+            &#frame2{
+                #image{
+                    width:vw-calc(1300);
+                    height:vw-calc(1300*0.732);
+                    transform: translate3d(-50%,-80%,0);
+                }
+                p{
+                    top:61%;
+                }
+            }
         }
         #bg{
             background: #fac05d;
             #outerWrap{
                 #innerWrap{
+                    p{
+                        @include setFont(390, 390);
+                        &:nth-child(1){
+                            top: 30%;
+                            left: 8%;
+                            transform: translate3d(-100vw, 0, 0) rotate(10deg);
+                        }
+                        &:nth-child(2){
+                            top: 51%;
+                            left: 37%;
+                            transform: translate3d(-100vw, 0, 0) rotate(-15deg);
+                        }
+                    }
+                    #character1{
+                        width:vw-calc(730);
+                        height:vw-calc(660);
+                        top:5%;
+                        left:8%;
+                    }
+                    #character2{
+                        width:vw-calc(260);
+                        height:vw-calc(330);
+                        top:10%;
+                        right:8%;
+                    }
+                    #shape{
+                        width:vw-calc(425);
+                        height:vw-calc(440);
+                        bottom:10%;
+                        left:8%;
+                    }
                     #cutline{
                         left:30%;
                         transform: translate3d(-50%, -50%, 0) rotate(54deg);

@@ -257,11 +257,12 @@ const Introarea = () => {
                 }
             }
     
-            tl.set('#promotion', {className:'active'});
             tl.call(()=>particlesAnim2.stop(), null);
             // if have promotion
-            if(document.querySelector('#promotion'))
+            if(document.querySelector('#promotion')){
+                tl.set('#promotion', {className:'active'});
                 tl.call(()=>promoAnim(), null);
+            }
             else{
                 tl.call(()=>video.current.play());
                 tl.set('#trendofbrandpart2', {className:'active out'});
@@ -303,6 +304,7 @@ const Introarea = () => {
     useEffect(()=>{
         if(gameStarted){
             setTimeout(()=>{
+                video.current.pause();
                 killAnimFunc.current.killAnim();
                 stopBgmFunc.current.stopBgm();
                 stopPromoAnim();
@@ -428,7 +430,7 @@ const Introarea = () => {
                                 <li>
                                     <div className="wrap">
                                         <div>Facebook <br/>Followers</div>
-                                        <div className="value">{trandData && trandData.followerscount}</div>
+                                        <div className="value">{trandData && trandData.followerscount}k</div>
                                     </div>
                                     <span></span>
                                 </li>
@@ -442,7 +444,7 @@ const Introarea = () => {
                                 <li>
                                     <div className="wrap">
                                         <div>Facebook<br/>Like</div>
-                                        <div className="value">{trandData && trandData.likescount}</div>
+                                        <div className="value">{trandData && trandData.likescount}k</div>
                                     </div>
                                     <span></span>
                                 </li>

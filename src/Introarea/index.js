@@ -8,6 +8,7 @@ import Promotion, { promoAnim, stopPromoAnim } from '../Promotion';
 import Game from '../Game';
 import ParticlesAnim from '../Game/particles';
 import introvideo from './images/intro.mp4';
+import sound_bgm from './sounds/popsq_BGM.mp3';
 
 const Introarea = () => {
     const gameStarted = useSelector(state => state.gameStarted);
@@ -23,13 +24,22 @@ const Introarea = () => {
     const shapesWrapElem = useRef(null);
     const shapesWrap2Elem = useRef(null);
     const killAnimFunc = useRef(null);
+    const getTrendDataFunc = useRef(null);
     const getPromoDataFunc = useRef(null);
+    const stopBgmFunc = useRef(null);
+    const trendAnimFunc = useRef(null);
 
     useEffect(()=>{
         let loaded = false;
 
+        const getTrendData = () => {
+            if(socket) socket.emit('getTrendData', initTrendData);
+        }
+        getTrendDataFunc.current = {getTrendData};
+
         const initTrendData = (data) => {
-            setTrandData(data); console.log('trend data',data)
+            setTrandData(data); console.log('trend data',data);
+            trendAnimFunc.current.trendAnim();
         }
         
         const getPromoData = () => {
@@ -42,8 +52,8 @@ const Introarea = () => {
         }
 
         if(socket){
-            socket.emit('getTrendData', initTrendData);
-            getPromoData();
+            // getTrendData();
+            // getPromoData();
         }else{
             setSocket(webSocket('http://10.0.1.40:8080/'));
         }
@@ -58,12 +68,21 @@ const Introarea = () => {
 
     useEffect(()=>{
         let tl;
+        const bgmSound = new Audio(sound_bgm);
+
+        video.current.onplay = () => {
+            bgmSound.volume = 1;
+            bgmSound.currentTime = 0;
+            bgmSound.play();
+            bgmSound.loop = true;
+        }
         video.current.onended = () => {
-            trendAnim();
+            stopBgm();
+            getTrendDataFunc.current.getTrendData();
+            getPromoDataFunc.current.getPromoData();
         };
 
         const trendAnim = () => {
-            getPromoDataFunc.current.getPromoData();
             whatisthetrend.current.className = 'active';
             gsap.set('#intro *:not(.important)', {clearProps:true});
             
@@ -90,6 +109,7 @@ const Introarea = () => {
             tl.set('#trendofbrand', {className:'active'},'-=1');
             tl.call(()=>brandAnim(), null);
         }
+        trendAnimFunc.current = {trendAnim};
     
         const brandAnim = () => {
             const particlesAnim = new ParticlesAnim(shapesWrapElem.current, true);
@@ -240,10 +260,12 @@ const Introarea = () => {
             tl.set('#promotion', {className:'active'});
             tl.call(()=>particlesAnim2.stop(), null);
             // if have promotion
-            tl.call(()=>promoAnim(), null);
-            // else
-            // tl.call(()=>video.current.play());
-            // tl.set('#trendofbrandpart2', {className:'active out'});
+            if(document.querySelector('#promotion'))
+                tl.call(()=>promoAnim(), null);
+            else{
+                tl.call(()=>video.current.play());
+                tl.set('#trendofbrandpart2', {className:'active out'});
+            }
             tl.set('#trendofbrandpart2', {className:''},'+=1');
         }
         // promoAnim()
@@ -252,8 +274,18 @@ const Introarea = () => {
         }
         killAnimFunc.current = {killAnim}
 
+        const stopBgm = () => {
+            bgmSound.loop = false;
+            gsap.to(bgmSound, 1, {volume:0, ease:'power1.inOut',
+                onComplete:function(){
+                    bgmSound.pause();
+                }
+            });
+        }
+        stopBgmFunc.current = {stopBgm}
+
         // setTimeout(()=>{
-        //         gsap.set('#whatisthetrend', {className:'active'});
+        //     gsap.set('#whatisthetrend', {className:'active'});
         //     trendAnim();
         
         //     gsap.set('#trendofbrandpart2', {className:'active'});
@@ -272,6 +304,7 @@ const Introarea = () => {
         if(gameStarted){
             setTimeout(()=>{
                 killAnimFunc.current.killAnim();
+                stopBgmFunc.current.stopBgm();
                 stopPromoAnim();
             },1000);
         }
@@ -309,12 +342,12 @@ const Introarea = () => {
                         <div id="frame2" className="frame">
                             <p ref={tag} id="tag">
                                 {
-                                    trandData &&
+                                    trandData && //${trandData.category}
                                     `#${trandData.category}`.split('').map((v,i)=>{
                                         const lth = `#${trandData.category}`.split('').length;
-                                        const h = 1920*1.15/Math.max(5, lth)/window.innerWidth*100+'vw';
-                                        const s = `calc((100vw + 16.5rem) / ${lth})`;
-                                        return <span key={i} className="important" style={{fontSize:s, lineHeight:h}}>{v}</span>
+                                        const h = 1920*1.15/Math.max(6, lth)/window.innerWidth*100+'vw';
+                                        const s = `calc((100vw + 16.5rem) / ${Math.max(6, lth)})`;
+                                        return <span key={i} className="important" style={{fontSize:s, lineHeight:h}} dangerouslySetInnerHTML={{__html:v.replace(' ','&nbsp;')}}></span>
                                     })
                                 }
                             </p>
@@ -395,28 +428,28 @@ const Introarea = () => {
                                 <li>
                                     <div className="wrap">
                                         <div>Facebook <br/>Followers</div>
-                                        <div className="value">{trandData && trandData.followerscount}k</div>
+                                        <div className="value">{trandData && trandData.followerscount}</div>
                                     </div>
                                     <span></span>
                                 </li>
                                 <li>
                                     <div className="wrap">
                                         <div>Facebook Followers<br/>Growth Rate</div>
-                                        <div className="value">{trandData && trandData.followersgrowth*100}%</div>
+                                        { trandData && <div className={`value ${trandData.followersgrowth > 0 ? 'up' : 'down'}`}>{Math.abs(Math.round(trandData.followersgrowth))}%</div>}
                                     </div>
                                     <span></span>
                                 </li>
                                 <li>
                                     <div className="wrap">
                                         <div>Facebook<br/>Like</div>
-                                        <div className="value up">{trandData && trandData.likescount}k</div>
+                                        <div className="value">{trandData && trandData.likescount}</div>
                                     </div>
                                     <span></span>
                                 </li>
                                 <li>
                                     <div className="wrap">
                                         <div>Facebook Like<br/>Growth Rate</div>
-                                        <div className="value up">{trandData && trandData.likesgrowth*100}%</div>
+                                        { trandData && <div className={`value ${trandData.likesgrowth > 0 ? 'up' : 'down'}`}>{Math.abs(Math.round(trandData.likesgrowth))}%</div> }
                                     </div>
                                     <span></span>
                                 </li>
@@ -433,7 +466,7 @@ const Introarea = () => {
                     </div>
                 </div>
                 {
-                    promoData && <Promotion trandData={trandData} promoData={promoData} />
+                    promoData && <Promotion promoData={promoData} />
                 }
             </div>
             <Game />

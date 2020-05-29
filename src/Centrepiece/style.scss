@@ -109,6 +109,8 @@
                 position: absolute;
                 top:0;
                 left:0;
+                background-size:cover;
+                background-repeat: no-repeat;
             }
         }
         .point{
@@ -169,6 +171,10 @@
             span{
                 width: 100%;
                 display: inline-block;
+            }
+            .tc{
+                font-size:6vw;
+                padding-top:vw-calc(30);
             }
         }
         ul{

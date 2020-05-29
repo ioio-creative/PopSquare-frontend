@@ -160,8 +160,8 @@ const Promotion = props => {
                 <div id="icon"><div id="eyes"><span></span><span></span></div></div>
                 <span>
                     {
-                        props.trandData &&
-                        props.trandData.companyname.split('').map((v,i)=>{
+                        props.promoData &&
+                        props.promoData.title.split('').map((v,i)=>{
                             return <span key={i} dangerouslySetInnerHTML={{__html: v.replace(' ','&nbsp;')}}></span>
                         })
                     }

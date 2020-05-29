@@ -75,19 +75,33 @@
                 font-size: 25vh;
             }
             #title {
-                font-size: 6.6vh;
-                line-height: 8vh;
+                width:90%;
+                font-size: 5vh;
+                line-height: 6vh;
                 margin-top: -12vh;
+                .tc{
+                    font-size: 4vh;
+                    line-height: 5vh;
+                    padding-top:1vw;
+                }
             }
             #smallTitle {
-                width: 50%;
-                font-size: 2.55vh;
-                line-height: 3.5vh;
+                width: 55%;
+                font-size: 2.5vh;
+                line-height: 3vh;
                 left: -60%;
                 top: 6vh;
+                .tc{
+                    font-size: 2vh;
+                    line-height: 3vh;
+                    // padding-top:0;
+                }
             }
             #tips {
-                font-size: 4.4vh;
+                font-size: 4vh;
+                &.tc{
+                    font-size: 3vh;
+                }
             }
         }
         #clock{
@@ -130,10 +144,11 @@
             padding: 10vh 10vh 0;
             #big {
                 font-size: 11vh;
+                padding-top:1vw;
             }
             .tc{
-                font-size: 4.1vh;
-                line-height: 5.5vh;
+                font-size: 3.5vh;
+                line-height: 4.5vh;
             }
         }
         #seeyou {
@@ -311,16 +326,21 @@
         }
         #title{
             color:#fff;
-            font-size: 3.9vh;
-            line-height: 5vh;
+            font-size: 3vh;
+            line-height: 4vh;
             margin-top: -8vh;
             span{
                 display: block;
             }
+            .tc{
+                font-size: 2vh;
+                line-height: 3vh;
+                padding-top:1vw;
+            }
         }
         #smallTitle{
-            width: 70%;
-            font-size: 2.55vh;
+            width: 80%;
+            font-size: 2.5vh;
             line-height: 3vh;
             color: #fff;
             position: absolute;
@@ -331,12 +351,18 @@
                 opacity: 0;
                 visibility: hidden;
             }
+            .tc{
+                font-size: 2vh;
+                line-height: 2.5vh;
+                padding-top:1vh;
+            }
         }
         #tips{
             color:#42d3d3;
-            font-size: 2.7vh;
+            font-size: 2.5vh;
             margin-top:4vh;
             &.tc{
+                font-size: 2vh;
                 margin-top:0;
             }
         }
@@ -352,6 +378,9 @@
             font-size:365px;
             color:#fff;
             transform: translate3d(-50%,-50%,0) scale(0);
+            &:nth-child(2){
+                color:#3e5bb7;
+            }
         }
         #bg{
             width:100%;

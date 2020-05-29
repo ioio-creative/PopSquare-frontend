@@ -6,9 +6,16 @@ import QRCode from "qrcode.react";
 import Counter from './counter';
 import ParticlesAnim from './particles';
 
+import sound_bgm from './sounds/popsq_BGM.mp3';
+import sound_intro from './sounds/popsq_Game-Intro-trans.mp3';
+import sound_alarm from './sounds/popsq_alarm.mp3';
+// import sound_introV2 from './sounds/popsq_Game-Intro-trans-V2.mp3';
 import sound_redball from './sounds/popsq_Game-rules-red-ball.mp3';
 import sound_countdown from './sounds/popsq_countdown.mp3';
 import sound_start from './sounds/popsq_Start.mp3';
+import sound_win from './sounds/popsq_Win.mp3';
+import sound_lose from './sounds/popsq_Lose.mp3';
+import sound_clock from './sounds/popsq_Start_digital-clock.mp3';
 
 const min = 1;
 const sec = 0;
@@ -89,9 +96,15 @@ const Game = props => {
         const particlesAnim = new ParticlesAnim(shapesWrapElem.current);
         let screenOrientation = null;
 
+        const bgmSound = new Audio(sound_bgm);
+        const introSound = new Audio(sound_intro);
+        const alarmSound = new Audio(sound_alarm);
         const redballSound = new Audio(sound_redball);
         const countdownSound = new Audio(sound_countdown);
         const startSound = new Audio(sound_start);
+        const winSound = new Audio(sound_win);
+        const loseSound = new Audio(sound_lose);
+        const clockSound = new Audio(sound_clock);
         
         const isCounting = () => {
             return counting;
@@ -110,6 +123,12 @@ const Game = props => {
         const updateCounter = () => {
             if(timer.seconds !== oldSeconds){
                 gsap.to('#pointer', .6, {rotation: (-timer.seconds * 6)+'_short', overwrite:true, ease:'elastic.out(1, 0.4)'});
+                if(timer.seconds % 4 === 0){
+                    clockSound.pause();
+                    clockSound.currentTime=0;
+                    clockSound.play();
+                }
+                
                 oldSeconds = timer.seconds;
             }
 
@@ -123,6 +142,7 @@ const Game = props => {
                 gsap.to('#pointer', .6, {rotation: (-timer.seconds * 6)+'_short', overwrite:true, ease:'elastic.out(1, 0.4)'});
                 setSecond(timer.seconds);
                 timer.stop();
+                clockSound.pause();
             }
             counting = false;
             animateToTimesup();
@@ -149,9 +169,24 @@ const Game = props => {
             gsap.set('#game *',{clearProps:true});
             gameElem.current.className = 'active';
             
+            bgmSound.volume = 1;
+            bgmSound.currentTime = 0;
+            bgmSound.play();
+            bgmSound.loop = true;
+            
+            alarmSound.volume = 1;
+            alarmSound.currentTime = 0;
+            alarmSound.play();
+            alarmSound.loop = true;
             setTimeout(()=>{
+                gsap.to(alarmSound, 1, {volume:0, ease:'power1.inOut',
+                    onComplete:function(){
+                        alarmSound.pause();
+                        alarmSound.loop = false;
+                    }
+                });
                 openingOut();
-            },1000 * 1); // 50s
+            },1000 * 10); // 50s
         
             initSlider();
             initQuestion();
@@ -165,6 +200,13 @@ const Game = props => {
 
         const closeGame = () => {
             if(started){
+                gsap.to(bgmSound, 1, {volume:0, ease:'power1.inOut',
+                    onComplete:function(){
+                        bgmSound.pause();
+                        bgmSound.loop = false;
+                    }
+                });
+
                 started = false;
                 setIsPicked(false);
                 gameElem.current.className = 'active out';
@@ -219,6 +261,8 @@ const Game = props => {
         let sliderInAnim = null;
         const sliderIn = () => {
             sliderInAnim = gsap.timeline();
+            
+            sliderInAnim.call(()=>{introSound.currentTime=0;introSound.play()});
             sliderInAnim.to('#cart', 1, {y:'-50%', ease: 'power4.out'});
             sliderInAnim.to('#buttons', 1, {y:0, ease: 'power4.out'},.4);
             sliderInAnim.to('#texts', 1, {y:0, ease: 'power4.out'},.2);
@@ -230,17 +274,19 @@ const Game = props => {
             sliderInAnim.to('#character1 .eyes', 1, {y:'-100%', repeat:-1, repeatDelay:.3, yoyo:true, ease:'power3.inOut'},1);
             sliderInAnim.to('#character2 .eyes', .6, {x:'-100%'},1);
             sliderInAnim.to('#character2 .eyes', 1, {x:'-50%', y:'-100%', repeat:-1, repeatDelay:1, yoyo:true, ease:'power3.inOut'},1.6);
-            sliderInAnim.to('#character2 .wrap', .3, {y:'-20%', repeat:-1, yoyo:true, ease:'power3.out'},'s');
-            sliderInAnim.call(()=>{redballSound.currentTime=0;redballSound.play()}, null, 's');
-            // sliderInAnim.call(()=>{redballSound.currentTime=0;redballSound.play()}, null, 's+=3');
-            // sliderInAnim.call(()=>{redballSound.currentTime=0;redballSound.play()}, null, 's+=6');
+            sliderInAnim.to('#character2 .wrap', .3, {y:'-20%', repeat:-1, yoyo:true, ease:'power3.out'},1);
+            sliderInAnim.call(()=>{redballSound.currentTime=0;redballSound.play()}, null, 1);
+            sliderInAnim.call(()=>{redballSound.pause();redballSound.currentTime=0;redballSound.play()}, null, 1+3+1);
+            sliderInAnim.call(()=>{redballSound.pause();redballSound.currentTime=0;redballSound.play()}, null, 1+3+3+1);
+            sliderInAnim.call(()=>{redballSound.pause();redballSound.currentTime=0;redballSound.play()}, null, 1+3+3+3+1);
+            sliderInAnim.call(()=>{redballSound.pause();redballSound.currentTime=0;redballSound.play()}, null, 1+3+3+3+3+1);
 
             // slide 2
             sliderInAnim.set({}, {}, '+=5');
-            sliderInAnim.to('#buttons div', .3, {autoAlpha:.5, ease:'power1.inOut'},'s1-=1');
-            sliderInAnim.to('#buttons div:nth-child(2)', .3, {autoAlpha:1, ease:'power1.inOut'},'s1-=1');
-            sliderInAnim.to('#texts div span', .6, {autoAlpha:0, y:'-100%', stagger:.1, ease:'power3.in'},'s1-=1');
-            sliderInAnim.to('#texts div:nth-child(2) span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease:'power3.out'},'s1');
+            sliderInAnim.to('#buttons div', .3, {autoAlpha:.5, ease:'power1.inOut'},'s1-=10');
+            sliderInAnim.to('#buttons div:nth-child(2)', .3, {autoAlpha:1, ease:'power1.inOut'},'s1-=10');
+            sliderInAnim.to('#texts div span', .6, {autoAlpha:0, y:'-100%', stagger:.1, ease:'power3.in'},'s1-=10');
+            sliderInAnim.to('#texts div:nth-child(2) span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease:'power3.out'},'s1-=9');
 
             // slide 3
             sliderInAnim.set({}, {}, '+=5');
@@ -301,23 +347,19 @@ const Game = props => {
 
         const ready = () => {
             const tl = gsap.timeline();
-            // tl.to('#ready span', 1, {scale:1, stagger:1, ease: 'elastic.out(1, 0.3)'},0);
-            tl.call(()=>{countdownSound.currentTime=0;countdownSound.play()}, null, 0);
-            tl.call(()=>{countdownSound.currentTime=0;countdownSound.play()}, null, 1);
-            tl.call(()=>{countdownSound.currentTime=0;countdownSound.play()}, null, 2);
-            tl.call(()=>{startSound.currentTime=0;startSound.play()}, null, 3);
-            tl.to('#ready span:nth-child(1)', 1, {scale:1, ease: 'elastic.out(1, 0.3)'},0);
-            tl.to('#ready span:nth-child(2)', 1, {scale:1, ease: 'elastic.out(1, 0.3)'},1);
-            tl.to('#ready span:nth-child(3)', 1, {scale:1, ease: 'elastic.out(1, 0.3)'},2);
+            tl.to('#ready span:nth-child(1)', 1, {scale:1, ease: 'elastic.out(1, 0.3)', onStart:function(){countdownSound.pause();countdownSound.currentTime=0;countdownSound.play()}},.3);
 
-            tl.set('#ready span:nth-child(1)',{scale:0},1.1);
-            tl.set('#ready #bg',{autoAlpha:1},1.1);
+            tl.to('#ready span:nth-child(2)', 1, {scale:1, ease: 'elastic.out(1, 0.3)', onStart:function(){countdownSound.pause();countdownSound.currentTime=0;countdownSound.play()}},1.1+.3);
+            tl.set('#ready span:nth-child(1)',{scale:0},1.1+.3);
+            tl.set('#ready #bg',{autoAlpha:1},1.1+.3);
 
-            tl.set('#ready span:nth-child(2)',{scale:0},2);
-            tl.set('#ready #bg',{autoAlpha:0},2);
+            tl.to('#ready span:nth-child(3)', 1, {scale:1, ease: 'elastic.out(1, 0.3)', onStart:function(){countdownSound.pause();countdownSound.currentTime=0;countdownSound.play()}},2.2+.3);
+            tl.set('#ready span:nth-child(2)',{scale:0},2.2+.3);
+            tl.set('#ready #bg',{autoAlpha:0},2.2+.3);
 
-            tl.set('#ready span:nth-child(3)',{scale:0},3);
-            tl.call(clockIn, null, 3);
+            tl.call(()=>{startSound.currentTime=0;startSound.play()}, null, 3.3+.3);
+            tl.set('#ready span:nth-child(3)',{scale:0},3.3+.3);
+            tl.call(clockIn, null, 3.3+.3);
         }
         
         ////////////////////////
@@ -356,6 +398,12 @@ const Game = props => {
         
         const animateToTimesup = () => {
             const tl = gsap.timeline();
+            
+            if(winGame)
+                tl.call(()=>{winSound.currentTime=0;winSound.play()}, null,'s');
+            else
+                tl.call(()=>{loseSound.currentTime=0;loseSound.play()}, null,'s');
+
             tl.to('#timesupBg', .8, {scale:25, ease: 'power3.out'},'s');
             tl.to('#question #smallTitle span', .3, {autoAlpha:0, y:'-100%', stagger:.1, overwrite:true, ease: 'power3.in'},'s');
             tl.to('#clock .text', .3, {autoAlpha:0, y:'50%', stagger:.1, overwrite:true, ease: 'power3.out'},'s+=.1');
@@ -405,7 +453,6 @@ const Game = props => {
                 tl.to('#character2 #qrcode', .6, {scale:1, ease:'elastic.out(1, 0.75)'},2);
             }
             else{//lose
-            
                 tl.to('#character2 .wrap', .6, {scale: .8, ease:'elastic.out(1, 0.75)'},1);
                 tl.to('#complete #lose span', .6, {autoAlpha:1, y:'0%', stagger:.1, ease: 'power3.out'},'s');
                 tl.to('#character2 .eyes', .6, {y:'600%', overwrite:true, ease: 'power3.inOut'},1);
@@ -609,10 +656,12 @@ const Game = props => {
                 <div id="question" className="fix">
                     <div id="symbol">“</div>
                     <div id="title">
-                        <span>{gameData.question ? gameData.question : 'Find out the product which give you a better smile'}</span>
+                        <span>{ gameData.question ? gameData.question.en : 'Find out the product which give you a better smile' }</span>
+                        <span className="tc">{ gameData.question ? gameData.question.zh : '' }</span>
                     </div>
                     <div id="smallTitle">
-                        <span>{gameData.question ? gameData.question : 'Find out the product which give you a better smile'}</span>
+                        <span>{ gameData.question ? gameData.question.en : 'Find out the product which give you a better smile' }</span>
+                        <span className="tc">{ gameData.question ? gameData.question.zh : '' }</span>
                     </div>
                     <div id="tips">You'll have 60 seconds!</div>
                     <div id="tips" className="tc">你將有60秒時間 !</div>
@@ -635,8 +684,8 @@ const Game = props => {
                         <div><span className="tc">任務完成</span></div>
                     </div>
                     <div id="tips">
-                        <span>Here is the promotion</span>
-                        <span>code for the prize</span>
+                        <span>{ gameData.qrtitle ? gameData.qrtitle.en : '' }</span>
+                        <span>{ gameData.qrtitle ? gameData.qrtitle.zh : '' }</span>
                     </div>
                     <div id="lose">
                         <span>Try again and</span>

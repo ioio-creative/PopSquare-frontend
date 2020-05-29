@@ -39,6 +39,7 @@ const Centrepiece = (props) => {
     const startTimerFunc = useRef(null);
     const stopTimerFunc = useRef(null);
     const preloadImageFunc = useRef(null);
+    const getTrendDataFunc = useRef(null);
     const getPromoDataFunc = useRef(null);
     const getRankingDataLthFunc = useRef(null);
     const updateTopProductIdxFunc = useRef(null);
@@ -48,6 +49,7 @@ const Centrepiece = (props) => {
 
     useEffect(()=>{
         let loaded = false;
+        
 
         const initProductData = (data) => {
             if(!loaded){
@@ -69,6 +71,11 @@ const Centrepiece = (props) => {
         const whenPutDown = (data) => {
             removeSpecificObjectFunc.current.removeSpecificObject(data.productId);
         }
+        
+        const getTrendData = () => {
+            if(socket) socket.emit('getTrendData', initTrendData);
+        }
+        getTrendDataFunc.current = {getTrendData};
 
         const initTrendData = (data) => {
             setTrandData(data); console.log('trend data',data)
@@ -88,7 +95,7 @@ const Centrepiece = (props) => {
             socket.on('productData', initProductData);
             socket.on('PICKUP', whenPickUp);
             socket.on('PUTDOWN', whenPutDown);
-            socket.emit('getTrendData', initTrendData);
+            getTrendData()
             getPromoData();
         }else{
             setSocket(webSocket('http://10.0.1.40:8080/'));
@@ -718,6 +725,7 @@ const Centrepiece = (props) => {
             gsap.to('#promotion #cutline span', .3, {y:0, ease:'power4.inOut'});
             gsap.to('#promotion #cutline #cutter', .3, {autoAlpha:1, ease:'power1.inOut'});
             gsap.set('#promotion *:not(.important)',{clearProps:true});
+            getTrendDataFunc.current.getTrendData();
             getPromoDataFunc.current.getPromoData();
         }
 
@@ -769,7 +777,7 @@ const Centrepiece = (props) => {
         const startTimer = () => {
             reset();
             ranking.current.className = '';
-            setTimer(2-1);
+            setTimer(40-1);
             paused = false;
         }
         startTimerFunc.current = {startTimer};
@@ -1087,14 +1095,16 @@ const Centrepiece = (props) => {
                         <div className="img active" style={{backgroundImage:'url()'}}></div>
                     </div> */}
                     <div id="productName">
-                        {
+                        {/* {
                             topProductData && topProductData[topProductIdx].productName.en.split(' ').map((v,i)=>{
                                 return <span key={i} dangerouslySetInnerHTML={{__html: v}}></span>
                             })
-                        }
+                        } */}
+                        <span>{ topProductData && topProductData[topProductIdx] && topProductData[topProductIdx].productName.en }</span>
+                        <span className="tc">{ topProductData && topProductData[topProductIdx] && topProductData[topProductIdx].productName.zh }</span>
                     </div>
                     <div id="image">
-                        <div style={{backgroundImage:'url()'}}></div>
+                        <div style={{backgroundImage:`url(${ topProductData && topProductData[topProductIdx] && topProductData[topProductIdx].productImage })`}}></div>
                     </div>
                     <div id="rateline">
                         <div className="point"></div>
@@ -1109,7 +1119,7 @@ const Centrepiece = (props) => {
                                 <p>Hottest Item <br/>Ranking</p>
                                 <p className="tc">熱門商品排名</p>
                             </div>
-                                <div className="value">{ topProductData && topProductData[topProductIdx].rank }</div>
+                                <div className="value">{ topProductData && topProductData[topProductIdx] && topProductData[topProductIdx].rank }</div>
                             <span></span>
                         </li>
                         <li>
@@ -1117,7 +1127,7 @@ const Centrepiece = (props) => {
                                 <p>Total Pick<br/>Up Time</p>
                                 <p className="tc">累積Pick Up 次數</p>
                             </div>
-                            <div className="value">{ topProductData && topProductData[topProductIdx].pickupCount }</div>
+                            <div className="value">{ topProductData && topProductData[topProductIdx] && topProductData[topProductIdx].pickupCount }</div>
                             <span></span>
                         </li>
                     </ul>
@@ -1125,7 +1135,7 @@ const Centrepiece = (props) => {
                         <div id="wrap"><div id="shape"></div></div>
                     </div>
                 </div>
-                { <Promotion trandData={trandData} promoData={promoData} /> }
+                { <Promotion promoData={promoData} /> }
                 <Game />
             </div>
         </div>

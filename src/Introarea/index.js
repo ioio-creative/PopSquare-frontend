@@ -326,7 +326,7 @@ const Introarea = () => {
     return(
         <>
             <div id="intro">
-                <video ref={video} autoPlay>
+                <video ref={video} autoPlay muted>
                     <source src={introvideo} type="video/mp4" />
                 </video>
                 <div ref={whatisthetrend} id="whatisthetrend" className="">

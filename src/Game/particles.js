@@ -4,8 +4,8 @@ import gsap from 'gsap';
 const CreateParticles = function(targetElem, isBigShape){
     this.x = 0;
     this.y = 0;
-    this.vx = Math.random() * 10 - 5;
-    this.vy = Math.random() * 30 - (isBigShape ? 45 : 50);
+    this.vx = isBigShape ? (Math.random() * 30 - 15) : (Math.random() * 10 - 5);
+    this.vy = Math.random() * 30 - 50;
     this.friction = Math.random() * .7 + .2;
     this.garvity = 1;
     this.deg = Math.random()*360;

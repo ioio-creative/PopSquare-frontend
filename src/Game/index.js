@@ -186,7 +186,7 @@ const Game = props => {
                     }
                 });
                 openingOut();
-            },1000 * 50); // 50s
+            },1000 * 1); // 50s
         
             initSlider();
             initQuestion();
@@ -697,7 +697,7 @@ const Game = props => {
                     <span>Our next limited offer </span>
                     <span>will be started at </span>
                     <span className="tc">下節遊戲時間將為</span>
-                    <span id="big">6:30pm</span>
+                    <span id="big">{gameData.next}</span>
                 </div>
                 <div id="seeyou" className="fix">
                     <span>See you</span>

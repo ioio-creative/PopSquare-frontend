@@ -385,12 +385,12 @@ $width: 1920;
                         }
                     }
                 }
-                #shape4{
-                    width: vw-calc(110);
-                    height: vw-calc(120);
-                    background:url('./images/shape8.svg') no-repeat;
-                    background-size:100%;
-                }
+                // #shape4{
+                //     width: vw-calc(110);
+                //     height: vw-calc(120);
+                //     background:url('./images/shape8.svg') no-repeat;
+                //     background-size:100%;
+                // }
                 #line1{
                     width: vw-calc(53);
                     height: vw-calc(78);
@@ -527,6 +527,7 @@ $width: 1920;
                         // visibility: hidden;
                         font-size:vw-calc(200);
                         overflow: hidden;
+                        text-transform: uppercase;
                         // transform: translate3d(3%,-29%,0) scale(.2);
                         span{
                             display: inline-block;
@@ -614,7 +615,7 @@ $width: 1920;
                             padding-top: vw-calc(80);
                             flex: 1;
                             @include setFont(27, 32);
-                            span{
+                            &>span{
                                 width:100%;
                                 height:vw-calc(8);
                                 display: block;
@@ -633,6 +634,11 @@ $width: 1920;
                                 div{
                                     opacity: 0;
                                     visibility: hidden;
+                                    display: flex;
+                                    flex-direction: column;
+                                    span{
+                                        display: inline-block;
+                                    }
                                 }
                                 .value{
                                     @include setFont(112, 112);
@@ -865,7 +871,12 @@ $width: 1920;
                 top:75%;
                 left:50%;
                 transform: translate3d(-50%,0,0);
+                &:first-child{
+                    top:50%;
+                    transform: translate3d(-50%,-50%,0);
+                }
                 p{
+                    width:100%;
                     position: absolute;
                     top:0;
                 }
@@ -884,7 +895,7 @@ $width: 1920;
                 z-index: 0;
                 // opacity: 0;
                 // visibility: hidden;
-                transform: translate3d(50vw, 50vh, 0);
+                transform: translate3d(50vw, 100vh, 0);
                 .shape{
                     width:3.5vh;
                     height:3.5vh;

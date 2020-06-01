@@ -20,7 +20,7 @@ const Introarea = () => {
     const video = useRef(null);
     const whatisthetrend = useRef(null);
     const tag = useRef(null);
-    const trendofbrand = useRef(null);
+    // const trendofbrand = useRef(null);
     const shapesWrapElem = useRef(null);
     const shapesWrap2Elem = useRef(null);
     const killAnimFunc = useRef(null);
@@ -30,7 +30,7 @@ const Introarea = () => {
     const trendAnimFunc = useRef(null);
 
     useEffect(()=>{
-        let loaded = false;
+        // let loaded = false;
 
         const getTrendData = () => {
             if(socket) socket.emit('getTrendData', initTrendData);
@@ -165,34 +165,40 @@ const Introarea = () => {
             tl.to('#trendofbrand #shape1', 1, {rotation:-360, motionPath: {
                 path:[
                     {x:window.innerWidth*.4, y:window.innerHeight*.8}, {x:window.innerWidth*.4, y:window.innerHeight*.5}, 
-                    {x:window.innerWidth*.2, y:window.innerHeight*.46}, {x:window.innerWidth*.2, y:window.innerHeight*.46}
+                    {x:window.innerWidth*.2, y:window.innerHeight*.2}, {x:window.innerWidth*.2, y:window.innerHeight*.2}
                 ], 
                 type: "cubic"}, ease:'power3.out'
             },'_1.7');
-            tl.to('#trendofbrand #line1 span', .6, {force3D:true, y:0, ease:'power4.out'},'_1.7+=.6');
+            // tl.to('#trendofbrand #line1 span', .6, {force3D:true, y:0, ease:'power4.out'},'_1.7+=.6');
+            // tl.to('#trendofbrand #line1 > span', .6, {y:'100%', ease:'power4.out'},'_1.7+=1');
+            // tl.to('#trendofbrand #line1 > span span', .6, {y:'-100%', ease:'power4.out'},'_1.7+=1');
             tl.to('#trendofbrand #shape2', 1, {rotation:360, motionPath: {
                 path:[
-                    {x:window.innerWidth*.5, y:window.innerHeight*.8}, {x:window.innerWidth*.5, y:window.innerHeight*.5}, 
-                    {x:window.innerWidth*.54, y:window.innerHeight*.05}, {x:window.innerWidth*.54, y:window.innerHeight*.05}
+                    {x:window.innerWidth*.3, y:window.innerHeight*.8}, {x:window.innerWidth*.5, y:window.innerHeight*.5}, 
+                    {x:window.innerWidth*.45, y:window.innerHeight*.05}, {x:window.innerWidth*.45, y:window.innerHeight*.05}
                 ], 
                 type: "cubic"}, ease:'power3.out'
             },'_1.7+=.3');
-            tl.to('#trendofbrand #line2 span', .6, {force3D:true, y:0, ease:'power4.out'},'_1.7+=.6');
+            // tl.to('#trendofbrand #line2 span', .6, {force3D:true, y:0, ease:'power4.out'},'_1.7+=.6');
+            // tl.to('#trendofbrand #line2 > span', .6, {y:'100%', ease:'power4.out'},'_1.7+=1');
+            // tl.to('#trendofbrand #line2 > span span', .6, {y:'-100%', ease:'power4.out'},'_1.7+=1');
             tl.to('#trendofbrand #shape3', 1, {rotation:360, motionPath: {
                 path:[
                     {x:window.innerWidth*.6, y:window.innerHeight*.8}, {x:window.innerWidth*.6, y:window.innerHeight*.5}, 
-                    {x:window.innerWidth*.81, y:-window.innerHeight*.4}, {x:window.innerWidth*.81, y:-window.innerHeight*.4}
+                    {x:window.innerWidth*.75, y:-window.innerHeight*.3}, {x:window.innerWidth*.75, y:-window.innerHeight*.3}
                 ], 
                 type: "cubic"}, ease:'power3.out'
             },'_1.7+=.6');
-            tl.to('#trendofbrand #line3 span', .6, {force3D:true, y:0, ease:'power4.out'},'_1.7+=.9');
-            tl.to('#trendofbrand #shape4', 1, {rotation:-360, motionPath: {
-                path:[
-                    {x:window.innerWidth*.5, y:window.innerHeight*.8}, {x:window.innerWidth*.5, y:window.innerHeight*.5}, 
-                    {x:window.innerWidth*.25, y:-window.innerHeight*.6}, {x:window.innerWidth*.25, y:-window.innerHeight*.6}
-                ], 
-                type: "cubic"}, ease:'power3.out'
-            },'_1.7+=.9');
+            // tl.to('#trendofbrand #line3 span', .6, {force3D:true, y:0, ease:'power4.out'},'_1.7+=.9');
+            // tl.to('#trendofbrand #line3 > span', .6, {y:'100%', ease:'power4.out'},'_1.7+=1.3');
+            // tl.to('#trendofbrand #line3 > span span', .6, {y:'-100%', ease:'power4.out'},'_1.7+=1.3');
+            // tl.to('#trendofbrand #shape4', 1, {rotation:-360, motionPath: {
+            //     path:[
+            //         {x:window.innerWidth*.5, y:window.innerHeight*.8}, {x:window.innerWidth*.5, y:window.innerHeight*.5}, 
+            //         {x:window.innerWidth*.25, y:-window.innerHeight*.6}, {x:window.innerWidth*.25, y:-window.innerHeight*.6}
+            //     ], 
+            //     type: "cubic"}, ease:'power3.out'
+            // },'_1.7+=.9');
     
             tl.set('#trendofbrand', {className:'active out'},'+=5');
             tl.set('#trendofbrand', {className:''},'+=1');
@@ -216,11 +222,11 @@ const Introarea = () => {
             tl.to('#trendofbrandpart2 #image', 1, {force3D:true, rotation:4, scale:1, ease:'elastic.out(1, 0.5)'},'_2.1');
             tl.to('#trendofbrandpart2 #character1', 1, {force3D:true, x:0, y:0, ease:'power4.out'},'_2.1');
             tl.to('#trendofbrandpart2 #character2', .6, {force3D:true, x:0, y:0, ease:'power2.out'},'_2.1+=.3');
-            tl.set({}, {}, '+=3');
+            tl.set({}, {}, '+=6');
             tl.to('#trendofbrandpart2 #des p', .3, {autoAlpha:0, ease:'power1.inOut'},'_2.11');
             tl.to('#trendofbrandpart2 #des .tc', .3, {autoAlpha:1, ease:'power1.inOut'},'_2.11+=.3');
     
-            tl.set({}, {}, '+=3');
+            tl.set({}, {}, '+=6');
             tl.call(()=>particlesAnim2.stop(), null, '_2.2');
             tl.to('#trendofbrandpart2 #frame1', .3, {autoAlpha:0, ease:'power1.inOut'},'_2.2');
             tl.set('#trendofbrandpart2 #frame2', {autoAlpha:1},'_2.2');
@@ -228,15 +234,15 @@ const Introarea = () => {
             tl.to('#trendofbrandpart2 #character1 #eyes', 1, {x:'30%', y:'50%', ease:'power3.inOut'},'_2.2+=.3');
             tl.to('#trendofbrandpart2 #character2', .6, {force3D:true, scale:0, ease:'back.in(2)'},'_2.2');
     
-            tl.set('#trendofbrandpart2 #frame2 #rateline > span', { x:'-100%'},'_2.3');
+            tl.set('#trendofbrandpart2 #frame2 #rateline span', { x:'-100%'},'_2.3');
             tl.set('#trendofbrandpart2 #frame2 #rateline > span span', { x:'100%'},'_2.3');
             tl.to('#trendofbrandpart2 #frame2 #rateline span', 1, {force3D:true, x:'0', ease:'none'},'_2.3');
             tl.to('#trendofbrandpart2 #frame2 #rateline .point', 1, {force3D:true, scale:1, stagger:.3, ease:'elastic.out(1, 0.3)'},'_2.3');
-            tl.fromTo('#trendofbrandpart2 #frame2 #list li span', 1, {force3D:true, scaleX:0}, {scaleX:1, transformOrigin:'left', stagger:.1, ease:'power4.out'},'_2.3');
+            tl.fromTo('#trendofbrandpart2 #frame2 #list li > span', 1, {force3D:true, scaleX:0}, {scaleX:1, transformOrigin:'left', stagger:.1, ease:'power4.out'},'_2.3');
             tl.fromTo('#trendofbrandpart2 #frame2 #list li .wrap div', .8, {force3D:true, y:'-50%', autoAlpha:0}, {y:'0%', autoAlpha:1, stagger:.1, ease:'power4.out'},'_2.3');
             
-            tl.set({}, {}, '+=3');
-            tl.to('#trendofbrandpart2 #frame2 #list li span', 1, {scaleX:0, transformOrigin:'right', stagger:.1, ease:'power4.out'},'_2.4');
+            tl.set({}, {}, '+=6');
+            tl.to('#trendofbrandpart2 #frame2 #list li > span', 1, {scaleX:0, transformOrigin:'right', stagger:.1, ease:'power4.out'},'_2.4');
             tl.to('#trendofbrandpart2 #frame2 #list li .wrap div', .3, {autoAlpha:0, stagger:.06, ease:'power1.out'},'_2.4');
     
             tl.to('#trendofbrandpart2 #character1', .6, {x:'0%', y:'0%', scale:1, ease:'power4.out'},'_2.5');
@@ -287,14 +293,13 @@ const Introarea = () => {
 
         // setTimeout(()=>{
         //     gsap.set('#whatisthetrend', {className:'active'});
-        //     trendAnim();
+            // trendAnim();
         
-        //     gsap.set('#trendofbrandpart2', {className:'active'});
-        //     setTimeout(()=>{
-        //         tl = gsap.timeline();
-        //         // brandAnim();
-        //         brandAnimPart2();
-        //     },1000);
+            // gsap.set('#trendofbrand', {className:'active'});
+            // tl = gsap.timeline();
+            // brandAnim();
+                // gsap.set('#trendofbrandpart2', {className:'active'});
+                // brandAnimPart2();
         // },1000);
         
     },[]);
@@ -358,7 +363,7 @@ const Introarea = () => {
                         </div>
                     </div>
                 </div>
-                <div ref={trendofbrand} id="trendofbrand" className="">
+                <div id="trendofbrand" className="">
                     <div id="container">
                         <div id="character">
                             <div id="main"></div>
@@ -372,7 +377,7 @@ const Introarea = () => {
                             <div id="shape1"><div id="eyes"><span></span><span></span></div></div>
                             <div id="shape2"><span>{trandData && trandData.companyname}</span></div>
                             <div id="shape3"><div id="eyes"><span></span><span></span></div></div>
-                            <div id="shape4"></div>
+                            {/* <div id="shape4"></div> */}
                             <div id="line1"><span><span></span></span></div>
                             <div id="line2"><span><span></span></span></div>
                             <div id="line3"><span><span></span></span></div>
@@ -390,7 +395,7 @@ const Introarea = () => {
                         </div>
                     </div>
                 </div>
-                <div ref={trendofbrand} id="trendofbrandpart2" className="">
+                <div id="trendofbrandpart2" className="active">
                     <div id="container">
                         <div ref={shapesWrap2Elem} id="shapesWrap">
                         </div>
@@ -412,7 +417,7 @@ const Introarea = () => {
                             <div id="eyes"><span></span><span></span></div>
                         </div>
                         <div id="frame1" className="frame">
-                            <div id="image"><div style={{backgroundImage:`url(${trandData && trandData.brief.image})`}}></div></div>
+                            {trandData && trandData.brief.image && <div id="image"><div className="important" style={{backgroundImage:`url(${trandData.brief.image})`}}></div></div>}
                             <div id="des">
                                 <p dangerouslySetInnerHTML={{__html: trandData && trandData.brief.content.en}}></p>
                                 <p className="tc" dangerouslySetInnerHTML={{__html: trandData && trandData.brief.content.zh}}></p>
@@ -427,34 +432,21 @@ const Introarea = () => {
                                 <span><span></span></span>
                             </div>
                             <ul id="list">
-                                <li>
-                                    <div className="wrap">
-                                        <div>Facebook <br/>Followers</div>
-                                        <div className="value">{trandData && trandData.followerscount}k</div>
-                                    </div>
-                                    <span></span>
-                                </li>
-                                <li>
-                                    <div className="wrap">
-                                        <div>Facebook Followers<br/>Growth Rate</div>
-                                        { trandData && <div className={`value ${trandData.followersgrowth > 0 ? 'up' : 'down'}`}>{Math.abs(Math.round(trandData.followersgrowth))}%</div>}
-                                    </div>
-                                    <span></span>
-                                </li>
-                                <li>
-                                    <div className="wrap">
-                                        <div>Facebook<br/>Like</div>
-                                        <div className="value">{trandData && trandData.likescount}k</div>
-                                    </div>
-                                    <span></span>
-                                </li>
-                                <li>
-                                    <div className="wrap">
-                                        <div>Facebook Like<br/>Growth Rate</div>
-                                        { trandData && <div className={`value ${trandData.likesgrowth > 0 ? 'up' : 'down'}`}>{Math.abs(Math.round(trandData.likesgrowth))}%</div> }
-                                    </div>
-                                    <span></span>
-                                </li>
+                                {
+                                    trandData &&
+                                    trandData.data.map((v,i)=>{
+                                        return <li key={i}>
+                                            <div className="wrap">
+                                                <div>
+                                                    <span dangerouslySetInnerHTML={{__html:v.label.en}}></span>
+                                                    <span className="tc" dangerouslySetInnerHTML={{__html:v.label.zh}}></span>
+                                                </div>
+                                                <div className={`value ${v.value[0] === '-' ? 'down' : 'up'}`}>{v.value.replace('-','')}</div>
+                                            </div>
+                                            <span></span>
+                                        </li>
+                                    })
+                                }
                             </ul>
                         </div>
                         {

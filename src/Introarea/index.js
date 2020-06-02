@@ -39,7 +39,7 @@ const Introarea = () => {
 
         const initTrendData = (data) => {
             setTrandData(data); console.log('trend data',data);
-            trendAnimFunc.current.trendAnim();
+            // trendAnimFunc.current.trendAnim();
         }
         
         const getPromoData = () => {
@@ -49,6 +49,7 @@ const Introarea = () => {
 
         const initPromoData = (data) => {
             setPromoData(data); console.log('promotion data',data);
+            // promoAnim()
         }
 
         if(socket){
@@ -75,11 +76,14 @@ const Introarea = () => {
             bgmSound.currentTime = 0;
             bgmSound.play();
             bgmSound.loop = true;
+            getTrendDataFunc.current.getTrendData();
+            getPromoDataFunc.current.getPromoData();
         }
         video.current.onended = () => {
             stopBgm();
-            getTrendDataFunc.current.getTrendData();
-            getPromoDataFunc.current.getPromoData();
+            setTimeout(()=>{
+                trendAnim();
+            },1000)
         };
 
         const trendAnim = () => {
@@ -275,7 +279,6 @@ const Introarea = () => {
             }
             tl.set('#trendofbrandpart2', {className:''},'+=1');
         }
-        // promoAnim()
         const killAnim = () => {
             if(tl) tl.kill();
         }
@@ -283,7 +286,7 @@ const Introarea = () => {
 
         const stopBgm = () => {
             bgmSound.loop = false;
-            gsap.to(bgmSound, 1, {volume:0, ease:'power1.inOut',
+            gsap.to(bgmSound, 2, {volume:0, ease:'power1.inOut',
                 onComplete:function(){
                     bgmSound.pause();
                 }
@@ -435,16 +438,25 @@ const Introarea = () => {
                                 {
                                     trandData &&
                                     trandData.data.map((v,i)=>{
-                                        return <li key={i}>
-                                            <div className="wrap">
-                                                <div>
-                                                    <span dangerouslySetInnerHTML={{__html:v.label.en}}></span>
-                                                    <span className="tc" dangerouslySetInnerHTML={{__html:v.label.zh}}></span>
+                                        return (
+                                            i !== 1 ?
+                                            <li key={i}>
+                                                { i === 0 && <span></span> }
+                                                <div className="wrap">
+                                                    <div>
+                                                        <span dangerouslySetInnerHTML={{__html:v.label.en}}></span>
+                                                        <span className="tc" dangerouslySetInnerHTML={{__html:v.label.zh}}></span>
+                                                    </div>
+                                                    <div className={`value`}>
+                                                        <span>{v.value}</span>
+                                                        { i === 0 && <span className={`trend ${i === 0 && (trandData.data[1].value[0] === '-' ? 'down' : 'up')}`}>{trandData.data[1].value}</span>}
+                                                    </div>
                                                 </div>
-                                                <div className={`value ${v.value[0] === '-' ? 'down' : 'up'}`}>{v.value.replace('-','')}</div>
-                                            </div>
-                                            <span></span>
-                                        </li>
+                                                <span></span>
+                                            </li>
+                                            :
+                                            false
+                                        )
                                     })
                                 }
                             </ul>

@@ -23,7 +23,7 @@ const Centrepiece = (props) => {
 
     const [topProductData, setTopProductData] = useState(null);
     const [topProductIdx, setTopProductIdx] = useState(0);
-    const [trandData, setTrandData] = useState(null);
+    // const [trandData, setTrandData] = useState(null);
     const [promoData, setPromoData] = useState(null);
 
     const sceneElem = useRef(null);
@@ -72,14 +72,14 @@ const Centrepiece = (props) => {
             removeSpecificObjectFunc.current.removeSpecificObject(data.productId);
         }
         
-        const getTrendData = () => {
-            if(socket) socket.emit('getTrendData', initTrendData);
-        }
-        getTrendDataFunc.current = {getTrendData};
+        // const getTrendData = () => {
+        //     if(socket) socket.emit('getTrendData', initTrendData);
+        // }
+        // getTrendDataFunc.current = {getTrendData};
 
-        const initTrendData = (data) => {
-            setTrandData(data); console.log('trend data',data)
-        }
+        // const initTrendData = (data) => {
+        //     setTrandData(data); console.log('trend data',data)
+        // }
         
         const getPromoData = () => {
             if(socket) socket.emit('getPromotionData', initPromoData);
@@ -88,6 +88,7 @@ const Centrepiece = (props) => {
         
         const initPromoData = (data) => {
             setPromoData(data); console.log('promotion data',data);
+            // promoAnim()
         }
 
         if(socket){
@@ -95,7 +96,7 @@ const Centrepiece = (props) => {
             socket.on('productData', initProductData);
             socket.on('PICKUP', whenPickUp);
             socket.on('PUTDOWN', whenPutDown);
-            getTrendData()
+            // getTrendData()
             getPromoData();
         }else{
             setSocket(webSocket('http://10.0.1.40:8080/'));
@@ -725,7 +726,7 @@ const Centrepiece = (props) => {
             gsap.to('#promotion #cutline span', .3, {y:0, ease:'power4.inOut'});
             gsap.to('#promotion #cutline #cutter', .3, {autoAlpha:1, ease:'power1.inOut'});
             gsap.set('#promotion *:not(.important)',{clearProps:true});
-            getTrendDataFunc.current.getTrendData();
+            // getTrendDataFunc.current.getTrendData();
             getPromoDataFunc.current.getPromoData();
         }
 

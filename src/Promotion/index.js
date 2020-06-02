@@ -94,7 +94,7 @@ const promoFrameIn = () => {
     if(document.querySelector('#promotion #frame1')){
         tl.to('#promotion .frame', .3, {autoAlpha:0, ease:'power1.inOut'},'_2-=1');
         tl.to('#promotion #frame1', .3, {autoAlpha:1, ease:'power1.inOut'},'_2-=.7');
-        tl.to('#promotion #discount #center', 2, {force3D:true, y:'-95.55%', ease:'power4.inOut'},'_2-=.4');
+        tl.to('#promotion #discount #center', 3, {force3D:true, y:'-94.7%', ease:'power4.inOut'},'_2-=.4');
         tl.to('#promotion #frame1 p', .3, {autoAlpha:0, ease:'power1.inOut'},'_2+=3.3');
         tl.to('#promotion #frame1 .tc', .3, {autoAlpha:1, ease:'power1.inOut'},'_2+=3.6');
     }
@@ -179,9 +179,10 @@ const Promotion = props => {
                             <div id="center">
                                 {
                                     [...Array(10)].map((v,i)=>{
+                                        const rand = Math.round(Math.random()*9);
                                         return <span key={i}>
-                                            <span>{props.promoData.discount.split('')[1]}</span>
-                                            <span className="c">{props.promoData.discount.split('')[1]}<div id="eyes"><span></span><span></span></div></span>
+                                            <span>{i === 9 ? props.promoData.discount.split('')[1] : rand}</span>
+                                            <span className="c">{i === 9 ? props.promoData.discount.split('')[1] : rand}<div id="eyes"><span></span><span></span></div></span>
                                         </span>
                                     })
                                 }
@@ -189,7 +190,7 @@ const Promotion = props => {
                             </div>
                         </div>
                     </div>
-                    <div>%</div>
+                    <div>%<span id="off">off</span></div>
                 </div>
                 <p dangerouslySetInnerHTML={{__html:props.promoData.description.en}}></p>
                 <p className="tc" dangerouslySetInnerHTML={{__html:props.promoData.description.zh}}></p>

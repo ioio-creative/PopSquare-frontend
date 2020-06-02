@@ -327,15 +327,15 @@ $width: 1920;
                     background:url('./images/shape1.svg') no-repeat;
                     background-size:100%;
                     #eyes{
-                        width:vw-calc(50);
-                        height:vw-calc(50/2.6);
+                        width:vw-calc(32);
+                        height:vw-calc(32/2.6);
                         position: absolute;
-                        top:0;
-                        left:0;
+                        top:23%;
+                        left:49%;
                         z-index: 3;
                         display: flex;
                         justify-content: space-between;
-                        transform: translate3d(190%, 250%, 0);
+                        // transform: translate3d(190%, 250%, 0);
                         span{
                             width:25%;
                             height:100%;
@@ -366,8 +366,8 @@ $width: 1920;
                     background:url('./images/character4.svg') no-repeat;
                     background-size:100%;
                     #eyes{
-                        width:vw-calc(30);
-                        height:vw-calc(30/2.6);
+                        width:vw-calc(32);
+                        height:vw-calc(32/2.6);
                         position: absolute;
                         top:0;
                         left:0;
@@ -600,21 +600,21 @@ $width: 1920;
                         }
                     }
                     #list{
-                        width:vw-calc(733);
+                        width:vw-calc(1020);
                         height:100vh;
                         position: absolute;
                         top:vw-calc(-10);
-                        right:vw-calc(80);
+                        right:vw-calc(120);
                         list-style: none;
                         display: flex;
                         flex-direction: column;
-                        padding:vw-calc(0 0 70 0);
+                        padding:vw-calc(150 0);
                         li{
                             width:100%;
                             position: relative;
-                            padding-top: vw-calc(80);
+                            padding: vw-calc(0 30 0 13);
                             flex: 1;
-                            @include setFont(27, 32);
+                            @include setFont(39, 49);
                             &>span{
                                 width:100%;
                                 height:vw-calc(8);
@@ -625,8 +625,37 @@ $width: 1920;
                                 left:0;
                                 transform-origin: left;
                                 transform: translate3d(0,0,0) scaleX(0);
+                                &:first-child{
+                                    bottom:auto;
+                                    top:0;
+                                }
+                            }
+                            &:nth-child(1){
+                                .wrap{
+                                    div:first-child{
+                                        background:url('../Introarea/images/rank.svg') vw-calc(12) center no-repeat;
+                                        background-size:vw-calc(61) auto;
+                                    }
+                                }
+                            }
+                            &:nth-child(2){
+                                .wrap{
+                                    div:first-child{
+                                        background:url('../Introarea/images/fb.svg') 0 center no-repeat;
+                                        background-size:vw-calc(86) auto;
+                                    }
+                                }
+                            }
+                            &:nth-child(3){
+                                .wrap{
+                                    div:first-child{
+                                        background:url('../Introarea/images/ig.svg') 0 center no-repeat;
+                                        background-size:vw-calc(86) auto;
+                                    }
+                                }
                             }
                             .wrap{
+                                width: 100%;
                                 height: 100%;
                                 display: flex;
                                 justify-content: space-between;
@@ -636,36 +665,50 @@ $width: 1920;
                                     visibility: hidden;
                                     display: flex;
                                     flex-direction: column;
+                                    &:first-child{
+                                        padding:vw-calc(50 0 50 130);
+                                    }
                                     span{
                                         display: inline-block;
+                                        &.tc{
+                                            padding-top:vw-calc(5);
+                                        }
                                     }
                                 }
                                 .value{
-                                    @include setFont(112, 112);
-                                    padding-left:vw-calc(100);
-                                    position: relative;
-                                    &:before{
-                                        content:'';
-                                        width:vw-calc(61);
-                                        height:vw-calc(53);
-                                        display: block;
-                                        background:url('./images/up.svg') center no-repeat;
-                                        background-size:100%;
-                                        opacity: 0;
-                                        position: absolute;
-                                        left:0;
-                                        top:50%;
-                                        transform: translate3d(0,-50%,0);
-                                    }
-                                    &.up{
+                                    @include setFont(140, 140);
+                                    display: flex;
+                                    flex-direction: initial;
+                                    align-items: baseline;
+                                    .trend{
+                                        margin-left: vw-calc(30);
+                                        padding-left:vw-calc(40);
+                                        position: relative;
+                                        display: inline-block;
+                                        @include setFont(66, 66);
                                         &:before{
-                                            opacity: 1;
+                                            content:'';
+                                            width:vw-calc(27);
+                                            height:vw-calc(23);
+                                            display: block;
+                                            position: absolute;
+                                            left:0;
+                                            top:50%;
+                                            transform: translate3d(0,-50%,0);
                                         }
-                                    }
-                                    &.down{
-                                        &:before{
-                                            opacity: 1;
-                                            background:url('./images/down.svg') center no-repeat;
+                                        &.up{
+                                            color:#3CE58A;
+                                            &:before{
+                                                background:url('./images/up.svg') center no-repeat;
+                                                background-size:100%;
+                                            }
+                                        }
+                                        &.down{
+                                            color:#f83940;
+                                            &:before{
+                                                background:url('./images/down.svg') center no-repeat;
+                                                background-size:100%;
+                                            }
                                         }
                                     }
                                 }
@@ -779,16 +822,16 @@ $width: 1920;
                 z-index: 10;
                 transform: translate3d(-250%, 50%, 0) scale(1.7);
                 #eyes{
-                    width:21%;
-                    height:8%;
+                    width:14.5%;
+                    height:5.5%;
                     position: absolute;
-                    top:22%;
-                    left:46%;
+                    top:21%;
+                    left:51%;
                     z-index: 3;
                     display: flex;
                     justify-content: space-between;
                     span{
-                        width:25%;
+                        width:24.5%;
                         height:100%;
                         border-radius: 1vw;
                         background:#fff;
@@ -827,7 +870,7 @@ $width: 1920;
             }
             #image{
                 width:vw-calc(650);
-                height:vw-calc(650*0.715);
+                height:vw-calc(650*0.75);
                 position: absolute;
                 top:48%;
                 left:50%;
@@ -858,6 +901,7 @@ $width: 1920;
                     background: #fff;
                     background-repeat: no-repeat;
                     background-size:cover;
+                    background-position: center;
                     position: absolute;
                     z-index: 3;
                     box-shadow: 0 0 vw-calc(15) rgba(0,0,0,.3);
@@ -868,7 +912,7 @@ $width: 1920;
                 text-align: center;
                 @include setFont(20, 29);
                 position: absolute;
-                top:75%;
+                top:77%;
                 left:50%;
                 transform: translate3d(-50%,0,0);
                 &:first-child{

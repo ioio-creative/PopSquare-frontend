@@ -381,14 +381,11 @@
             font-size:365px;
             color:#fff;
             transform: translate3d(-50%,-50%,0) scale(0);
-            &:nth-child(2){
-                color:#3e5bb7;
-            }
         }
         #bg{
             width:100%;
             height:100%;
-            background:#f9c05d;
+            background:#3e5bb7;
             position: relative;
             z-index: -1;
             opacity: 0;

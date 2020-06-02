@@ -34,14 +34,19 @@ const ParticlesAnim = function(elem, isBigShape){
     this.shapesWrapElem = elem;
     this.particles = [];
     this.stopCreateParticles = false;
-    this.updateParticles = () => {
+    this.last = 0;
+    this.updateParticles = (now) => {
         this.play = requestAnimationFrame(this.updateParticles);
 
         if(!this.stopCreateParticles){
-            for(let i=this.particles.length; i<30; i++){
-                const p = new CreateParticles(this.shapesWrapElem, isBigShape);
-                p.init();
-                this.particles.push(p);
+            if(now - this.last >= 1*1000){
+                this.last = now;
+
+                for(let i=0; i<10; i++){
+                    const p = new CreateParticles(this.shapesWrapElem, isBigShape);
+                    p.init();
+                    this.particles.push(p);
+                }
             }
         }
         else{

@@ -78,9 +78,11 @@ const Introarea = () => {
             bgmSound.loop = true;
             getTrendDataFunc.current.getTrendData();
             getPromoDataFunc.current.getPromoData();
+            setTimeout(()=>{
+                stopBgm();
+            }, 1000 * 50);
         }
         video.current.onended = () => {
-            stopBgm();
             setTimeout(()=>{
                 trendAnim();
             },1000)

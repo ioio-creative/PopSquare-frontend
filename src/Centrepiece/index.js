@@ -21,6 +21,7 @@ window.decomp = decomp;
 const Centrepiece = (props) => {
     const gameStarted = useSelector(state => state.gameStarted);
 
+    // const [productData, setProductData] = useState(null);
     const [topProductData, setTopProductData] = useState(null);
     const [topProductIdx, setTopProductIdx] = useState(0);
     // const [trandData, setTrandData] = useState(null);
@@ -43,6 +44,8 @@ const Centrepiece = (props) => {
     const getPromoDataFunc = useRef(null);
     const getRankingDataLthFunc = useRef(null);
     const updateTopProductIdxFunc = useRef(null);
+    const getProdctDataFunc = useRef(null);
+    const getTopProdctDataFunc = useRef(null);
     
     const [socket,setSocket] = useState(null);
 
@@ -54,14 +57,18 @@ const Centrepiece = (props) => {
         const initProductData = (data) => {
             if(!loaded){
                 loaded = true;
+                // setProductData(data.data);
+                console.log(data.data);
                 if(data.data) preloadImageFunc.current.preloadImage(data.data);
+                getProdctDataFunc.current.getProdctData(data.data);
             }
         }
 
         const initTopProductData = (data) => {
             console.log('top',data);
             setTopProductData(data);
-            getRankingDataLthFunc.current.getRankingDataLth(data.length);
+            getTopProdctDataFunc.current.getTopProdctData(data);
+            // getRankingDataLthFunc.current.getRankingDataLth(data.length);
         }
 
         const whenPickUp = (data) => {
@@ -134,8 +141,10 @@ const Centrepiece = (props) => {
         const group = -1;
         let page = 'loading';
         let end = new Date();
-        let rankingDataLength = 0; // from data
+        let rankingDataLength = 3; // from data
         const a = {b:0}
+        let initialTopProductData = null;
+        let tempProductData = null;
 
 
         // module aliases
@@ -202,6 +211,15 @@ const Centrepiece = (props) => {
         //     World.add(engine.world, mouseConstraint);
         // }
 
+        const getTopProdctData = (d) => {
+            initialTopProductData = d;
+        }
+        getTopProdctDataFunc.current = {getTopProdctData}
+
+        const getProdctData = (d) => {
+            tempProductData = d;
+        }
+        getProdctDataFunc.current = {getProdctData}
 
         const addObject = (_productID, _productName, _cartName) => {
             if(!paused && !disablePick){
@@ -212,6 +230,11 @@ const Centrepiece = (props) => {
                 createObject(_productID, _productName, _cartName);
                 pick.current.className = 'text active';
                 up.current.className = 'text active';
+
+                const pickedupData = tempProductData.find((el)=>el.productId === _productID);
+                setTopProductData((topProductData)=>{
+                    return [...topProductData, pickedupData].slice(-3);
+                });
 
                 if(centerpieceElem.current.className === 'important'){
                     gsap.set(centerpieceElem.current, {className:''});
@@ -552,7 +575,7 @@ const Centrepiece = (props) => {
                     gsap.to(eyesArray, .3, {alpha:0, overwrite:true, ease:'power3.inOut'});
                     gsap.to(detailsArray, .3, {alpha:1, overwrite:true, ease:'power3.inOut'});
 
-                    const tl = gsap.timeline({delay:Math.random()*3+1, repeat:-1, repeatDelay:2, yoyo:true});
+                    const tl = gsap.timeline({delay:Math.random()*3+1});
                     tl.to(texten, .6, {alpha:1, ease:'power3.inOut'},'s');
                     tl.to(textzh, .6, {alpha:1, ease:'power3.inOut'},'s');
                     tl.to(texten, .3, {alpha:0, ease:'power3.inOut'},3);
@@ -854,6 +877,7 @@ const Centrepiece = (props) => {
             tl.set(centerpieceElem.current, {className:'important'},'+=1');
             tl.set(ranking.current, {className:''},'+=1');
             tl.call(()=>setTopProductIdx(0), null);
+            tl.call(()=>setTopProductData(initialTopProductData), null);
         }
         // promoAnim()
         const runRankingAnimation = (spans, divs) => {
@@ -943,10 +967,10 @@ const Centrepiece = (props) => {
             tl3.to('#ranking #rateline .point', .3, {scale:0, stagger:.3, ease:'back.in(2)'},'_1');
         }
 
-        const getRankingDataLth = (i) => {
-            rankingDataLength = i;
-        }
-        getRankingDataLthFunc.current = {getRankingDataLth};
+        // const getRankingDataLth = (i) => {
+        //     rankingDataLength = i;
+        // }
+        // getRankingDataLthFunc.current = {getRankingDataLth};
         
         const explosion = function() {
             timeScaleTarget = 0.01;
@@ -1084,6 +1108,9 @@ const Centrepiece = (props) => {
         }
     },[gameStarted]);
 
+    // useEffect(()=>{
+    //     console.log(topProductData)
+    // },[topProductData])
     const updateTopProductIdx = () => {
         setTopProductIdx(topProductIdx+1);
     }

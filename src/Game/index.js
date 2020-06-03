@@ -60,7 +60,8 @@ const Game = props => {
         const whenPickUp = (data) => {
             // win
             if(!win && enabled && isCountingFunc.current.isCounting()){
-                if(tempGameData.answer === data.productId){
+                const answer = tempGameData.answer.split(',');
+                if(answer.indexOf(data.productId) !== -1){
                     stopCounterFunc.current.stopCounter();
                     win = true;
                 }

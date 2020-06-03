@@ -76,7 +76,7 @@ const Game = props => {
             socket.on('GAME', gameStart);
             socket.on('PICKUP', whenPickUp);
         }else{
-            setSocket(webSocket('http://10.0.1.40:8080/'));
+            setSocket(webSocket('http://192.168.8.109:8080/'));
         }
 
         return ()=>{

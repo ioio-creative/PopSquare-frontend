@@ -99,7 +99,7 @@ const Centrepiece = (props) => {
             // getTrendData()
             getPromoData();
         }else{
-            setSocket(webSocket('http://10.0.1.40:8080/'));
+            setSocket(webSocket('http://192.168.8.109:8080/'));
         }
 
         return ()=>{
@@ -230,19 +230,19 @@ const Centrepiece = (props) => {
             const num = Math.round(Math.random() * 2);
             let _obj = null;
 
-            if(_cartName === '3' || (_productID === -1 && num === 0)){
+            if(_cartName === '12' || (_productID === -1 && num === 0)){
                 _obj = createShape('circle', colors[0], _productID, _productName, _cartName);
             }
-            else if(_cartName === '12' || (_productID === -1 && num === 1)){
+            else if(_cartName === '13' || (_productID === -1 && num === 1)){
                 _obj = createShape('triangle', colors[1], _productID, _productName, _cartName);
             }
             else if(_cartName === '14' || (_productID === -1 && num === 2)){
                 _obj = createShape('halfCircle', colors[2], _productID, _productName, _cartName);
             }
-            else if(_cartName === '13' || (_productID === -1 && num === 2)){
+            else if(_cartName === '15' || (_productID === -1 && num === 2)){
                 _obj = createShape('smallCircle', colors[3], _productID, _productName, _cartName);
             }
-            else if(_cartName === '10' || (_productID === -1 && num === 2)){
+            else if(_cartName === '16' || (_productID === -1 && num === 2)){
                 _obj = createShape('halfCircle', colors[4], _productID, _productName, _cartName);
             }
 
@@ -552,6 +552,8 @@ const Centrepiece = (props) => {
                     const tl = gsap.timeline({delay:Math.random()*3+1, repeat:-1, repeatDelay:2, yoyo:true});
                     tl.to(texten, .6, {alpha:1, ease:'power3.inOut'},'s');
                     tl.to(textzh, .6, {alpha:1, ease:'power3.inOut'},'s');
+                    tl.to(texten, .3, {alpha:0, ease:'power3.inOut'},3);
+                    tl.to(textzh, .3, {alpha:0, ease:'power3.inOut'},3);
                     tl.to(image, .6, {alpha:1, ease:'power3.inOut'},3);
 
                     productDetailsTween.push(tl);

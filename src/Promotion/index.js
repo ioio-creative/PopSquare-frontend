@@ -144,7 +144,7 @@ const Promotion = props => {
         // if(socket){
             // socket.emit('getTrendData', initTrendData);
         // }else{
-        //     setSocket(webSocket('http://10.0.1.40:8080/'));
+        //     setSocket(webSocket('http://192.168.8.109:8080/'));
         // }
 
         // return ()=>{

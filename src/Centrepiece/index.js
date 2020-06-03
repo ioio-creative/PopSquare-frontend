@@ -390,7 +390,7 @@ const Centrepiece = (props) => {
             
             graphicsContainer.addChild(graphics);
             createEyes(graphicsContainer);
-            createProductName(productName, size, detailsContainer);
+            createProductName(productName, size, detailsContainer, graphics.width);
             createProductImage(productID, detailsContainer, tempgraphics);
             // createCartName(cartName, detailsContainer, graphicsContainer);
             
@@ -480,7 +480,7 @@ const Centrepiece = (props) => {
             container.addChild(cartContainer);
         }
         
-        const createProductName = (productName, size, container) => {
+        const createProductName = (productName, size, container, gw) => {
             // product name
             const style = new PIXI.TextStyle({
                 align: "center",
@@ -488,7 +488,10 @@ const Centrepiece = (props) => {
                 fontFamily: "Comic Sans MS, Noto Sans TC",
                 fontSize: size,
                 fontWeight: "bold",
-                letterSpacing: 1
+                letterSpacing: 1,
+                // breakWords: true,
+                wordWrap:true,
+                wordWrapWidth:gw
             });
             const texten = new PIXI.Text(productName.en, style);
             const textzh = new PIXI.Text(productName.zh, style);

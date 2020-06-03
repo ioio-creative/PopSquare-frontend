@@ -10,7 +10,7 @@ import ParticlesAnim from '../Game/particles';
 import introvideo from './images/intro.mp4';
 import sound_bgm from './sounds/popsq_BGM.mp3';
 
-const Introarea = () => {
+const Introarea = (props) => {
     const gameStarted = useSelector(state => state.gameStarted);
 
     const [socket,setSocket] = useState(null);
@@ -477,7 +477,7 @@ const Introarea = () => {
                     promoData && <Promotion promoData={promoData} />
                 }
             </div>
-            <Game />
+            <Game muted={props.mutedgame} />
         </>
     )
 }

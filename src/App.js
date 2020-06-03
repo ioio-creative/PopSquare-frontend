@@ -21,7 +21,7 @@ function App(props) {
         <Route exact path="/" component={Centrepiece} />
         <Route path="/particles" component={Particles} />
         {/* <Route path="/summary" component={Summary} /> */}
-        <Route path="/intro" component={Introarea} />
+        <Route path="/intro" render={()=><Introarea mutedgame={true}/>} />
         {/* <Redirect to="/dropping2d" /> */}
       </Switch>
     </Router>

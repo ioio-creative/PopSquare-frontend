@@ -126,7 +126,7 @@ const Game = props => {
                 if(timer.seconds % 4 === 0){
                     clockSound.pause();
                     clockSound.currentTime=0;
-                    clockSound.play();
+                    !props.muted && clockSound.play();
                 }
                 
                 oldSeconds = timer.seconds;
@@ -171,12 +171,12 @@ const Game = props => {
             
             bgmSound.volume = 1;
             bgmSound.currentTime = 0;
-            bgmSound.play();
+            !props.muted && bgmSound.play();
             bgmSound.loop = true;
             
             alarmSound.volume = 1;
             alarmSound.currentTime = 0;
-            alarmSound.play();
+            !props.muted && alarmSound.play();
             alarmSound.loop = true;
             setTimeout(()=>{
                 gsap.to(alarmSound, 1, {volume:0, ease:'power1.inOut',
@@ -262,7 +262,7 @@ const Game = props => {
         const sliderIn = () => {
             sliderInAnim = gsap.timeline();
             
-            sliderInAnim.call(()=>{introSound.currentTime=0;introSound.play()});
+            sliderInAnim.call(()=>{introSound.currentTime=0;!props.muted && introSound.play()});
             sliderInAnim.to('#cart', 1, {y:'-50%', ease: 'power4.out'});
             sliderInAnim.to('#buttons', 1, {y:0, ease: 'power4.out'},.4);
             sliderInAnim.to('#texts', 1, {y:0, ease: 'power4.out'},.2);
@@ -275,11 +275,11 @@ const Game = props => {
             sliderInAnim.to('#character2 .eyes', .6, {x:'-100%'},1);
             sliderInAnim.to('#character2 .eyes', 1, {x:'-50%', y:'-100%', repeat:-1, repeatDelay:1, yoyo:true, ease:'power3.inOut'},1.6);
             sliderInAnim.to('#character2 .wrap', .3, {y:'-20%', repeat:-1, yoyo:true, ease:'power3.out'},1);
-            sliderInAnim.call(()=>{redballSound.currentTime=0;redballSound.play()}, null, 1);
-            sliderInAnim.call(()=>{redballSound.pause();redballSound.currentTime=0;redballSound.play()}, null, 1+3+1);
-            sliderInAnim.call(()=>{redballSound.pause();redballSound.currentTime=0;redballSound.play()}, null, 1+3+3+1);
-            sliderInAnim.call(()=>{redballSound.pause();redballSound.currentTime=0;redballSound.play()}, null, 1+3+3+3+1);
-            sliderInAnim.call(()=>{redballSound.pause();redballSound.currentTime=0;redballSound.play()}, null, 1+3+3+3+3+1);
+            sliderInAnim.call(()=>{redballSound.currentTime=0;!props.muted && redballSound.play()}, null, 1);
+            sliderInAnim.call(()=>{redballSound.pause();redballSound.currentTime=0;!props.muted && redballSound.play()}, null, 1+3+1);
+            sliderInAnim.call(()=>{redballSound.pause();redballSound.currentTime=0;!props.muted && redballSound.play()}, null, 1+3+3+1);
+            sliderInAnim.call(()=>{redballSound.pause();redballSound.currentTime=0;!props.muted && redballSound.play()}, null, 1+3+3+3+1);
+            sliderInAnim.call(()=>{redballSound.pause();redballSound.currentTime=0;!props.muted && redballSound.play()}, null, 1+3+3+3+3+1);
 
             // slide 2
             sliderInAnim.set({}, {}, '+=5');
@@ -347,17 +347,17 @@ const Game = props => {
 
         const ready = () => {
             const tl = gsap.timeline();
-            tl.to('#ready span:nth-child(1)', 1, {scale:1, ease: 'elastic.out(1, 0.3)', onStart:function(){countdownSound.pause();countdownSound.currentTime=0;countdownSound.play()}},.3);
+            tl.to('#ready span:nth-child(1)', 1, {scale:1, ease: 'elastic.out(1, 0.3)', onStart:function(){countdownSound.pause();countdownSound.currentTime=0;!props.muted && countdownSound.play()}},.3);
 
-            tl.to('#ready span:nth-child(2)', 1, {scale:1, ease: 'elastic.out(1, 0.3)', onStart:function(){countdownSound.pause();countdownSound.currentTime=0;countdownSound.play()}},1.1+.3);
+            tl.to('#ready span:nth-child(2)', 1, {scale:1, ease: 'elastic.out(1, 0.3)', onStart:function(){countdownSound.pause();countdownSound.currentTime=0;!props.muted && countdownSound.play()}},1.1+.3);
             tl.set('#ready span:nth-child(1)',{scale:0},1.1+.3);
             tl.set('#ready #bg',{autoAlpha:1},1.1+.3);
 
-            tl.to('#ready span:nth-child(3)', 1, {scale:1, ease: 'elastic.out(1, 0.3)', onStart:function(){countdownSound.pause();countdownSound.currentTime=0;countdownSound.play()}},2.2+.3);
+            tl.to('#ready span:nth-child(3)', 1, {scale:1, ease: 'elastic.out(1, 0.3)', onStart:function(){countdownSound.pause();countdownSound.currentTime=0;!props.muted && countdownSound.play()}},2.2+.3);
             tl.set('#ready span:nth-child(2)',{scale:0},2.2+.3);
             tl.set('#ready #bg',{autoAlpha:0},2.2+.3);
 
-            tl.call(()=>{startSound.currentTime=0;startSound.play()}, null, 3.3+.3);
+            tl.call(()=>{startSound.currentTime=0;!props.muted && startSound.play()}, null, 3.3+.3);
             tl.set('#ready span:nth-child(3)',{scale:0},3.3+.3);
             tl.call(clockIn, null, 3.3+.3);
         }
@@ -400,9 +400,9 @@ const Game = props => {
             const tl = gsap.timeline();
             
             if(winGame)
-                tl.call(()=>{winSound.currentTime=0;winSound.play()}, null,'s');
+                tl.call(()=>{winSound.currentTime=0;!props.muted && winSound.play()}, null,'s');
             else
-                tl.call(()=>{loseSound.currentTime=0;loseSound.play()}, null,'s');
+                tl.call(()=>{loseSound.currentTime=0;!props.muted && loseSound.play()}, null,'s');
 
             tl.to('#timesupBg', .8, {scale:25, ease: 'power3.out'},'s');
             tl.to('#question #smallTitle span', .3, {autoAlpha:0, y:'-100%', stagger:.1, overwrite:true, ease: 'power3.in'},'s');

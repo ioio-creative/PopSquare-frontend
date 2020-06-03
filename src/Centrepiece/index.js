@@ -491,7 +491,7 @@ const Centrepiece = (props) => {
                 letterSpacing: 1,
                 // breakWords: true,
                 wordWrap:true,
-                wordWrapWidth:gw
+                wordWrapWidth:gw*.8
             });
             const texten = new PIXI.Text(productName.en, style);
             const textzh = new PIXI.Text(productName.zh, style);

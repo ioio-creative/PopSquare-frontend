@@ -187,7 +187,7 @@ const Game = props => {
                     }
                 });
                 openingOut();
-            },1000 * 30); // 50s
+            },1000 * 20); // 50s
         
             initSlider();
             initQuestion();

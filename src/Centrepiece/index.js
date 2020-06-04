@@ -513,7 +513,7 @@ const Centrepiece = (props) => {
         const createProductName = (productName, size, container, tbw) => {
             // product name
             const style = new PIXI.TextStyle({
-                align: "center",
+                align: "left",
                 fill: "white",
                 fontFamily: "Inter, Noto Sans TC",
                 fontSize: size,
@@ -522,15 +522,15 @@ const Centrepiece = (props) => {
                 wordWrap:true,
                 wordWrapWidth:tbw
             });
-            const texten = new PIXI.Text(productName.en, style);
-            const textzh = new PIXI.Text(productName.zh, style);
-            texten.pivot.x = texten.width/2;
-            texten.pivot.y = texten.height+10;
-            textzh.pivot.x = textzh.width/2;
-            textzh.pivot.y = -10;
+            const text = new PIXI.Text(productName.en+'\n\n'+productName.zh, style);
+            // const textzh = new PIXI.Text(productName.zh, style);
+            text.pivot.x = text.width/2;
+            text.pivot.y = text.height/2;
+            // textzh.pivot.x = textzh.width/2;
+            // textzh.pivot.y = -10;
             // text.alpha = 0;
-            container.addChild(texten);
-            container.addChild(textzh);
+            container.addChild(text);
+            // container.addChild(textzh);
         }
 
         const preloadImage = (images) => {
@@ -574,18 +574,18 @@ const Centrepiece = (props) => {
             for(let i=0; i<detailsArray.length; i++){
                 const detail = detailsArray[i];
                 if(detail !== null){
-                    const texten = detail.children[0];
-                    const textzh = detail.children[1];
-                    const image = detail.children[2];
+                    const text = detail.children[0];
+                    // const textzh = detail.children[1];
+                    const image = detail.children[1];
                     
                     gsap.to(eyesArray, .3, {alpha:0, overwrite:true, ease:'power3.inOut'});
                     gsap.to(detailsArray, .3, {alpha:1, overwrite:true, ease:'power3.inOut'});
 
                     const tl = gsap.timeline({delay:Math.random()*3+1});
-                    tl.to(texten, .6, {alpha:1, ease:'power3.inOut'},'s');
-                    tl.to(textzh, .6, {alpha:1, ease:'power3.inOut'},'s');
-                    tl.to(texten, .3, {alpha:0, ease:'power3.inOut'},3);
-                    tl.to(textzh, .3, {alpha:0, ease:'power3.inOut'},3);
+                    tl.to(text, .6, {alpha:1, ease:'power3.inOut'},'s');
+                    // tl.to(textzh, .6, {alpha:1, ease:'power3.inOut'},'s');
+                    tl.to(text, .3, {alpha:0, ease:'power3.inOut'},3);
+                    // tl.to(textzh, .3, {alpha:0, ease:'power3.inOut'},3);
                     tl.to(image, .6, {alpha:1, ease:'power3.inOut'},3);
 
                     productDetailsTween.push(tl);

@@ -924,8 +924,8 @@ const Centrepiece = (props) => {
             }
 
             // list bottom line
-            gsap.set('#ranking #list li span', {force3D:true, x:'-100%', overwrite:true});
-            gsap.to('#ranking #list li span', 1, {delay:.3, x:'0%',stagger:.1, ease:'power3.inOut'});
+            gsap.set('#ranking #list li > span', {force3D:true, x:'-100%', overwrite:true});
+            gsap.to('#ranking #list li > span', 1, {delay:.3, x:'0%',stagger:.1, ease:'power3.inOut'});
 
             const tl3 = gsap.timeline({delay:.6});
             tl3.set('#ranking #rateline > span', { x:'-100%'},'_1');
@@ -962,7 +962,7 @@ const Centrepiece = (props) => {
             }
 
             // list bottom line
-            gsap.to('#ranking #list li span', 1, {x:'100%',stagger:.1, ease:'power3.inOut',
+            gsap.to('#ranking #list li > span', 1, {x:'100%',stagger:.1, ease:'power3.inOut',
                 'onComplete':function(){
                     // update data
                 }
@@ -1164,8 +1164,8 @@ const Centrepiece = (props) => {
                         </li>
                         <li>
                             <div className="title">
-                                <p>Total Pick<br/>Up Time</p>
-                                <p className="tc">累積Pick Up 次數</p>
+                                <p>Total Pick<br/>Up Time <span>(Daily Update)</span></p>
+                                <p className="tc">累積Pick Up 次數 <span>(每天更新一次)</span></p>
                             </div>
                             <div className="value">{ topProductData && topProductData[topProductIdx] && topProductData[topProductIdx].pickupCount }</div>
                             <span></span>

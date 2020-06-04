@@ -384,7 +384,7 @@ const Game = props => {
                 tl.to('#character1 .wrap', 1, {scale:2, ease: 'elastic.out(1, 0.3)'},'b-=.6');
             }
             else{
-                tl.to('#character2 .eyes', .3, {x:'-100%', y:'0%', ease: 'power1.inOut'},'s');
+                tl.to('#character2 .eyes', .3, {x:'-130%', y:'0%', ease: 'power1.inOut'},'s');
                 tl.to('#character2 .wrap', 1, {scale:1, left:'50vw', top:'50vh', y:0, ease:'power2.inOut'},'s');
                 tl.to('#character1 .wrap', 1, {left:0, top:'-6vh', boxShadow:'0px 0px 0px rgba(0,0,0,0)', ease: 'elastic.out(1, 0.75)'},'b-=.6');
                 tl.to('#character1 .wrap', 1, {scale:1.55, ease: 'elastic.out(1, 0.3)'},'b-=.6');
@@ -478,7 +478,7 @@ const Game = props => {
         const nextOfferIn = () => {
             nextOfferInAnim = gsap.timeline();
             nextOfferInAnim.to('#character1 .eyes', .6, {x:'-100%', y:'0%', overwrite:true, ease: 'power3.inOut'},'s');
-            nextOfferInAnim.to('#character2 .eyes', .6, {x:'-100%', y:'0%', scale:1, ease: 'power3.inOut'},'s');
+            nextOfferInAnim.to('#character2 .eyes', .6, {x:'-130%', y:'0%', scale:1, ease: 'power3.inOut'},'s');
             if(screenOrientation === 'horizontal'){
                 nextOfferInAnim.to('#character1 .wrap', 1, {left:'25vw', top: '7vh', boxShadow:'1vh 0.3vh 0 #333', ease: 'power3.inOut'},'s');
                 nextOfferInAnim.to('#character2 .wrap', 1, {left:'37vw', top: '31vh', boxShadow:'4vh 2.5vh 0 #333', scale: .4, ease: 'power3.inOut'},'s');

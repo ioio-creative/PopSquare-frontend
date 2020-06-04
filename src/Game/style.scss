@@ -638,13 +638,14 @@
                 box-shadow: 4vh 2.5vh 0 #333;
                 // animation: jump 2s ease infinite alternate-reverse;
                 .eyes{
-                    width:20%;
-                    height: 8%;
+                    width:16%;
+                    height: 6%;
                     // top:20%;
                     // left:50%;
                     // transform: translate3d(-50%,0,0);
                     // animation: moveeyes2 5s ease infinite 3s;
                     span{
+                        border-radius: 2vw;
                         animation-delay: 5s;
                         // animation-direction: reverse;
                     }

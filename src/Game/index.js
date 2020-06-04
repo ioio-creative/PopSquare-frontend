@@ -686,7 +686,7 @@ const Game = props => {
                     </div>
                     <div id="tips">
                         <span>{ gameData.qrtitle ? gameData.qrtitle.en : '' }</span>
-                        <span>{ gameData.qrtitle ? gameData.qrtitle.zh : '' }</span>
+                        <span className="tc">{ gameData.qrtitle ? gameData.qrtitle.zh : '' }</span>
                     </div>
                     <div id="lose">
                         <span>Try again and</span>

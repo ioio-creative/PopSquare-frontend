@@ -327,7 +327,7 @@ const Centrepiece = (props) => {
             if(_productID === -1)
                 createGraphicWithShadow(graphics);
             else{
-                createGraphicWithInfo(graphics, _productID, _productName, _cartName);
+                createGraphicWithInfo(shape, graphics, _productID, _productName, _cartName);
                 addPop();
             }
 
@@ -399,11 +399,18 @@ const Centrepiece = (props) => {
             shapes.push(container);
         }
         
-        const createGraphicWithInfo = (graphics, _productID, _productName, _cartName) => {
+        const createGraphicWithInfo = (shape, graphics, _productID, _productName, _cartName) => {
             const container = new PIXI.Container();
             const graphicsContainer = new PIXI.Container();
             const detailsContainer = new PIXI.Container();
-            const size = graphics.width*.08;
+            let size, textblockwidth;
+            if(shape === 'halfCircle'){
+                size = graphics.width*.05;
+                textblockwidth = graphics.width * .6;
+            }else{
+                size = graphics.width*.08;
+                textblockwidth = graphics.width * .8;
+            }
             // const cartName = _cartName;
             const productName = _productName;
             const productID = _productID;
@@ -413,7 +420,7 @@ const Centrepiece = (props) => {
             
             graphicsContainer.addChild(graphics);
             createEyes(graphicsContainer);
-            createProductName(productName, size, detailsContainer, graphics.width);
+            createProductName(productName, size, detailsContainer, textblockwidth);
             createProductImage(productID, detailsContainer, tempgraphics);
             // createCartName(cartName, detailsContainer, graphicsContainer);
             
@@ -472,49 +479,48 @@ const Centrepiece = (props) => {
             eyesTween.push(tl);
         }
 
-        const createCartName = (cartName, container, graphicsContainer) => {
-            const cartContainer = new PIXI.Container();
+        // const createCartName = (cartName, container, graphicsContainer) => {
+        //     const cartContainer = new PIXI.Container();
 
-            const style = new PIXI.TextStyle({
-                align: "center",
-                fill: "#333333",
-                fontFamily: "Comic Sans MS",
-                fontSize: 30,
-                fontWeight: "bold",
-                letterSpacing: 1
-            });
-            const text = new PIXI.Text(cartName, style);
-            text.pivot.x = text.width/2;
-            text.pivot.y = text.height/2;
+        //     const style = new PIXI.TextStyle({
+        //         align: "center",
+        //         fill: "#333333",
+        //         fontFamily: "Comic Sans MS",
+        //         fontSize: 30,
+        //         fontWeight: "bold",
+        //         letterSpacing: 1
+        //     });
+        //     const text = new PIXI.Text(cartName, style);
+        //     text.pivot.x = text.width/2;
+        //     text.pivot.y = text.height/2;
 
             
-            const bg = new PIXI.Graphics();
-            bg.beginFill(0xffffff, 1);
-            bg.drawRoundedRect(0, 0, text.width+60, text.height+40, text.height+5);
-            bg.pivot.x = bg.width/2;
-            bg.pivot.y = bg.height/2;
+        //     const bg = new PIXI.Graphics();
+        //     bg.beginFill(0xffffff, 1);
+        //     bg.drawRoundedRect(0, 0, text.width+60, text.height+40, text.height+5);
+        //     bg.pivot.x = bg.width/2;
+        //     bg.pivot.y = bg.height/2;
 
-            cartContainer.addChild(bg);
-            cartContainer.addChild(text);
+        //     cartContainer.addChild(bg);
+        //     cartContainer.addChild(text);
 
-            cartContainer.x = graphicsContainer.width/3;
-            cartContainer.y = graphicsContainer.height/3;
+        //     cartContainer.x = graphicsContainer.width/3;
+        //     cartContainer.y = graphicsContainer.height/3;
 
-            container.addChild(cartContainer);
-        }
+        //     container.addChild(cartContainer);
+        // }
         
-        const createProductName = (productName, size, container, gw) => {
+        const createProductName = (productName, size, container, tbw) => {
             // product name
             const style = new PIXI.TextStyle({
                 align: "center",
                 fill: "white",
-                fontFamily: "Comic Sans MS, Noto Sans TC",
+                fontFamily: "Inter, Noto Sans TC",
                 fontSize: size,
                 fontWeight: "bold",
                 letterSpacing: 1,
-                // breakWords: true,
                 wordWrap:true,
-                wordWrapWidth:gw*.8
+                wordWrapWidth:tbw
             });
             const texten = new PIXI.Text(productName.en, style);
             const textzh = new PIXI.Text(productName.zh, style);

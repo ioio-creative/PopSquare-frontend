@@ -518,6 +518,7 @@ const Centrepiece = (props) => {
                 fontFamily: "Inter, Noto Sans TC",
                 fontSize: size,
                 fontWeight: "bold",
+                lineHeight: size,
                 letterSpacing: 1,
                 wordWrap:true,
                 wordWrapWidth:tbw

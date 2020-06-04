@@ -131,29 +131,6 @@ export const stopPromoAnim = () => {
 }
 
 const Promotion = props => {
-    // const [socket,setSocket] = useState(null);
-    // const [trandData, setTrandData] = useState(null);
-
-    // useEffect(()=>{
-        // let loaded = false;
-
-        // const initTrendData = (data) => {
-        //     setTrandData(data);
-        // }
-
-        // if(socket){
-            // socket.emit('getTrendData', initTrendData);
-        // }else{
-        //     setSocket(webSocket('http://192.168.8.109:8080/'));
-        // }
-
-        // return ()=>{
-        //     if(socket){
-                // socket.off('getTrendData', initTrendData);
-        //     }
-        // }
-    // },[socket])
-
     return (
         <div id="promotion" className="">
             <div id="name">

@@ -56,17 +56,24 @@ const Game = props => {
                 dispatch({type:'START_GAME'});
             }
         }
-        
-        const whenPickUp = (data) => {
-            // win
-            if(!win && enabled && isCountingFunc.current.isCounting()){
-                const answer = tempGameData.answer.split(',');
-                if(answer.indexOf(data.productId) !== -1){
-                    stopCounterFunc.current.stopCounter();
-                    win = true;
-                }
+
+        const gameEnd = (data) => {
+            if(data && !win){
+                stopCounterFunc.current.stopCounter();
+                win = true;
             }
         }
+        
+        // const whenPickUp = (data) => {
+        //     // win
+        //     if(!win && enabled && isCountingFunc.current.isCounting()){
+        //         const answer = tempGameData.answer.split(',');
+        //         if(answer.indexOf(data.productId) !== -1){
+        //             stopCounterFunc.current.stopCounter();
+        //             win = true;
+        //         }
+        //     }
+        // }
 
         const resetEnabled = () => {
             enabled = false;
@@ -75,7 +82,8 @@ const Game = props => {
 
         if(socket){
             socket.on('GAME', gameStart);
-            socket.on('PICKUP', whenPickUp);
+            // socket.on('PICKUP', whenPickUp);
+            socket.on('GAMEEND', gameEnd);
         }else{
             setSocket(webSocket('http://192.168.8.109:8080/'));
         }
@@ -83,7 +91,8 @@ const Game = props => {
         return ()=>{
             if(socket){
                 socket.off('GAME', gameData);
-                socket.off('PICKUP', whenPickUp);
+                // socket.off('PICKUP', whenPickUp);
+                socket.off('GAMEEND', gameEnd);
             }
         }
     },[socket])

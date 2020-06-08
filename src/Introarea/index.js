@@ -71,7 +71,7 @@ const Introarea = (props) => {
         let tl;
         const bgmSound = new Audio(sound_bgm);
 
-        video.current.onplay = () => {
+        video.current.oncanplay = () => {
             bgmSound.volume = 1;
             bgmSound.currentTime = 0;
             bgmSound.play();

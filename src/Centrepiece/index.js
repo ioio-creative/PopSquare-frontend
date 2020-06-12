@@ -16,8 +16,8 @@ import svg1_2 from './images/pop2.svg';
 import svg2_2 from './images/mark2.svg';
 import decomp from 'poly-decomp';
 window.decomp = decomp;
-
-
+// edited by hung, replace all window.innerwidth & window.innerheight to fix value
+const [winW, winH] = [1080, 1920];
 const Centrepiece = (props) => {
     const gameStarted = useSelector(state => state.gameStarted);
 
@@ -161,8 +161,8 @@ const Centrepiece = (props) => {
             Svg = Matter.Svg,
             Vertices = Matter.Vertices;
         
-        const ww = window.innerWidth,
-            wh = window.innerHeight;
+        const ww = winW,
+            wh = winH;
 
 
 
@@ -1039,8 +1039,8 @@ const Centrepiece = (props) => {
             });
             
             app = new PIXI.Application({
-                width: window.innerWidth, 
-                height: window.innerHeight,
+                width: winW, 
+                height: winH,
                 // resolution: 1,
                 antialias:true,
                 autoResize: true,
@@ -1075,9 +1075,9 @@ const Centrepiece = (props) => {
         }
         
         const onResize = (app) => {
-            app.view.style.width = window.innerWidth+'px';
-            app.view.style.height = window.innerHeight+'px';
-            app.resize(window.innerWidth,window.innerHeight);
+            app.view.style.width = winW+'px';
+            app.view.style.height = winH+'px';
+            app.resize(winW,winH);
         }
 
         initMatter();
